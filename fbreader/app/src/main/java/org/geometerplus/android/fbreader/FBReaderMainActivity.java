@@ -29,8 +29,10 @@ import com.github.johnpersano.supertoasts.SuperActivityToast;
 import org.geometerplus.zlibrary.core.options.*;
 import org.geometerplus.zlibrary.ui.android.library.*;
 import org.geometerplus.zlibrary.ui.android.view.AndroidFontUtil;
-
 import org.geometerplus.android.fbreader.dict.DictionaryUtil;
+import org.geometerplus.android.fbreader.libraryService.BookCollectionShadow;
+import org.geometerplus.fbreader.Paths;
+import org.geometerplus.fbreader.fbreader.FBReaderApp;
 
 public abstract class FBReaderMainActivity extends Activity {
 	public static final int REQUEST_PREFERENCES = 1;
@@ -38,11 +40,21 @@ public abstract class FBReaderMainActivity extends Activity {
 	public static final int REQUEST_DICTIONARY = 3;
 
 	private volatile SuperActivityToast myToast;
+	protected FBReaderApp myFBReaderApp;
 
 	@Override
 	protected void onCreate(Bundle saved) {
 		super.onCreate(saved);
 		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
+		
+		initApp();
+	}
+	
+	protected void initApp() {
+		myFBReaderApp = (FBReaderApp)FBReaderApp.Instance();
+		if (myFBReaderApp == null) {
+			myFBReaderApp = new FBReaderApp(Paths.systemInfo(this), new BookCollectionShadow());
+		}
 	}
 
 	@Override

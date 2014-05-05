@@ -27,17 +27,21 @@ import org.geometerplus.zlibrary.core.application.*;
 import org.geometerplus.zlibrary.core.drm.FileEncryptionInfo;
 import org.geometerplus.zlibrary.core.drm.EncryptionMethod;
 import org.geometerplus.zlibrary.core.util.*;
-
 import org.geometerplus.zlibrary.text.hyphenation.ZLTextHyphenator;
 import org.geometerplus.zlibrary.text.model.ZLTextModel;
 import org.geometerplus.zlibrary.text.view.*;
-
 import org.geometerplus.fbreader.book.*;
 import org.geometerplus.fbreader.bookmodel.*;
 import org.geometerplus.fbreader.fbreader.options.*;
 import org.geometerplus.fbreader.formats.*;
+import org.geometerplus.fbreader.library.DictionaryParser;
 import org.geometerplus.fbreader.network.sync.SyncData;
-import org.geometerplus.fbreader.util.*;
+import org.geometerplus.fbreader.util.AutoTextSnippet;
+import org.geometerplus.fbreader.util.EmptyTextSnippet;
+import org.geometerplus.fbreader.util.TextSnippet;
+import org.geometerplus.fbreader.formats.FormatPlugin;
+import org.geometerplus.fbreader.formats.djvu.DjvuContext;
+import org.geometerplus.fbreader.formats.djvu.DjvuDocument;
 
 public final class FBReaderApp extends ZLApplication {
 	public interface ExternalFileOpener {
@@ -65,6 +69,7 @@ public final class FBReaderApp extends ZLApplication {
 	public final FBView BookTextView;
 	public final FBView FootnoteView;
 	private String myFootnoteModelId;
+	public DjvuDocument Document;
 
 	public volatile BookModel Model;
 	public volatile Book ExternalBook;
@@ -191,7 +196,7 @@ public final class FBReaderApp extends ZLApplication {
 		}, postAction);
 	}
 
-	private void reloadBook() {
+	public void reloadBook() {
 		final Book book = getCurrentBook();
 		if (book != null) {
 			final SynchronousExecutor executor = createExecutor("loadingBook");
@@ -324,7 +329,13 @@ public final class FBReaderApp extends ZLApplication {
 		}
 
 		hideActivePopup();
-		storePosition();
+		if (Model != null) {
+			if(Model.Book.isDjvu()) {
+				storePosition(new ZLTextFixedPosition(Document.currentPageIndex, 0 ,0));
+			} else {
+				storePosition();
+			}
+		}
 
 		BookTextView.setModel(null);
 		FootnoteView.setModel(null);
@@ -362,10 +373,34 @@ public final class FBReaderApp extends ZLApplication {
 		try {
 			Model = BookModel.createModel(book, plugin);
 			Collection.saveBook(book);
+			if("djvu".equalsIgnoreCase(book.getExtention())) {
+				Document = new DjvuContext().openDocument(book.getPath());
+			}
 			ZLTextHyphenator.Instance().load(book.getLanguage());
 			BookTextView.setModel(Model.getTextModel());
+			BookTextView.setBook(book, this);
 			setBookmarkHighlightings(BookTextView, null);
 			gotoStoredPosition();
+			final String path = book.getPath();
+			final Book bookId = book;
+			if(book.getLanguage() != null && (
+					book.getLanguage().toLowerCase().startsWith("en") ||
+					book.getLanguage().toLowerCase().startsWith("fr") || book.getLanguage().toLowerCase().startsWith("it")
+					)) {
+				Thread t = new Thread(new Runnable() {
+
+					public void run() {
+						List<Word> unknownList = Collection.unknownWords(bookId.getId());
+						if(unknownList == null || unknownList.size() == 0) {
+							Model.getTextModel().makeDictionary(Collection, book);
+						}
+					}
+				});
+				t.setPriority(Thread.MAX_PRIORITY);
+				t.start();
+				
+			}
+			
 			if (bookmark == null) {
 				setView(BookTextView);
 			} else {
@@ -469,8 +504,41 @@ public final class FBReaderApp extends ZLApplication {
 		setView(BookTextView);
 	}
 
+//	private Book createBookForFile(ZLFile file) {
+//		if (file == null) {
+//			return null;
+//		}
+//		Book book = Book.getByFile(file);
+//		if (book != null) {
+//			book.insertIntoBookList();
+//			return book;
+//		}
+//		if (file.isArchive()) {
+//			for (ZLFile child : file.children()) {
+//				book = Book.getByFile(child);
+//				if (book != null) {
+//					book.insertIntoBookList();
+//					return book;
+//				}
+//			}
+//		}
+//		return null;
+//	}
+//
+//	@Override
+//	public void openFile(ZLFile file, Runnable postAction) {
+//		Book book = createBookForFile(file);
+//		openBook(book, null, postAction);
+//		
+//	}
+
 	public void onWindowClosing() {
-		storePosition();
+		if(Model.Book.isDjvu()) {
+			storePosition(new ZLTextFixedPosition(Document.currentPageIndex, 0 ,0));
+			return;
+		} else {
+			storePosition();
+		}
 	}
 
 	private class PositionSaver implements Runnable {
@@ -563,6 +631,16 @@ public final class FBReaderApp extends ZLApplication {
 		savePosition();
 	}
 
+	public void storePosition(ZLTextPosition position) {
+		final Book bk = Model != null ? Model.Book : null;
+		if (bk != null && bk == myStoredPositionBook && myStoredPosition != null && BookTextView != null) {
+			if (!myStoredPosition.equals(position)) {
+				myStoredPosition = position;
+				savePosition();
+			}
+		}
+	}
+	
 	public void storePosition() {
 		final Book bk = Model != null ? Model.Book : null;
 		if (bk != null && bk == myStoredPositionBook && myStoredPosition != null && BookTextView != null) {
@@ -590,7 +668,7 @@ public final class FBReaderApp extends ZLApplication {
 
 	public void runCancelAction(CancelMenuHelper.ActionType type, Bookmark bookmark) {
 		switch (type) {
-			case library:
+			case openLocal:
 				runAction(ActionCode.SHOW_LIBRARY);
 				break;
 			case networkLibrary:

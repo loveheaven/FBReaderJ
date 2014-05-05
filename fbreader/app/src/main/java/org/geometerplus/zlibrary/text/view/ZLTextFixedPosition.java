@@ -31,9 +31,16 @@ public class ZLTextFixedPosition extends ZLTextPosition {
 	}
 
 	public ZLTextFixedPosition(ZLTextPosition position) {
-		ParagraphIndex = position.getParagraphIndex();
-		ElementIndex = position.getElementIndex();
-		CharIndex = position.getCharIndex();
+		if(position != null) {
+			ParagraphIndex = position.getParagraphIndex();
+			ElementIndex = position.getElementIndex();
+			CharIndex = position.getCharIndex();
+		} else {
+			ParagraphIndex = 0;
+			ElementIndex = 0;
+			CharIndex = 0;
+		}
+		
 	}
 
 	public final int getParagraphIndex() {

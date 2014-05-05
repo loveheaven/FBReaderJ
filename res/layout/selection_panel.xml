@@ -58,6 +58,30 @@
 				android:layout_marginRight="8dp"
 			/>
 			<ImageView
+				android:id="@+id/selection_panel_addknown"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@drawable/popup_copy"
+				android:layout_marginLeft="8dp"
+				android:layout_marginRight="8dp"
+			/>
+			<ImageView
+				android:id="@+id/selection_panel_addunknown"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@drawable/popup_copy"
+				android:layout_marginLeft="8dp"
+				android:layout_marginRight="8dp"
+			/>
+			<ImageView
+				android:id="@+id/selection_panel_modifyguji"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@drawable/popup_copy"
+				android:layout_marginLeft="8dp"
+				android:layout_marginRight="8dp"
+			/>
+			<ImageView
 				android:id="@+id/selection_panel_close"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"

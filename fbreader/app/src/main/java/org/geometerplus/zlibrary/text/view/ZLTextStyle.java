@@ -22,15 +22,18 @@ package org.geometerplus.zlibrary.text.view;
 import java.util.List;
 
 import org.geometerplus.zlibrary.core.fonts.FontEntry;
+import org.geometerplus.zlibrary.core.util.ZLColor;
 import org.geometerplus.zlibrary.text.model.ZLTextMetrics;
 
 public abstract class ZLTextStyle {
 	public final ZLTextStyle Parent;
 	public final ZLTextHyperlink Hyperlink;
+	public ZLColor TextColor;
 
 	protected ZLTextStyle(ZLTextStyle parent, ZLTextHyperlink hyperlink) {
 		Parent = parent != null ? parent : this;
 		Hyperlink = hyperlink;
+		TextColor = new ZLColor(0,0,0);
 	}
 
 	public abstract List<FontEntry> getFontEntries();

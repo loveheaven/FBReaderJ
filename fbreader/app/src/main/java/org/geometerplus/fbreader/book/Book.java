@@ -50,4 +50,12 @@ public final class Book extends AbstractBook {
 		}
 		return myPath.equals(((Book)o).myPath);
 	}
+	
+	public boolean isGuji() {
+		return "guji".equalsIgnoreCase(getExtention());
+	}
+	
+	public boolean isDjvu() {
+		return "djvu".equalsIgnoreCase(getExtention());
+	}
 }

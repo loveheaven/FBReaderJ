@@ -100,7 +100,7 @@ bool TxtBookReader::newLineHandler() {
 		}
 	}
 
-	if (paragraphBreak) {
+	if (true) {
 		internalEndParagraph();
 		beginParagraph();
 	}

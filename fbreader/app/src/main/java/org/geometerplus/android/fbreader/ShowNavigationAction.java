@@ -19,10 +19,9 @@
 
 package org.geometerplus.android.fbreader;
 
+import org.geometerplus.fbreader.fbreader.FBReaderApp;
 import org.geometerplus.zlibrary.text.model.ZLTextModel;
 import org.geometerplus.zlibrary.text.view.ZLTextView;
-
-import org.geometerplus.fbreader.fbreader.FBReaderApp;
 
 class ShowNavigationAction extends FBAndroidAction {
 	ShowNavigationAction(FBReader baseActivity, FBReaderApp fbreader) {
@@ -32,6 +31,12 @@ class ShowNavigationAction extends FBAndroidAction {
 	@Override
 	public boolean isVisible() {
 		final ZLTextView view = (ZLTextView)Reader.getCurrentView();
+		if(view.isDjvu()) {
+			if(Reader.Document != null && Reader.Document.getPageCount() > 0) {
+				return true;
+			}
+			return false;
+		}
 		final ZLTextModel textModel = view.getModel();
 		return textModel != null && textModel.getParagraphsNumber() != 0;
 	}

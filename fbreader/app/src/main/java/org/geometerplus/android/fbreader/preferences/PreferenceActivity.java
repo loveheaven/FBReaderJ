@@ -361,6 +361,8 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 			baseStyle.AlignmentOption, alignments
 		));
 		textScreen.addOption(baseStyle.AutoHyphenationOption, "autoHyphenations");
+		textScreen.addOption(androidLibrary.ShowGujiZhuOption, "ShowGujiZhu");
+		textScreen.addOption(androidLibrary.ShowGujiYiOption, "ShowGujiYi");
 
 		final Screen moreStylesScreen = textScreen.createPreferenceScreen("more");
 		for (ZLTextNGStyleDescription description : collection.getDescriptionList()) {
@@ -368,6 +370,54 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 			ngScreen.addPreference(new FontPreference(
 				this, textScreen.Resource.getResource("font"),
 				description.FontFamilyOption, true
+/*=======
+
+		byte styles[] = {
+			FBTextKind.REGULAR,
+			FBTextKind.TITLE,
+			FBTextKind.SECTION_TITLE,
+			FBTextKind.SUBTITLE,
+			FBTextKind.H1,
+			FBTextKind.H2,
+			FBTextKind.H3,
+			FBTextKind.H4,
+			FBTextKind.H5,
+			FBTextKind.H6,
+			FBTextKind.ANNOTATION,
+			FBTextKind.EPIGRAPH,
+			FBTextKind.AUTHOR,
+			FBTextKind.POEM_TITLE,
+			FBTextKind.STANZA,
+			FBTextKind.VERSE,
+			FBTextKind.CITE,
+			FBTextKind.INTERNAL_HYPERLINK,
+			FBTextKind.EXTERNAL_HYPERLINK,
+			FBTextKind.FOOTNOTE,
+			FBTextKind.ITALIC,
+			FBTextKind.EMPHASIS,
+			FBTextKind.BOLD,
+			FBTextKind.STRONG,
+			FBTextKind.DEFINITION,
+			FBTextKind.DEFINITION_DESCRIPTION,
+			FBTextKind.PREFORMATTED,
+			FBTextKind.CODE,
+			FBTextKind.SUB,
+			FBTextKind.SUP
+		};
+		for (int i = 0; i < styles.length; ++i) {
+			final ZLTextStyleDecoration decoration = collection.getDecoration(styles[i]);
+			if (decoration == null) {
+				continue;
+			}
+			ZLTextFullStyleDecoration fullDecoration =
+				decoration instanceof ZLTextFullStyleDecoration
+					? (ZLTextFullStyleDecoration)decoration : null;
+
+			final Screen formatScreen = moreStylesScreen.createPreferenceScreen(decoration.getName());
+			formatScreen.addPreference(new FontPreference(
+				this, textScreen.Resource, "font",
+				decoration.FontFamilyOption, true
+>>>>>>> 1. Add Guji support*/
 			));
 			ngScreen.addPreference(new StringPreference(
 				this, description.FontSizeOption,
@@ -656,12 +706,12 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 		}));
 		volumeKeysPreferences.run();
 
-		scrollingScreen.addOption(pageTurningOptions.Animation, "animation");
+		scrollingScreen.addOption(pageTurningOptions.AnimationOption, "animation");
 		scrollingScreen.addPreference(new AnimationSpeedPreference(
 			this,
 			scrollingScreen.Resource,
 			"animationSpeed",
-			pageTurningOptions.AnimationSpeed
+			pageTurningOptions.AnimationSpeedOption
 		));
 		scrollingScreen.addOption(pageTurningOptions.Horizontal, "horizontal");
 
@@ -733,7 +783,7 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 
 		final CancelMenuHelper cancelMenuHelper = new CancelMenuHelper();
 		final Screen cancelMenuScreen = createPreferenceScreen("cancelMenu");
-		cancelMenuScreen.addOption(cancelMenuHelper.ShowLibraryItemOption, "library");
+		cancelMenuScreen.addOption(cancelMenuHelper.ShowLibraryItemOption, "openLocal");
 		cancelMenuScreen.addOption(cancelMenuHelper.ShowNetworkLibraryItemOption, "networkLibrary");
 		cancelMenuScreen.addOption(cancelMenuHelper.ShowPreviousBookItemOption, "previousBook");
 		cancelMenuScreen.addOption(cancelMenuHelper.ShowPositionItemsOption, "positions");

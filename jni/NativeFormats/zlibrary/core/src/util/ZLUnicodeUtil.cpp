@@ -21,6 +21,8 @@
 #include <cstdlib>
 #include <map>
 
+#include <android/log.h>
+
 #include <AndroidUtil.h>
 #include <JniEnvelope.h>
 
@@ -104,6 +106,10 @@ bool ZLUnicodeUtil::isUtf8String(const char *str, int len) {
 					nonLeadingCharsCounter = 2;
 				} else if ((*str & 0xF8) == 0xF0) {
 					nonLeadingCharsCounter = 3;
+				} else if ((*str & 0xFC) == 0xF8) {
+					nonLeadingCharsCounter = 4;
+				} else if ((*str & 0xFE) == 0xFC) {
+					nonLeadingCharsCounter = 5;
 				} else {
 					return false;
 				}
@@ -141,6 +147,14 @@ void ZLUnicodeUtil::cleanUtf8String(std::string &str) {
 				charLength = 4;
 				processed = 1;
 				++it;
+			} else if ((*it & 0xFC) == 0xF8) {
+				charLength = 5;
+				processed = 1;
+				++it;
+			} else if ((*it & 0xFE) == 0xFC) {
+				charLength = 6;
+				processed = 1;
+				++it;
 			} else {
 				it = str.erase(it);
 			}
@@ -167,8 +181,13 @@ int ZLUnicodeUtil::utf8Length(const char *str, int len) {
 			str += 2;
 		} else if ((*str & 0x10) == 0) {
 			str += 3;
-		} else {
+		} else if ((*str & 0x08) == 0) {
 			str += 4;
+			++counter;
+		} else if ((*str & 0x04) == 0) {
+			str += 5;
+		} else {
+			str += 6;
 		}
 		++counter;
 	}
@@ -188,8 +207,12 @@ int ZLUnicodeUtil::length(const char *str, int utf8Length) {
 			ptr += 2;
 		} else if ((*ptr & 0x10) == 0) {
 			ptr += 3;
-		} else {
+		}  else if ((*ptr & 0x08) == 0) {
 			ptr += 4;
+		} else if ((*ptr & 0x04) == 0) {
+			ptr += 5;
+		} else {
+			ptr += 6;
 		}
 	}
 	return ptr - str;
@@ -267,10 +290,58 @@ void ZLUnicodeUtil::utf8ToUcs2(Ucs2String &to, const char *from, int length, int
 			ch += *ptr & 0x3f;
 			to.push_back(ch);
 			++ptr;
+		} else  if ((*ptr & 0x08) == 0) {
+			Ucs4Char ch = *ptr & 0x07;
+			++ptr;
+			ch <<= 6;
+			ch += *ptr & 0x3f;
+			++ptr;
+			ch <<= 6;
+			ch += *ptr & 0x3f;
+			++ptr;
+			ch <<= 6;
+			ch += *ptr & 0x3f;
+			ch -= 0x10000;
+			Ucs2Char ch1 = (54<<10)+(ch>>10);
+			Ucs2Char ch2 = (55<<10)+(ch & 0x0003FF);
+			to.push_back(ch1);
+			to.push_back(ch2);
+			++ptr;
+		} else if ((*ptr & 0x04) == 0) {
+			Ucs2Char ch = *ptr & 0x03;
+			++ptr;
+			ch <<= 6;
+			ch += *ptr & 0x3f;
+			++ptr;
+			ch <<= 6;
+			ch += *ptr & 0x3f;
+			++ptr;
+			ch <<= 6;
+			ch += *ptr & 0x3f;
+			++ptr;
+			ch <<= 6;
+			ch += *ptr & 0x3f;
+			to.push_back(ch);
+			++ptr;
 		} else {
-			// symbol number is > 0xffff :(
-			to.push_back('X');
-			ptr += 4;
+			Ucs2Char ch = *ptr & 0x01;
+			++ptr;
+			ch <<= 6;
+			ch += *ptr & 0x3f;
+			++ptr;
+			ch <<= 6;
+			ch += *ptr & 0x3f;
+			++ptr;
+			ch <<= 6;
+			ch += *ptr & 0x3f;
+			++ptr;
+			ch <<= 6;
+			ch += *ptr & 0x3f;
+			++ptr;
+			ch <<= 6;
+			ch += *ptr & 0x3f;
+			to.push_back(ch);
+			++ptr;
 		}
 	}
 }
@@ -292,13 +363,46 @@ std::size_t ZLUnicodeUtil::firstChar(Ucs4Char &ch, const char *utf8String) {
 		ch <<= 6;
 		ch += *(utf8String + 1) & 0x3f;
 		return 2;
-	} else {
+	} else if ((*utf8String & 0x10) == 0) {
 		ch = *utf8String & 0x0f;
 		ch <<= 6;
 		ch += *(utf8String + 1) & 0x3f;
 		ch <<= 6;
 		ch += *(utf8String + 2) & 0x3f;
 		return 3;
+	}  else if ((*utf8String & 0x08) == 0) {
+		ch = *utf8String & 0x07;
+		ch <<= 6;
+		ch += *(utf8String + 1) & 0x3f;
+		ch <<= 6;
+		ch += *(utf8String + 2) & 0x3f;
+		ch <<= 6;
+		ch += *(utf8String + 3) & 0x3f;
+		return 4;
+	} else if ((*utf8String & 0x04) == 0) {
+		ch = *utf8String & 0x03;
+		ch <<= 6;
+		ch += *(utf8String + 1) & 0x3f;
+		ch <<= 6;
+		ch += *(utf8String + 2) & 0x3f;
+		ch <<= 6;
+		ch += *(utf8String + 3) & 0x3f;
+		ch <<= 6;
+		ch += *(utf8String + 4) & 0x3f;
+		return 5;
+	} else {
+		ch = *utf8String & 0x01;
+		ch <<= 6;
+		ch += *(utf8String + 1) & 0x3f;
+		ch <<= 6;
+		ch += *(utf8String + 2) & 0x3f;
+		ch <<= 6;
+		ch += *(utf8String + 3) & 0x3f;
+		ch <<= 6;
+		ch += *(utf8String + 4) & 0x3f;
+		ch <<= 6;
+		ch += *(utf8String + 5) & 0x3f;
+		return 6;
 	}
 }
 
@@ -349,11 +453,17 @@ int ZLUnicodeUtil::ucs2ToUtf8(char *to, Ucs2Char ch) {
 		*to = (char)(0xC0 | (ch >> 6));
 		*(to + 1) = (char)(0x80 | (ch & 0x3F));
 		return 2;
-	} else {
+	} else if (ch < 0x10000)  {
 		*to = (char)(0xE0 | ch >> 12);
 		*(to + 1) = (char)(0x80 | ((ch >> 6) & 0x3F));
 		*(to + 2) = (char)(0x80 | (ch & 0x3F));
 		return 3;
+	} else if (ch < 0x200000)  {
+		*to = (char)(0xF0 | ch >> 18);
+		*(to + 1) = (char)(0x80 | ((ch >> 12) & 0x3F));
+		*(to + 2) = (char)(0x80 | ((ch >> 6) & 0x3F));
+		*(to + 3) = (char)(0x80 | (ch & 0x3F));
+		return 4;
 	}
 }
 

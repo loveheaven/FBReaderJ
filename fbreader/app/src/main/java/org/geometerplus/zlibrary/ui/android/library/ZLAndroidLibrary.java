@@ -57,6 +57,10 @@ public final class ZLAndroidLibrary extends ZLibrary {
 	public final ZLIntegerRangeOption BatteryLevelToTurnScreenOffOption = new ZLIntegerRangeOption("LookNFeel", "BatteryLevelToTurnScreenOff", 0, 100, 50);
 	public final ZLBooleanOption DontTurnScreenOffDuringChargingOption = new ZLBooleanOption("LookNFeel", "DontTurnScreenOffDuringCharging", true);
 	public final ZLIntegerRangeOption ScreenBrightnessLevelOption = new ZLIntegerRangeOption("LookNFeel", "ScreenBrightnessLevel", 0, 100, 0);
+	public final ZLBooleanOption ShowGujiZhuOption =
+			new ZLBooleanOption("Options", "ShowGujiZhu", true);
+	public final ZLBooleanOption ShowGujiYiOption =
+			new ZLBooleanOption("Options", "ShowGujiYi", true);
 
 	private final Application myApplication;
 

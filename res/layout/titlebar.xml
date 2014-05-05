@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RtitleBar"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bookshelf_header_bg"
+    android:gravity="center_vertical" >
+
+    <LinearLayout
+        android:id="@+id/lLeftButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:paddingBottom="0.0px"
+        android:paddingLeft="0.0px"
+        android:paddingRight="0.0px"
+        android:paddingTop="0.0px" >
+
+        <Button
+            android:id="@+id/leftButton"
+            android:layout_width="68.0dip"
+            android:layout_height="48.0dip"
+            android:background="@drawable/nav_back_0"
+            android:text="bbb" 
+            android:visibility="invisible"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lTitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:paddingBottom="0.0px"
+        android:paddingLeft="0.0px"
+        android:paddingRight="0.0px"
+        android:paddingTop="0.0px" >
+        
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textSize="25dp"
+            android:textColor="#8B5742"
+            android:text="@string/selection"
+            android:typeface="monospace" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lRightButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:paddingBottom="0.0px"
+        android:paddingLeft="0.0px"
+        android:paddingRight="20.0px"
+        android:paddingTop="0.0px" >
+
+        <Button
+            android:id="@+id/rightButton"
+            android:layout_width="68.0dip"
+            android:layout_height="48.0dip"
+            android:background="@drawable/nav_button_0"
+            android:text="@string/my_book_shelf" />
+        
+        <ImageButton
+            
+            android:id="@+id/goNetStore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/go_net_store"
+            android:visibility="gone"
+            ></ImageButton>
+        
+    </LinearLayout>
+
+</RelativeLayout>

@@ -46,33 +46,37 @@ public class FileFirstLevelTree extends FirstLevelTree {
 	@Override
 	public void waitForOpening() {
 		clear();
+		createTree(this);
+	}
+	
+	public static void createTree(LibraryTree tree) {
 		for (String dir : Paths.BookPathOption.getValue()) {
-			addChild(dir, resource().getResource("fileTreeLibrary").getValue(), dir);
+			addChild(tree, dir, resource().getResource("fileTreeLibrary").getValue(), dir);
 		}
-		addChild("/", "fileTreeRoot");
+		addChild(tree, "/", "fileTreeRoot");
 		final List<String> cards = Paths.allCardDirectories();
 		if (cards.size() == 1) {
-			addChild(cards.get(0), "fileTreeCard");
+			addChild(tree, cards.get(0), "fileTreeCard");
 		} else {
 			final ZLResource res = resource().getResource("fileTreeCard");
 			final String title = res.getResource("withIndex").getValue();
 			final String summary = res.getResource("summary").getValue();
 			int index = 0;
 			for (String dir : cards) {
-				addChild(dir, title.replaceAll("%s", String.valueOf(++index)), summary);
+				addChild(tree, dir, title.replaceAll("%s", String.valueOf(++index)), summary);
 			}
 		}
 	}
 
-	private void addChild(String path, String title, String summary) {
+	private static void addChild(LibraryTree tree, String path, String title, String summary) {
 		final ZLFile file = ZLFile.createFileByPath(path);
 		if (file != null) {
-			new FileTree(this, file, title, summary);
+			new FileTree(tree, file, title, summary);
 		}
 	}
 
-	private void addChild(String path, String resourceKey) {
+	private static void addChild(LibraryTree tree, String path, String resourceKey) {
 		final ZLResource resource = resource().getResource(resourceKey);
-		addChild(path, resource.getValue(), resource.getResource("summary").getValue());
+		addChild(tree, path, resource.getValue(), resource.getResource("summary").getValue());
 	}
 }

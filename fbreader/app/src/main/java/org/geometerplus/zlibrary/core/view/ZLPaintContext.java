@@ -159,10 +159,10 @@ abstract public class ZLPaintContext {
 	}
 	abstract protected int getDescentInternal();
 
-	public final void drawString(int x, int y, String string) {
-		drawString(x, y, string.toCharArray(), 0, string.length());
+	public final void drawString(int x, int y, String string, boolean isGujiString) {
+		drawString(x, y, string.toCharArray(), 0, string.length(), isGujiString);
 	}
-	abstract public void drawString(int x, int y, char[] string, int offset, int length);
+	abstract public void drawString(int x, int y, char[] string, int offset, int length, boolean isGujiString);
 
 	public static final class Size {
 		public final int Width;
@@ -205,6 +205,7 @@ abstract public class ZLPaintContext {
 	abstract public void drawImage(int x, int y, ZLImageData image, Size maxSize, ScalingType scaling, ColorAdjustingMode adjustingMode);
 
 	abstract public void drawLine(int x0, int y0, int x1, int y1);
+	abstract public void drawRectangle(int x0, int y0, int x1, int y1);
 	abstract public void fillRectangle(int x0, int y0, int x1, int y1);
 
 	abstract public void drawPolygonalLine(int[] xs, int[] ys);

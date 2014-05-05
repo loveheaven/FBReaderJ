@@ -27,12 +27,9 @@ import android.os.IBinder;
 import android.os.RemoteException;
 
 import org.geometerplus.zlibrary.core.options.Config;
-
 import org.geometerplus.zlibrary.text.view.ZLTextFixedPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextPosition;
-
 import org.geometerplus.fbreader.book.*;
-
 import org.geometerplus.android.fbreader.api.FBReaderIntents;
 
 public class BookCollectionShadow extends AbstractBookCollection<Book> implements ServiceConnection {
@@ -619,5 +616,51 @@ public class BookCollectionShadow extends AbstractBookCollection<Book> implement
 
 	public Book createBook(long id, String url, String title, String encoding, String language) {
 		return new Book(id, url.substring("file://".length()), title, encoding, language);
+	}
+	
+	public List<Word> unknownWords(final long bookId) {
+		return listCall(new ListCallable<Word>() {
+			public List<Word> call() throws RemoteException {
+				return myInterface.unknownWords(bookId);
+			}
+		});
+	}
+	
+	public List<Word> allKnownWords(final String language) {
+		return listCall(new ListCallable<Word>() {
+			public List<Word> call() throws RemoteException {
+				return myInterface.allKnownWords(language);
+			}
+		});
+	}
+	
+	public void saveToKnownWords(Word word) {
+		try {
+			if (myInterface != null) {
+				myInterface.saveToKnownWords(word);
+			}
+		} catch(RemoteException e) {
+			
+		}
+	}
+	
+	public void saveToUnknownWords(Word word) {
+		try {
+			if (myInterface != null) {
+				myInterface.saveToKnownWords(word);
+			}
+		} catch(RemoteException e) {
+			
+		}
+	}
+	
+	public List<Book> recentlyOpenedBooks() {
+		return listCall(new ListCallable<Book>() {
+			public List<Book> call() throws RemoteException {
+				return SerializerUtil.deserializeBookList(
+					myInterface.recentBooks(), BookCollectionShadow.this
+				);
+			}
+		});
 	}
 }

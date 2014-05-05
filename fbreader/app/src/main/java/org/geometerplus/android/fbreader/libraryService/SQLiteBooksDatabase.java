@@ -34,9 +34,7 @@ import org.geometerplus.zlibrary.core.util.RationalNumber;
 import org.geometerplus.zlibrary.core.util.ZLColor;
 import org.geometerplus.zlibrary.text.view.ZLTextPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextFixedPosition;
-
 import org.geometerplus.fbreader.book.*;
-
 import org.geometerplus.android.util.SQLiteUtil;
 
 final class SQLiteBooksDatabase extends BooksDatabase {
@@ -394,34 +392,53 @@ final class SQLiteBooksDatabase extends BooksDatabase {
 			"UPDATE Books SET `exists` = " + (flag ? 1 : 0) + " WHERE book_id IN " + bookSet
 		);
 	}
-
+	
 	@Override
-	protected void updateBookInfo(long bookId, long fileId, String encoding, String language, String title) {
+	protected void updateBookInfo(long bookId, long fileId, String encoding, 
+		byte[] cover, String language, String title) {
 		final SQLiteStatement statement = get(
-			"UPDATE OR IGNORE Books SET file_id=?, encoding=?, language=?, title=? WHERE book_id=?"
-		);
+				"UPDATE OR IGNORE Books SET file_id = ?, encoding = ?, language = ?, title = ?,book_cover = ?  WHERE book_id = ?"
+			);
 		synchronized (statement) {
 			statement.bindLong(1, fileId);
-			SQLiteUtil.bindString(statement, 2, encoding);
-			SQLiteUtil.bindString(statement, 3, language);
-			statement.bindString(4, title);
-			statement.bindLong(5, bookId);
-			statement.execute();
+		SQLiteUtil.bindString(statement, 2, encoding);
+		SQLiteUtil.bindString(statement, 3, language);
+		statement.bindString(4, title);
+		statement.bindLong(5, bookId);
+		if (cover  != null) {
+			statement.bindBlob(6, cover);
+		}
+		
+		statement.execute();
+		}
+	}
+
+	@Override
+	protected void updateBookInfo(long bookId, byte[] cover) {
+		final SQLiteStatement statement = get("UPDATE Books SET book_cover = ?  WHERE book_id = ?");
+		synchronized (statement) {
+		if (cover != null) {
+			statement.bindBlob(1, cover);
+		}
+		
+		statement.bindLong(2, bookId);
+		statement.execute();
 		}
 	}
 
 	@Override
 	protected long insertBookInfo(ZLFile file, String encoding, String language, String title) {
 		final SQLiteStatement statement = get(
-			"INSERT OR IGNORE INTO Books (encoding,language,title,file_id) VALUES (?,?,?,?)"
+				"INSERT OR IGNORE INTO Books (encoding,language,title,file_id) VALUES (?,?,?,?)"
 		);
 		synchronized (statement) {
-			SQLiteUtil.bindString(statement, 1, encoding);
-			SQLiteUtil.bindString(statement, 2, language);
-			statement.bindString(3, title);
-			final FileInfoSet infoSet = new FileInfoSet(this, file);
-			statement.bindLong(4, infoSet.getId(file));
-			return statement.executeInsert();
+		SQLiteUtil.bindString(statement, 1, encoding);
+		// myInsertBookInfoStatement.bindBlob(2, cover);
+		SQLiteUtil.bindString(statement, 2, language);
+		statement.bindString(3, title);
+		final FileInfoSet infoSet = new FileInfoSet(this, file);
+		statement.bindLong(4, infoSet.getId(file));
+		return statement.executeInsert();
 		}
 	}
 
@@ -1259,6 +1276,7 @@ final class SQLiteBooksDatabase extends BooksDatabase {
 		myDatabase.execSQL("DELETE FROM Books WHERE book_id=" + bookId);
 		myDatabase.setTransactionSuccessful();
 		myDatabase.endTransaction();
+		deleteAllUnknownWord(bookId);
 	}
 
 	private void createTables() {
@@ -1873,4 +1891,222 @@ final class SQLiteBooksDatabase extends BooksDatabase {
 		}
 		return statement;
 	}
+	
+	private void updateTables39() {
+		myDatabase.execSQL(
+				"CREATE TABLE KnownWords(" +
+					"word Text NOT NULL," +
+					"language Text NOT NULL," +
+					"frequency INTEGER, primary key (word,language) )");
+		myDatabase.execSQL("CREATE INDEX KnownWords_WordIndex ON KnownWords (word)");
+		
+		myDatabase.execSQL(
+				"CREATE TABLE IF NOT EXISTS UnknownWords(" +
+					"word Text NOT NULL," +
+					"book_id INTEGER NOT NULL REFERENCES Books(book_id)," +
+					"frequency INTEGER NOT NULL," +
+					"paragraph INTEGER NOT NULL," +
+					"wordIndex INTEGER NOT NULL," +
+					"char INTEGER NOT NULL, primary key (word,book_id))");
+		myDatabase.execSQL("CREATE INDEX UnknownWords_WordIndex ON UnknownWords (word)");
+		myDatabase.execSQL("ALTER TABLE Books ADD COLUMN book_cover BLOB");
+		
+	}
+	
+	@Override
+	protected List<Long> loadRecentBookIds(int event) {
+		final Cursor cursor = myDatabase.rawQuery(
+			"SELECT book_id FROM BookHistory WHERE event=? GROUP BY book_id ORDER BY timestamp DESC",
+			new String[] { String.valueOf(event)}
+		);
+		final LinkedList<Long> ids = new LinkedList<Long>();
+		while (cursor.moveToNext()) {
+			ids.add(cursor.getLong(0));
+		}
+		cursor.close();
+		return ids;
+	}
+
+	private SQLiteStatement mUpdateBookCoverStatement;
+
+	@Override
+	protected void deleteAllBook() {
+		myDatabase.execSQL("DELETE FROM Books");
+
+	}
+
+	@Override
+	protected void updateBookCoverByPath(byte[] cover, String path) {
+		if (mUpdateBookCoverStatement == null) {
+			mUpdateBookCoverStatement = myDatabase
+					.compileStatement("UPDATE Books SET book_cover = ? WHERE path = ?");
+		}
+		if (cover != null) {
+			mUpdateBookCoverStatement.bindBlob(1, cover);
+		}
+		mUpdateBookCoverStatement.bindString(2, path);
+		mUpdateBookCoverStatement.execute();
+	}
+	
+	private SQLiteStatement myInserWordStatement;
+	@Override
+	protected long insertKnownWord(String word, String language, long frequency) {
+		if (myInserWordStatement == null) {
+			myInserWordStatement = myDatabase.compileStatement(
+				"INSERT OR IGNORE INTO KnownWords (word,language, frequency) VALUES (?,?,?)"
+			);
+		}
+		SQLiteUtil.bindString(myInserWordStatement, 1, word);
+		SQLiteUtil.bindString(myInserWordStatement, 2, language);
+		myInserWordStatement.bindLong(3, frequency);
+		return myInserWordStatement.executeInsert();
+	}
+	
+	private SQLiteStatement myDeleteWordStatement;
+	@Override
+	protected void deleteKnownWord(String word, String language) {
+		if (myDeleteWordStatement == null) {
+			myDeleteWordStatement = myDatabase.compileStatement(
+				"DELETE FROM KnownWords WHERE word like ? and language like ?"
+			);
+		}
+		SQLiteUtil.bindString(myDeleteWordStatement, 1, word);
+		SQLiteUtil.bindString(myDeleteWordStatement, 2, language);
+		myDeleteWordStatement.execute();
+	}
+	
+	private SQLiteStatement myUpdateWordStatement;
+	@Override
+	protected void updateKnownWord(String word, String language, String newWord) {
+		if (myUpdateWordStatement == null) {
+			myUpdateWordStatement = myDatabase.compileStatement(
+				"update KnownWords set word = ? WHERE word like ? and language like ?"
+			);
+		}
+		SQLiteUtil.bindString(myUpdateWordStatement, 1, newWord);
+		SQLiteUtil.bindString(myUpdateWordStatement, 2, word);
+		SQLiteUtil.bindString(myUpdateWordStatement, 3, language);
+		myUpdateWordStatement.execute();
+	}
+
+	private SQLiteStatement myInserUnknownWordStatement;
+	@Override
+	protected long insertUnknownWord(long book_id, String word, long frequency, 
+			long paragraph, long wordIndex, long charIndex) {
+		if (myInserUnknownWordStatement == null) {
+			myInserUnknownWordStatement = myDatabase.compileStatement(
+				"INSERT OR IGNORE INTO UnknownWords (book_id,word,frequency,paragraph,wordIndex,char) " +
+				"VALUES (?,?,?,?,?,?)"
+			);
+		}
+		myInserUnknownWordStatement.bindLong(1, book_id);
+		SQLiteUtil.bindString(myInserUnknownWordStatement, 2, word);
+		myInserUnknownWordStatement.bindLong(3, frequency);
+		myInserUnknownWordStatement.bindLong(4, paragraph);
+		myInserUnknownWordStatement.bindLong(5, wordIndex);
+		myInserUnknownWordStatement.bindLong(6, charIndex);
+		return myInserUnknownWordStatement.executeInsert();
+	}
+	
+	private SQLiteStatement myDeleteUnknownWordStatement;
+	@Override
+	protected void deleteUnknownWord(long book_id, String word) {
+		if (myDeleteUnknownWordStatement == null) {
+			myDeleteUnknownWordStatement = myDatabase.compileStatement(
+				"DELETE FROM UnknownWords WHERE book_id = ? and word like ?"
+			);
+		}
+		myDeleteUnknownWordStatement.bindLong(1, book_id);
+		SQLiteUtil.bindString(myDeleteUnknownWordStatement, 2, word);
+		myDeleteUnknownWordStatement.execute();
+	}
+	
+	private SQLiteStatement myUpdateUnknownWordStatement;
+	@Override
+	protected void updateUnknownWord(long book_id, String word, String newWord) {
+		if (myUpdateUnknownWordStatement == null) {
+			myUpdateUnknownWordStatement = myDatabase.compileStatement(
+				"update UnknownWords set word = ? WHERE book_id = ? and word like ?"
+			);
+		}
+		SQLiteUtil.bindString(myUpdateUnknownWordStatement, 1, newWord);
+		myUpdateUnknownWordStatement.bindLong(2, book_id);
+		SQLiteUtil.bindString(myUpdateUnknownWordStatement, 3, word);
+		myUpdateUnknownWordStatement.execute();
+	}
+	
+	private SQLiteStatement myDeleteAllUnknownWordStatement;
+	@Override
+	protected void deleteAllUnknownWord(long book_id) {
+		if (myDeleteAllUnknownWordStatement == null) {
+			myDeleteAllUnknownWordStatement = myDatabase.compileStatement(
+				"DELETE FROM UnknownWords WHERE book_id = ? "
+			);
+		}
+		myDeleteAllUnknownWordStatement.bindLong(1, book_id);
+		myDeleteAllUnknownWordStatement.execute();
+	}
+	
+	private SQLiteStatement myDeleteAllKnownWordStatement;
+	@Override
+	public void deleteAllKnownWord(String language) {
+		if (myDeleteAllKnownWordStatement == null) {
+			myDeleteAllKnownWordStatement = myDatabase.compileStatement(
+				"DELETE FROM KnownWords WHERE language like ? "
+			);
+		}
+		myDeleteAllKnownWordStatement.bindString(1, language);
+		myDeleteAllKnownWordStatement.execute();
+	}
+	
+	@Override
+	protected List<Word> loadUnknownWords(long bookId) {
+		LinkedList<Word> list = new LinkedList<Word>();
+		Cursor cursor = myDatabase.rawQuery(
+			"SELECT UnknownWords.word, UnknownWords.book_id, UnknownWords.frequency," +
+			"UnknownWords.paragraph,UnknownWords.wordIndex,UnknownWords.char, Books.language " +
+			"FROM UnknownWords " +
+			"INNER JOIN Books ON Books.book_id = UnknownWords.book_id " +
+			"WHERE UnknownWords.book_id = ? ", new String[] { "" + bookId}
+		);
+		while (cursor.moveToNext()) {
+			list.add(new Word(
+				cursor.getLong(1),
+				cursor.getString(6),
+				cursor.getString(0),
+				cursor.getLong(2),
+				cursor.getLong(3),
+				cursor.getLong(4),
+				cursor.getLong(5)
+			));
+		}
+		cursor.close();
+		return list;
+	}
+
+	@Override
+	protected List<Word> loadAllKnownWords(String language) {
+		LinkedList<Word> list = new LinkedList<Word>();
+		Cursor cursor = myDatabase.rawQuery(
+			"SELECT KnownWords.word, KnownWords.frequency, KnownWords.language FROM KnownWords where KnownWords.language='"+
+					language
+					+
+			"' order by KnownWords.word", null
+		);
+		while (cursor.moveToNext()) {
+			list.add(new Word(
+				-1,
+				cursor.getString(2),
+				cursor.getString(0),
+				cursor.getLong(1),
+				0,
+				0,
+				0
+			));
+		}
+		cursor.close();
+		return list;
+	}
+		
+
 }

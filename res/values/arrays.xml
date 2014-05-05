@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="dialog_option">
+        <item>打开</item>
+        <item>查看书籍详细信息</item>
+        <item>删除本书</item>
+    </string-array>
+
+</resources>

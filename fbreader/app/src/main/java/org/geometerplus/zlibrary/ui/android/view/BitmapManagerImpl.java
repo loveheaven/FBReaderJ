@@ -21,6 +21,7 @@ package org.geometerplus.zlibrary.ui.android.view;
 
 import android.graphics.*;
 
+import org.geometerplus.fbreader.fbreader.FBReaderApp;
 import org.geometerplus.zlibrary.core.view.ZLView;
 import org.geometerplus.zlibrary.ui.android.view.animation.BitmapManager;
 
@@ -58,18 +59,52 @@ final class BitmapManagerImpl implements BitmapManager {
 				return myBitmaps[i];
 			}
 		}
+		final FBReaderApp fbReader = (FBReaderApp)FBReaderApp.Instance();
+		
+		boolean isGuji = fbReader.Model == null?false:fbReader.Model.Book.isGuji();
+		boolean isDjvu = fbReader.Model == null?false:fbReader.Model.Book.isDjvu();
 		final int iIndex = getInternalIndex(index);
 		myIndexes[iIndex] = index;
+		if(myBitmaps[iIndex] != null && (isDjvu||isGuji)) {
+			myBitmaps[iIndex].recycle();
+			myBitmaps[iIndex] = null;
+		}
+		if(myBitmaps[iIndex] != null && !myBitmaps[iIndex].isMutable()) {
+			myBitmaps[iIndex].recycle();
+			myBitmaps[iIndex] = null;
+		}
 		if (myBitmaps[iIndex] == null) {
 			try {
-				myBitmaps[iIndex] = Bitmap.createBitmap(myWidth, myHeight, Bitmap.Config.RGB_565);
+				if(isDjvu) {
+					if(fbReader.Document == null) return null;
+					int pageIndex = fbReader.Document.currentPageIndex;
+					if(index == ZLView.PageIndex.next) pageIndex++;
+					else if(index == ZLView.PageIndex.previous) pageIndex--;
+					if(pageIndex < 0) pageIndex = 0;
+					else if(pageIndex > fbReader.Document.getPageCount()-1) pageIndex = fbReader.Document.getPageCount() -1;
+					
+					myBitmaps[iIndex] = fbReader.Document.getPage(pageIndex).renderBitmap(myWidth, myHeight, new RectF(0, 0, 1, 1));
+				} else {
+					myBitmaps[iIndex] = Bitmap.createBitmap(isGuji?myHeight:myWidth, isGuji?myWidth:myHeight, Bitmap.Config.RGB_565);
+				}
 			} catch (OutOfMemoryError e) {
 				System.gc();
 				System.gc();
-				myBitmaps[iIndex] = Bitmap.createBitmap(myWidth, myHeight, Bitmap.Config.RGB_565);
+				myBitmaps[iIndex] = Bitmap.createBitmap(isGuji?myHeight:myWidth, isGuji?myWidth:myHeight, Bitmap.Config.RGB_565);
 			}
 		}
-		myWidget.drawOnBitmap(myBitmaps[iIndex], index);
+		if(!isDjvu) {
+			myWidget.drawOnBitmap(myBitmaps[iIndex], index);
+		}
+		if(isGuji) {
+	        Matrix matrix = new Matrix();
+	        matrix.postRotate(90);
+	        Bitmap rotated = Bitmap.createBitmap(myBitmaps[iIndex], 0, 0,
+	        		myBitmaps[iIndex].getWidth(), myBitmaps[iIndex].getHeight(), matrix, true);
+	        myBitmaps[iIndex].recycle();
+	        myBitmaps[iIndex] = null;
+	        myBitmaps[iIndex] = rotated;
+		}
 		return myBitmaps[iIndex];
 	}
 

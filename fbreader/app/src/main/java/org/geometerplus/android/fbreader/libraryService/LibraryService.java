@@ -26,18 +26,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.os.FileObserver;
+import android.os.RemoteException;
 
 import org.geometerplus.zlibrary.core.options.Config;
-
 import org.geometerplus.zlibrary.text.view.ZLTextFixedPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextPosition;
-
 import org.geometerplus.zlibrary.ui.android.image.ZLAndroidImageData;
 import org.geometerplus.zlibrary.ui.android.image.ZLAndroidImageManager;
-
 import org.geometerplus.fbreader.Paths;
 import org.geometerplus.fbreader.book.*;
-
 import org.geometerplus.android.fbreader.api.FBReaderIntents;
 import org.geometerplus.android.fbreader.httpd.DataService;
 import org.geometerplus.android.fbreader.httpd.DataUtil;
@@ -174,7 +171,8 @@ public class LibraryService extends Service {
 		}
 
 		public List<String> recentBooks() {
-			return recentlyOpenedBooks(12);
+			//return recentlyOpenedBooks(12);
+			return SerializerUtil.serializeBookList(myCollection.recentlyOpenedBooks());
 		}
 
 		public List<String> recentlyOpenedBooks(int count) {
@@ -401,6 +399,30 @@ public class LibraryService extends Service {
 			} else {
 				return false;
 			}
+		}
+
+		@Override
+		public List<Word> unknownWords(long bookId) throws RemoteException {
+			// TODO Auto-generated method stub
+			return myCollection.unknownWords(bookId);
+		}
+		
+		@Override
+		public List<Word> allKnownWords(String language) throws RemoteException {
+			// TODO Auto-generated method stub
+			return myCollection.allKnownWords(language);
+		}
+
+		@Override
+		public void saveToKnownWords(Word word) throws RemoteException {
+			// TODO Auto-generated method stub
+			myCollection.saveToKnownWords(word);
+		}
+
+		@Override
+		public void saveToUnknownWords(Word word) throws RemoteException {
+			// TODO Auto-generated method stub
+			myCollection.saveToUnknownWords(word);
 		}
 	}
 

@@ -32,6 +32,7 @@ import org.geometerplus.zlibrary.core.application.ZLKeyBindings;
 import org.geometerplus.zlibrary.core.util.SystemInfo;
 import org.geometerplus.zlibrary.core.view.ZLView;
 import org.geometerplus.zlibrary.core.view.ZLViewWidget;
+import org.geometerplus.zlibrary.text.view.ZLTextView;
 
 import org.geometerplus.zlibrary.ui.android.view.animation.*;
 
@@ -235,15 +236,19 @@ public class ZLAndroidWidget extends MainView implements ZLViewWidget, View.OnLo
 		if (view == null) {
 			return;
 		}
-
+		boolean isGuji = false;
+		if(view instanceof ZLTextView) {
+			isGuji = ((ZLTextView)view).isGuji();
+		}
+		
 		final ZLAndroidPaintContext context = new ZLAndroidPaintContext(
 			mySystemInfo,
 			new Canvas(bitmap),
 			new ZLAndroidPaintContext.Geometry(
 				getWidth(),
 				getHeight(),
-				getWidth(),
-				getMainAreaHeight(),
+				isGuji?getMainAreaHeight():getWidth(),
+				isGuji?getWidth():getMainAreaHeight(),
 				0,
 				0
 			),

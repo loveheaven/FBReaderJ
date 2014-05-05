@@ -44,6 +44,7 @@ public class CancelMenuHelper {
 	}
 
 	public static enum ActionType {
+		openLocal,
 		library,
 		networkLibrary,
 		previousBook,
@@ -77,7 +78,7 @@ public class CancelMenuHelper {
 		final List<ActionDescription> list = new ArrayList<ActionDescription>();
 
 		if (ShowLibraryItemOption.getValue()) {
-			list.add(new ActionDescription(ActionType.library, null));
+			list.add(new ActionDescription(ActionType.openLocal, null));
 		}
 		if (ShowNetworkLibraryItemOption.getValue()) {
 			list.add(new ActionDescription(ActionType.networkLibrary, null));

@@ -19,11 +19,25 @@
 
 package org.geometerplus.zlibrary.text.model;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.geometerplus.fbreader.book.Book;
+import org.geometerplus.fbreader.book.IBookCollection;
+import org.geometerplus.fbreader.book.Word;
+import org.geometerplus.fbreader.bookmodel.FBTextKind;
+import org.geometerplus.fbreader.library.DictionaryParser;
+import org.geometerplus.fbreader.library.DictionaryParser.FileWord;
 import org.geometerplus.zlibrary.core.fonts.FontManager;
 import org.geometerplus.zlibrary.core.image.ZLImage;
 import org.geometerplus.zlibrary.core.util.*;
+
+import android.text.TextUtils;
 
 public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Feature {
 	private final String myId;
@@ -44,7 +58,7 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 
 	private final FontManager myFontManager;
 
-	final class EntryIteratorImpl implements ZLTextParagraph.EntryIterator {
+	public final class EntryIteratorImpl implements ZLTextParagraph.EntryIterator {
 		private int myCounter;
 		private int myLength;
 		private byte myType;
@@ -79,11 +93,11 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 		// FixedHSpaceEntry data
 		private short myFixedHSpaceLength;
 
-		EntryIteratorImpl(int index) {
+		public EntryIteratorImpl(int index) {
 			reset(index);
 		}
 
-		void reset(int index) {
+		public void reset(int index) {
 			myCounter = 0;
 			myLength = myParagraphLengths[index];
 			myDataIndex = myStartEntryIndices[index];
@@ -373,7 +387,421 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 		}
 		return mark;
 	}
+	public void makeDictionary(IBookCollection<Book> collection, Book book) {
+		int	startIndex = 0;
+		int	endIndex = myParagraphsNumber;
+		int index = startIndex;
+		
+//		List<Word> unknownWords = Library.Instance().unknownWords(book.getId());
+//    	if(unknownWords.size() >0) {
+//    		return;
+//    	}
+    	
+		final EntryIteratorImpl it = new EntryIteratorImpl(index);
+		LinkedHashMap<String, FileWord> map = new LinkedHashMap<String, FileWord>();
+		while (true) {
+			int offset = 0;
+			while (it.next()) {
+				//it.next();
+				if (it.getType() == ZLTextParagraph.Entry.TEXT) {
+					char[] textData = it.getTextData();
+					int textOffset = it.getTextOffset();
+					int textLength = it.getTextLength();
+					char[] textDataDst = new char[textLength + 1];
+					
+					System.arraycopy(textData, textOffset, textDataDst, 0, textLength);
+					
+					DictionaryParser.statisticsString(new String(textDataDst), map, index);
+					
+					offset += textLength;
+				}
+			}
+			if (++index >= endIndex) {
+				break;
+			}
+			it.reset(index);
+		}
+		
+		List<Word> knownWords = collection.allKnownWords(book.getLanguage());
+        //new File(fileName+".csv").delete();
+        for(String word:map.keySet()) {
+        	FileWord temp = map.get(word);
+        	//AppendToFile.appendMethodB(fileName+".csv", temp.toString());
+        	Word w = new Word(book.getId(), book.getLanguage().toLowerCase(), word, temp.frequency, temp.paragraphIndex, 0, 0);
+        	if(knownWords.size() == 0) {
+            	if(temp.frequency >= 15) {
+            		collection.saveToKnownWords(w);
+            	} else {
+            		collection.saveToUnknownWords(w);
+            	}
+        	} else {
+        		boolean isKnown = false;
+        		for(Word wo:knownWords) {
+        			if(word.equals(wo.getText().toLowerCase())) {
+        				isKnown = true;
+        				break;
+        			}
+        		}
+        		if(!isKnown) {
+        			collection.saveToUnknownWords(w);
+        		}
+        	}
+        }
+	}
 
+	public static String[] splitGujiYuan(String strYuan) {
+    	if(strYuan == null || strYuan.length() == 0) return null;
+    	int lastPos = 0;
+    	boolean shouldSplit = true;
+    	ArrayList<String> list = new ArrayList<String>();
+    	for(int i = 0; i< strYuan.length(); i++) {
+    		char c = strYuan.charAt(i);
+    		if(c == '{') {
+    			shouldSplit = false;
+    		} else if(c == '}') {
+    			shouldSplit = true;
+    		} else if(c == '。') {
+    			if(shouldSplit) {
+    				list.add(strYuan.substring(lastPos, i));
+    				lastPos = i+1;
+    			}
+    		}
+    	}
+    	if(lastPos <strYuan.length()) {
+    		list.add(strYuan.substring(lastPos));
+    	}
+    	String[] ret = new String[list.size()];
+    	list.toArray(ret);
+    	return ret;
+    }
+	public String compositeGuji(String tempStringYuan, String tempStringYi) {
+		if(TextUtils.isEmpty(tempStringYuan) && TextUtils.isEmpty(tempStringYi)) {
+			return "";
+		} else if(TextUtils.isEmpty(tempStringYuan)) {
+			return tempStringYi;
+		} else if(TextUtils.isEmpty(tempStringYi)) {
+			return tempStringYuan;
+		}
+		if(tempStringYuan.endsWith("\n"))tempStringYuan =tempStringYuan.substring(0, tempStringYuan.length()-1);
+		if(tempStringYi.endsWith("\n"))tempStringYi =tempStringYi.substring(0, tempStringYi.length()-1);
+		String[] yuan=splitGujiYuan(
+				tempStringYuan.replaceAll("<[^>]*>", "").replaceAll("〔[一二三四五六七八九十０]*〕", "")
+				.replace("!", "！").replace(",", "，").replace(":", "：")
+        		.replace("“", "「").replace("”", "」").replace("‘", "『").replace("’", "』")
+				);
+        String[] yi=tempStringYi.replaceAll("<[^>]*>", "")
+        		.replace("!", "！").replace(",", "，").replace(":", "：")
+        		.replace("“", "「").replace("”", "」").replace("‘", "『").replace("’", "』")
+        		.split("。");
+        int i=0, j=0;
+        String result = "";
+        for(i=0, j =0; i< yuan.length && j < yi.length; i++,j++) {
+        	if((i+1)==yuan.length && !tempStringYuan.endsWith("。")) {
+        		result+= yuan[i];
+        		if(yuan[i].length() > 0 && !yuan[i].endsWith("？")&&!yuan[i].endsWith("！")&&!yuan[i].endsWith("：")) {
+    				result+="。";
+    			}
+            	if(yi[j].length() > 0) {
+            		if(yi[j].startsWith("」")||yi[j].startsWith("』")) {
+                		yi[j]=yi[j].substring(1);
+                	}
+            		result+=  "|{"+yi[j];
+            		if(!yi[j].endsWith("？")&&!yi[j].endsWith("！")&&!yi[j].endsWith("：")) {
+            			result+="。";
+            		}
+            		result+="}";
+            	}
+        	} else if((i+1)<yuan.length && (yuan[i+1].startsWith("」")||yuan[i+1].startsWith("』"))) {
+        		if(yuan[i+1].startsWith("」")) {
+        			result+=  yuan[i]+"。」";
+        			result+=  "|{"+yi[j]+"。」}";
+        		} else {
+        			result+=  yuan[i]+"。』";
+        			result+=  "|{"+yi[j]+"。』}";
+        		}
+            	
+            	if((j+1)<yi.length && (yi[j+1].startsWith("」")||yi[j+1].startsWith("』"))) {
+            		yi[j+1]=yi[j+1].substring(1);
+            	}
+            	yuan[i+1]=yuan[i+1].substring(1);
+        	} else {
+        		result+=  yuan[i];
+        		if(yuan[i].length() > 0 && !yuan[i].endsWith("？")&&!yuan[i].endsWith("！")&&!yuan[i].endsWith("：")) {
+    				result+="。";
+    			}
+        		if(yi[j].startsWith("」")||yi[j].startsWith("』")) {
+            		yi[j]=yi[j].substring(1);
+            	}
+        		result+=  "|{"+yi[j];
+        		if(!yi[j].endsWith("？")&&!yi[j].endsWith("！")&&!yi[j].endsWith("：")) {
+        			result+="。";
+        		}
+        		result+="}";
+        	}
+        }
+        
+        if(i<yuan.length) {
+        	for(;i<yuan.length; i++) {
+        			result+=  yuan[i];
+        			if(yuan[i].length() > 0 && !yuan[i].endsWith("？")&&!yuan[i].endsWith("！")&&!yuan[i].endsWith("：")) {
+        				result+="。";
+        			}
+        	}
+        }
+        if(j<yi.length) {
+        	for(;j<yi.length; j++) {
+        		if(yi[j].startsWith("」")||yi[j].startsWith("』")) {
+            		yi[j]=yi[j].substring(1);
+            	}
+        		result+=  "|{"+yi[j];
+        		if(!yi[j].endsWith("？")&&!yi[j].endsWith("！")&&!yi[j].endsWith("：")) {
+        			result+="。";
+        		}
+        		result+="}";
+        	}
+        }
+        
+        return result;
+	}
+	public String extractGujiFromString(String text) {
+		if(text == null || text.length() == 0) return text;
+		return text.replaceAll("\\|\\{[^}]*\\}", "");
+	}
+	public String extractCommentFromString(String text) {
+		if(text == null || text.length() == 0) return text;
+		Pattern p = Pattern.compile("\\|\\{[^}]*\\}");
+	    Matcher m = p.matcher(text);
+	    String result ="";
+	    while(m.find()) {
+	    	result+=m.group();
+	    }
+	    return result.replaceAll("\\|\\{", "").replaceAll("\\}", "");
+	}
+	public final void saveGuji(Book book, int indexToModify, String newString) {
+		int	startIndex = 0;
+		int	endIndex = myParagraphsNumber;
+		int index = startIndex;
+		
+		try {
+			FileOutputStream file = new FileOutputStream(book.getPath(), false);
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(file,"utf-8"));
+//			out.write("\\title{");
+//			out.write(book.getTitle());
+//			out.write("}\n");
+			final EntryIteratorImpl it = new EntryIteratorImpl(index);
+			boolean isChapterEnd = false;
+			boolean isTitleEnd = false;
+			ArrayList<String> extraLines = new ArrayList<String>();
+			String lastString = "";
+			String lastYiString = "";
+			while (true) {
+				int offset = 0;
+				if(indexToModify == index) {
+					if(isTitleEnd) {
+						isTitleEnd = false;
+						out.write("}\n");
+					}
+					if(isChapterEnd) {
+						isChapterEnd = false;
+						out.write("}\n");
+					}
+					extraLines.clear();
+					if(newString.indexOf("|a") > -1) {
+						String[] lines = newString.split("\\|a");
+						newString = lines[0];
+						String yuan = extractGujiFromString(newString);
+						String yi = extractCommentFromString(newString);
+						newString = compositeGuji(yuan, yi)+"\n";
+						if(lines.length > 1)
+							for(int i = 1; i < lines.length; i++) {
+								newString +=  lines[i];
+							}
+						if(!newString.endsWith("\n")) {
+							newString +="\n";
+						}
+						out.write(newString);
+					} else if(newString.startsWith("|c")) {
+						newString = newString.substring(2);
+						String yuan = extractGujiFromString(newString);
+						String yi = extractCommentFromString(newString);
+						if(yi.length()>0) {
+							out.write(yi+"\n");
+						}
+						lastString = yuan;
+					} else if(newString.startsWith("|t")) {
+						newString = newString.substring(2);
+						String yuan = extractGujiFromString(newString);
+						String yi = extractCommentFromString(newString);
+						if(yuan.trim().length()>0) {
+							out.write(yuan.trim()+"\n");
+						}
+						lastYiString = yi;
+					} else {
+						String[] lines = newString.split("\\|n");
+						newString = lines[0];
+						String yuan = extractGujiFromString(newString);
+						String yi = extractCommentFromString(newString);
+						newString = compositeGuji(yuan, yi)+"\n";
+						
+						if(lines.length > 1)
+						for(int i = 1; i < lines.length; i++) {
+							if(lines[i].endsWith("\n")) lines[i] = lines[i].substring(0, lines[i].length()-1);
+							extraLines.add(lines[i]);
+						}
+						out.write(newString);
+					}
+				} else {
+					String extraLine = "";
+					if(extraLines.size() > 0) {
+						extraLine = extraLines.get(0);
+						extraLines.remove(0);
+					}
+					
+					String result="";
+					while (it.next()) {
+						if (it.getType() == ZLTextParagraph.Entry.TEXT) {
+							{
+								char[] textData = it.getTextData();
+								int textOffset = it.getTextOffset();
+								int textLength = it.getTextLength();
+								char[] textDataDst = new char[textLength];
+								
+								System.arraycopy(textData, textOffset, textDataDst, 0, textLength);
+								result+=new String(textDataDst);
+								offset += textLength;
+							}
+						} else if (it.getType() == ZLTextParagraph.Entry.CONTROL) {
+							if(it.myControlIsStart) {
+								switch(it.myControlKind) {
+								case FBTextKind.TITLE:
+									result+="\\title{";
+									isTitleEnd = true;
+									break;
+								case FBTextKind.CONTENTS_TABLE_ENTRY:
+									if(!TextUtils.isEmpty(lastString)) {
+										out.write(lastString+"\n");
+										lastString = "";
+									}
+									if(!TextUtils.isEmpty(lastYiString)) {
+										out.write("|{"+lastYiString+"}\n");
+										lastYiString = "";
+									}
+									result += "\\endSection\n";
+									break;
+								case FBTextKind.CODE:
+									result+="|{";
+									break;
+								case FBTextKind.SUB:
+									result+="\\sub{";
+									break;
+								case FBTextKind.SUP:
+									result+="\\sup{";
+									break;
+								case FBTextKind.H1:
+									result+="\\h1{";
+									break;
+								case FBTextKind.H3:
+									result+="\\h3{";
+									break;
+								case FBTextKind.H2:
+									result+="\\h2{";
+									break;
+								case FBTextKind.H4:
+									result+="\\h4{";
+									break;
+								case FBTextKind.SECTION_TITLE:
+									if(!TextUtils.isEmpty(lastString)) {
+										out.write(lastString+"\n");
+										lastString = "";
+									}
+									if(!TextUtils.isEmpty(lastYiString)) {
+										out.write("|{"+lastYiString+"}\n");
+										lastYiString = "";
+									}
+									result+="\\section{";
+									isChapterEnd = true;
+									break;
+								}
+							} else {
+								switch(it.myControlKind) {
+								case FBTextKind.CODE:
+									result+="}";
+									break;
+								case FBTextKind.SUB:
+									result+="}";
+									break;
+								case FBTextKind.SUP:
+									result+="}";
+									break;
+								case FBTextKind.H3:
+									result+="}";
+									break;
+								case FBTextKind.H2:
+									result+="}";
+									break;
+								case FBTextKind.H1:
+									result+="}";
+									break;
+								case FBTextKind.H4:
+									result+="}";
+									break;
+								case FBTextKind.SECTION_TITLE:
+									result+="}";
+									break;
+								case FBTextKind.TITLE:
+									result+="}\n";
+									break;
+								}
+								
+							}
+						}
+					}//end while(it.hasnext())
+					if(isTitleEnd) {
+						isTitleEnd = false;
+						result+="}\n";
+					}
+					if(isChapterEnd) {
+						isChapterEnd = false;
+						result+="}\n";
+					}
+					if(!TextUtils.isEmpty(lastYiString)) {
+						String yuan = extractGujiFromString(result);
+						String yi = extractCommentFromString(result);
+						result = compositeGuji(yuan.trim(), lastYiString) +"\n";
+						lastYiString = yi.trim();
+					} else if(!TextUtils.isEmpty(lastString)) {
+						String yuan = extractGujiFromString(result);
+						String yi = extractCommentFromString(result);
+						result = compositeGuji(lastString, yi) +"\n";
+						lastString = yuan.trim();
+					} else {
+						result=extraLine+result;
+						if(extraLine.length() > 0) {
+							String yuan = extractGujiFromString(result);
+							String yi = extractCommentFromString(result);
+							result = compositeGuji(yuan, yi) + "\n";
+						}
+					}
+					extraLine="";
+					
+					out.write(result);
+					
+				}//end if
+				if (++index >= endIndex) {
+					break;
+				}
+				it.reset(index);
+			}
+			out.flush();
+			out.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 	public final int search(final String text, int startIndex, int endIndex, boolean ignoreCase) {
 		int count = 0;
 		ZLSearchPattern pattern = new ZLSearchPattern(text, ignoreCase);

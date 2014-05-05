@@ -331,7 +331,28 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 	public int getHeight() {
 		return myGeometry.AreaSize.Height;
 	}
-
+	
+	public int measureText(char[] string, int offset, int length) {
+		int start = offset;
+		float stringWidth = 0;
+		for(int i = offset;i < offset + length; i++) {
+			if(Character.isHighSurrogate(string[i])) {
+				if(i != start) {
+					stringWidth += myTextPaint.measureText(new String(string, start, i-start));
+				}
+				Typeface previosType = myTextPaint.getTypeface();
+				myTextPaint.setTypeface(AndroidFontUtil.systemTypeface("TW Kai Ext-B", previosType.isBold(), previosType.isItalic()));
+				stringWidth += myTextPaint.measureText(new String(string, i, 2));
+				myTextPaint.setTypeface(previosType);
+				i++;
+				start = i+1;
+			}
+		}
+		if(start < offset+length) {
+			stringWidth += myTextPaint.measureText(new String(string, start, offset+length - start));
+		}
+		return (int)(stringWidth + 0.5f);
+	}
 	@Override
 	public int getStringWidth(char[] string, int offset, int length) {
 		boolean containsSoftHyphen = false;
@@ -342,7 +363,9 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 			}
 		}
 		if (!containsSoftHyphen) {
-			return (int)(myTextPaint.measureText(new String(string, offset, length)) + 0.5f);
+			
+			return measureText(string, offset, length);
+			//return (int)(myTextPaint.measureText(new String(string, offset, length)) + 0.5f);
 		} else {
 			final char[] corrected = new char[length];
 			int len = 0;
@@ -352,7 +375,8 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 					corrected[len++] = chr;
 				}
 			}
-			return (int)(myTextPaint.measureText(corrected, 0, len) + 0.5f);
+			return measureText(corrected, 0, len);
+			//return (int)(myTextPaint.measureText(corrected, 0, len) + 0.5f);
 		}
 	}
 
@@ -379,8 +403,36 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 		return (int)(myTextPaint.descent() + 0.5f);
 	}
 
+
+	private boolean isCharShouldHorizontal(char ch) {
+		char[] horizontalChar = new char[]{'(', ')', '[', ']', '（', '）', '【', '】','《','》'};
+		for(int i = 0; i < horizontalChar.length; i++) {
+			if(ch == horizontalChar[i]) return true;
+		}
+		return false;
+	}
+	public void drawText(int x, int y, char[] string, int offset, int length) {
+		int stringWidth = 0;
+		for(int i = offset; i < offset + length; i++) {
+			if(Character.isHighSurrogate(string[i])) {
+				stringWidth +=drawUTF16Text(""+string[i]+string[i+1], x+stringWidth, y);
+				i++;
+			} else if(isCharShouldHorizontal(string[i])) {
+				myCanvas.drawText(string, i, 1, x+stringWidth, y - this.getDescent(), myTextPaint);
+				stringWidth += getStringWidth(string, i, 1);
+			} else {
+				myCanvas.translate(x+stringWidth, y);				
+				myCanvas.rotate(-90);
+				myCanvas.drawText(string, i, 1, 0, this.getStringHeight()-this.getDescent() + 1, myTextPaint);
+				myCanvas.rotate(90);
+				myCanvas.translate(-1*(x+stringWidth), -y);
+				stringWidth += getStringWidth(string, i, 1);
+			}
+		}
+	}
+
 	@Override
-	public void drawString(int x, int y, char[] string, int offset, int length) {
+	public void drawString(int x, int y, char[] string, int offset, int length, boolean isGujiString) {
 		boolean containsSoftHyphen = false;
 		for (int i = offset; i < offset + length; ++i) {
 			if (string[i] == (char)0xAD) {
@@ -389,7 +441,12 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 			}
 		}
 		if (!containsSoftHyphen) {
-			myCanvas.drawText(string, offset, length, x, y, myTextPaint);
+			if(isGujiString) {
+				drawText(x, y, string, offset, length);
+			} else {
+				myCanvas.drawText(string, offset, length, x, y, myTextPaint);
+			}
+			
 		} else {
 			final char[] corrected = new char[length];
 			int len = 0;
@@ -399,7 +456,11 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 					corrected[len++] = chr;
 				}
 			}
-			myCanvas.drawText(corrected, 0, len, x, y, myTextPaint);
+			if(isGujiString) {
+				drawText(x, y, corrected, 0, len);
+			} else {
+				myCanvas.drawText(corrected, 0, len, x, y, myTextPaint);
+			}
 		}
 	}
 
@@ -439,6 +500,25 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 		canvas.drawPoint(x1, y1, paint);
 		paint.setAntiAlias(true);
 	}
+	
+	@Override
+	public void drawRectangle(int x0, int y0, int x1, int y1) {
+		final Canvas canvas = myCanvas;
+		final Paint paint = myLinePaint;
+		if (x1 < x0) {
+			int swap = x1;
+			x1 = x0;
+			x0 = swap;
+		}
+		if (y1 < y0) {
+			int swap = y1;
+			y1 = y0;
+			y0 = swap;
+		}
+		paint.setAntiAlias(false);
+		canvas.drawRect(x0, y0, x1, y1, paint);
+		paint.setAntiAlias(true);
+	}
 
 	@Override
 	public void fillRectangle(int x0, int y0, int x1, int y1) {
@@ -458,5 +538,18 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 	@Override
 	public void fillCircle(int x, int y, int radius) {
 		myCanvas.drawCircle(x, y, radius, myFillPaint);
+	}
+	
+	public float drawUTF16Text(String newGlyph, int x, int y) {
+		myCanvas.translate(x, y);
+		myCanvas.rotate(-90);
+		Typeface previosType = myTextPaint.getTypeface();
+		myTextPaint.setTypeface(AndroidFontUtil.systemTypeface("TW Kai Ext-B", previosType.isBold(), previosType.isItalic()));
+		myCanvas.drawText(newGlyph, 0, this.getStringHeight()-this.getDescent() + 1, myTextPaint);
+		myCanvas.rotate(90);
+		myCanvas.translate(-x, -y);
+		float width = myTextPaint.measureText(newGlyph);
+		myTextPaint.setTypeface(previosType);
+		return width;
 	}
 }

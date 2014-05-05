@@ -36,7 +36,7 @@ class VolumeKeyTurnPageAction extends FBAction {
 			myForward ? FBView.PageIndex.next : FBView.PageIndex.previous,
 			preferences.Horizontal.getValue()
 				? FBView.Direction.rightToLeft : FBView.Direction.up,
-			preferences.AnimationSpeed.getValue()
+			preferences.AnimationSpeedOption.getValue()
 		);
 	}
 }

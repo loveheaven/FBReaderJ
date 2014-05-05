@@ -2,4 +2,17 @@
 <resources>
 	<string name="app_name">FBReader</string>
 	<string name="empty_string"></string>
+	
+	<string name="epub_reader">ZWReader</string>
+	
+	<!-- add by wenyd on 2011-12-21 -->
+	<string name="reader">ZWReader</string>
+	<string name="my_book_shelf">我的书架</string>
+    <string name="selection">精选</string>
+    <string name="crash">出错</string>
+    <string name="quit">退出</string>
+    <string name="confirm_quit">退出ZWReader</string>
+    <string name="dialog_ok">是</string>
+    <string name="dialog_cancel">否</string>
+    <string name="no_exist_on_sdcard">在内存卡上无法加载此书</string>
 </resources>

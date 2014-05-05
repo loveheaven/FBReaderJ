@@ -31,10 +31,11 @@ public final class ZLTextElementArea extends ZLTextFixedPosition {
 	final boolean ChangeStyle;
 	final ZLTextStyle Style;
 	final ZLTextElement Element;
+	final byte ControlKind;
 
 	private final boolean myIsLastInElement;
 
-	ZLTextElementArea(int paragraphIndex, int elementIndex, int charIndex, int length, boolean lastInElement, boolean addHyphenationSign, boolean changeStyle, ZLTextStyle style, ZLTextElement element, int xStart, int xEnd, int yStart, int yEnd, int columnIndex) {
+	ZLTextElementArea(int paragraphIndex, int elementIndex, int charIndex, int length, boolean lastInElement, boolean addHyphenationSign, boolean changeStyle, ZLTextStyle style, ZLTextElement element, int xStart, int xEnd, int yStart, int yEnd, int columnIndex, byte controlKind) {
 		super(paragraphIndex, elementIndex, charIndex);
 
 		XStart = xStart;
@@ -50,6 +51,7 @@ public final class ZLTextElementArea extends ZLTextFixedPosition {
 		ChangeStyle = changeStyle;
 		Style = style;
 		Element = element;
+		ControlKind = controlKind;
 	}
 
 	boolean contains(int x, int y) {

@@ -33,6 +33,7 @@ import org.geometerplus.zlibrary.text.model.ZLTextModel;
 import org.geometerplus.zlibrary.text.view.*;
 import org.geometerplus.zlibrary.text.view.style.ZLTextStyleCollection;
 
+import org.geometerplus.fbreader.book.Book;
 import org.geometerplus.fbreader.bookmodel.BookModel;
 import org.geometerplus.fbreader.bookmodel.FBHyperlinkType;
 import org.geometerplus.fbreader.bookmodel.TOCTree;
@@ -41,7 +42,6 @@ import org.geometerplus.fbreader.util.FixedTextSnippet;
 import org.geometerplus.fbreader.util.TextSnippet;
 
 public final class FBView extends ZLTextView {
-	private final FBReaderApp myReader;
 	private final ViewOptions myViewOptions;
 	private final BookElementManager myBookElementManager;
 
@@ -58,7 +58,7 @@ public final class FBView extends ZLTextView {
 			myFooter.resetTOCMarks();
 		}
 	}
-
+	
 	private int myStartY;
 	private boolean myIsBrightnessAdjustmentInProgress;
 	private int myStartBrightness;
@@ -129,27 +129,64 @@ public final class FBView extends ZLTextView {
 
 	@Override
 	public boolean isDoubleTapSupported() {
-		return myReader.MiscOptions.EnableDoubleTap.getValue();
+		//return myReader.MiscOptions.EnableDoubleTap.getValue();
+		return true;
 	}
 
 	@Override
 	public void onFingerDoubleTap(int x, int y) {
 		myReader.runAction(ActionCode.HIDE_TOAST);
 
-		myReader.runAction(getZoneMap().getActionByCoordinates(
-			x, y, getContextWidth(), getContextHeight(), TapZoneMap.Tap.doubleTap
-		), x, y);
+		switch (myReader.MiscOptions.EnableDoubleTap.getValue()) {
+			case showMenu:
+				myReader.runAction(getZoneMap().getActionByCoordinates(
+						x, y, getContextWidth(), getContextHeight(), TapZoneMap.Tap.doubleTap
+					), x, y);
+				break;
+			case selectWord:
+				if(isGuji()) {//rotate 90 degree
+					int tmp = x;
+					x=y;
+					y=this.getContext().getHeight()-tmp;
+				}
+				final ZLTextRegion region = findRegion(x, y, maxSelectionDistance(), ZLTextRegion.AnyRegionFilter);
+				if (region != null) {
+					final ZLTextRegion.Soul soul = region.getSoul();
+					boolean doSelectRegion = false;
+					if (soul instanceof ZLTextWordRegionSoul) {
+						doSelectRegion = true;
+					} else if (soul instanceof ZLTextHyperlinkRegionSoul) {
+						doSelectRegion = true;
+					}
+
+					if (doSelectRegion) {
+						outlineRegion(region);
+						myReader.getViewWidget().reset();
+						myReader.getViewWidget().repaint();
+						myReader.runAction(ActionCode.PROCESS_HYPERLINK);
+						return;
+					}
+				}
+				break;
+		}
+		
 	}
 
 	@Override
 	public void onFingerPress(int x, int y) {
 		myReader.runAction(ActionCode.HIDE_TOAST);
 
+		int realX = x;
+		int realY = y;
+		if(isGuji()) {//rotate 90 degree
+			realX=y;
+			realY=this.getContext().getHeight()-x;
+		}
 		final float maxDist = ZLibrary.Instance().getDisplayDPI() / 4;
-		final SelectionCursor.Which cursor = findSelectionCursor(x, y, maxDist * maxDist);
+		final SelectionCursor.Which cursor = findSelectionCursor(realX, realY, maxDist * maxDist);
 		if (cursor != null) {
 			myReader.runAction(ActionCode.SELECTION_HIDE_PANEL);
-			moveSelectionCursorTo(cursor, x, y);
+			moveSelectionCursorTo(cursor, realX, realY);
 			return;
 		}
 
@@ -183,15 +220,22 @@ public final class FBView extends ZLTextView {
 
 	@Override
 	public void onFingerMove(int x, int y) {
+
+		int realX = x;
+		int realY = y;
+		if(isGuji()) {//rotate 90 degree
+			realX=y;
+			realY=this.getContext().getHeight()-x;
+		}
 		final SelectionCursor.Which cursor = getSelectionCursorInMovement();
 		if (cursor != null) {
-			moveSelectionCursorTo(cursor, x, y);
+			moveSelectionCursorTo(cursor, realX, realY);
 			return;
 		}
 
 		synchronized (this) {
 			if (myIsBrightnessAdjustmentInProgress) {
-				if (x >= getContextWidth() / 5) {
+				if (x >= getContextWidth() / 10) {
 					myIsBrightnessAdjustmentInProgress = false;
 					startManualScrolling(x, y);
 				} else {
@@ -216,7 +260,7 @@ public final class FBView extends ZLTextView {
 			myIsBrightnessAdjustmentInProgress = false;
 		} else if (isFlickScrollingEnabled()) {
 			myReader.getViewWidget().startAnimatedScrolling(
-				x, y, myReader.PageTurningOptions.AnimationSpeed.getValue()
+				x, y, myReader.PageTurningOptions.AnimationSpeedOption.getValue()
 			);
 		}
 	}
@@ -225,6 +269,11 @@ public final class FBView extends ZLTextView {
 	public boolean onFingerLongPress(int x, int y) {
 		myReader.runAction(ActionCode.HIDE_TOAST);
 
+		if(isGuji()) {
+			int tmp = x;
+			x=y;
+			y=this.getContext().getHeight()-tmp;
+		}
 		final ZLTextRegion region = findRegion(x, y, maxSelectionDistance(), ZLTextRegion.AnyRegionFilter);
 		if (region != null) {
 			final ZLTextRegion.Soul soul = region.getSoul();
@@ -264,6 +313,11 @@ public final class FBView extends ZLTextView {
 
 	@Override
 	public void onFingerMoveAfterLongPress(int x, int y) {
+		if(isGuji()) {//rotate 90 degree
+			int tmp = x;
+			x=y;
+			y=this.getContext().getHeight()-tmp;
+		}
 		final SelectionCursor.Which cursor = getSelectionCursorInMovement();
 		if (cursor != null) {
 			moveSelectionCursorTo(cursor, x, y);
@@ -354,24 +408,41 @@ public final class FBView extends ZLTextView {
 
 	@Override
 	public int getLeftMargin() {
-		return myViewOptions.LeftMargin.getValue();
+		if(isGuji()) {
+			return myViewOptions.TopMargin.getValue();
+		} else {
+			return myViewOptions.LeftMargin.getValue();
+		}
+		
 	}
 
 	@Override
 	public int getRightMargin() {
-		return myViewOptions.RightMargin.getValue();
+		if(isGuji()) {
+			return myViewOptions.BottomMargin.getValue();
+		} else {
+			return myViewOptions.RightMargin.getValue();
+		}
 	}
 
 	@Override
 	public int getTopMargin() {
-		return myViewOptions.TopMargin.getValue();
+		if(isGuji()) {
+			return myViewOptions.RightMargin.getValue();
+		} else {
+			return myViewOptions.TopMargin.getValue();
+		}
 	}
 
 	@Override
 	public int getBottomMargin() {
-		return myViewOptions.BottomMargin.getValue();
+		if(isGuji()) {
+			return myViewOptions.LeftMargin.getValue();
+		} else {
+			return myViewOptions.BottomMargin.getValue();
+		}
 	}
-
+	
 	@Override
 	public int getSpaceBetweenColumns() {
 		return myViewOptions.SpaceBetweenColumns.getValue();
@@ -595,7 +666,7 @@ public final class FBView extends ZLTextView {
 			final String infoString = buildInfoString(pagePosition, " ");
 			final int infoWidth = context.getStringWidth(infoString);
 			context.setTextColor(fgColor);
-			context.drawString(right - infoWidth, height - delta, infoString);
+			context.drawString(right - infoWidth, height - delta, infoString, false);
 
 			// draw gauge
 			final int gaugeRight = right - (infoWidth == 0 ? 0 : infoWidth + 10);
@@ -657,7 +728,7 @@ public final class FBView extends ZLTextView {
 			final String infoString = buildInfoString(pagePosition, "  ");
 			final int infoWidth = context.getStringWidth(infoString);
 			context.setTextColor(textColor);
-			context.drawString(right - infoWidth, (height + charHeight + 1) / 2, infoString);
+			context.drawString(right - infoWidth, (height + charHeight + 1) / 2, infoString, false);
 
 			// draw gauge
 			final int gaugeRight = right - (infoWidth == 0 ? 0 : infoWidth + 10);
@@ -766,7 +837,7 @@ public final class FBView extends ZLTextView {
 
 	@Override
 	public Animation getAnimationType() {
-		return myReader.PageTurningOptions.Animation.getValue();
+		return myReader.PageTurningOptions.AnimationOption.getValue();
 	}
 
 	@Override

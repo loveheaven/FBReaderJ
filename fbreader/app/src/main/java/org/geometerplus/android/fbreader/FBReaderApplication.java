@@ -19,7 +19,17 @@
 
 package org.geometerplus.android.fbreader;
 
+import jopencc.util.ChineseConvertor;
+import jopencc.util.Dict;
+
 import org.geometerplus.zlibrary.ui.android.library.ZLAndroidApplication;
 
 public class FBReaderApplication extends ZLAndroidApplication {
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		//bindService(new Intent(this, LibraryService.class), null, LibraryService.BIND_AUTO_CREATE);
+		ChineseConvertor.DICT_TO_ZHS = new Dict(Dict.ZHT_TO_ZHS, this.getApplicationContext());
+        ChineseConvertor.DICT_TO_ZHT = new Dict(Dict.ZHS_TO_ZHT, this.getApplicationContext());
+	}
 }

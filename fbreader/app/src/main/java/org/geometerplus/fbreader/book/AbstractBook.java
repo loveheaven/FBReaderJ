@@ -24,9 +24,9 @@ import java.util.*;
 
 import org.fbreader.util.ComparisonUtil;
 
+import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.util.MiscUtil;
 import org.geometerplus.zlibrary.core.util.RationalNumber;
-
 import org.geometerplus.fbreader.sort.TitledEntity;
 
 public abstract class AbstractBook extends TitledEntity<AbstractBook> {
@@ -66,6 +66,11 @@ public abstract class AbstractBook extends TitledEntity<AbstractBook> {
 	}
 
 	public abstract String getPath();
+	
+	public String getExtention() {
+		ZLFile file = ZLFile.createFileByUrl("file://" + getPath());
+		return file.getExtension();
+	}
 
 	public void updateFrom(AbstractBook book) {
 		if (book == null || myId != book.myId) {

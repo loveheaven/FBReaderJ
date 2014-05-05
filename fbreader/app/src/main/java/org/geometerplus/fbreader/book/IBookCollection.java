@@ -111,4 +111,10 @@ public interface IBookCollection<B extends AbstractBook> extends AbstractSeriali
 	boolean setActiveFormats(List<String> formatIds);
 
 	void rescan(String path);
+	
+	List<Word> unknownWords(long bookId);
+	List<Word> allKnownWords(String language);
+	void saveToKnownWords(Word word);
+	void saveToUnknownWords(Word word);
+	List<B> recentlyOpenedBooks();
 }

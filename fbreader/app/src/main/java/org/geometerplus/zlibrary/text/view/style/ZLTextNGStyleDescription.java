@@ -68,7 +68,7 @@ public class ZLTextNGStyleDescription {
 		LineHeightOption = createOption(selector, "line-height", valueMap);
 	}
 
-	int getFontSize(ZLTextMetrics metrics, int parentFontSize) {
+	public int getFontSize(ZLTextMetrics metrics, int parentFontSize) {
 		final ZLTextStyleEntry.Length length = parseLength(FontSizeOption.getValue());
 		if (length == null) {
 			return parentFontSize;

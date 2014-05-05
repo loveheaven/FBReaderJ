@@ -87,7 +87,6 @@ public final class FBReader extends FBReaderMainActivity implements ZLApplicatio
 		context.startActivity(intent);
 	}
 
-	private FBReaderApp myFBReaderApp;
 	private volatile Book myBook;
 
 	private RelativeLayout myRootView;
@@ -233,10 +232,6 @@ public final class FBReader extends FBReaderMainActivity implements ZLApplicatio
 		myMainView = (ZLAndroidWidget)findViewById(R.id.main_view);
 		setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
-		myFBReaderApp = (FBReaderApp)FBReaderApp.Instance();
-		if (myFBReaderApp == null) {
-			myFBReaderApp = new FBReaderApp(Paths.systemInfo(this), new BookCollectionShadow());
-		}
 		getCollection().bindToService(this, null);
 		myBook = null;
 
@@ -260,6 +255,10 @@ public final class FBReader extends FBReaderMainActivity implements ZLApplicatio
 			new SelectionPopup(myFBReaderApp);
 		}
 
+		myFBReaderApp.addAction(ActionCode.SELECTION_ADDTOKNOWN, new SelectionAddToKnown(this, myFBReaderApp));
+		myFBReaderApp.addAction(ActionCode.SELECTION_ADDTOUNKNOWN, new SelectionAddToUnknown(this, myFBReaderApp));
+		myFBReaderApp.addAction(ActionCode.SELECTION_MODIFYGUJI, new SelectionModifyGuji(this, myFBReaderApp));
+		myFBReaderApp.addAction(ActionCode.SHOW_SHELF, new ShowShelfAction(this, myFBReaderApp));
 		myFBReaderApp.addAction(ActionCode.SHOW_LIBRARY, new ShowLibraryAction(this, myFBReaderApp));
 		myFBReaderApp.addAction(ActionCode.SHOW_PREFERENCES, new ShowPreferencesAction(this, myFBReaderApp));
 		myFBReaderApp.addAction(ActionCode.SHOW_BOOK_INFO, new ShowBookInfoAction(this, myFBReaderApp));
@@ -790,6 +789,7 @@ public final class FBReader extends FBReaderMainActivity implements ZLApplicatio
 		myMenuLanguage = menuLanguage;
 
 		menu.clear();
+		addMenuItem(menu, ActionCode.SHOW_SHELF, R.drawable.ic_menu_library);
 		fillMenu(menu, MenuData.topLevelNodes());
 		synchronized (myPluginActions) {
 			int index = 0;
@@ -917,7 +917,7 @@ public final class FBReader extends FBReaderMainActivity implements ZLApplicatio
 
 	private BookCollectionShadow getCollection() {
 		return (BookCollectionShadow)myFBReaderApp.Collection;
-	}
+   }
 
 	// methods from ZLApplicationWindow interface
 	@Override

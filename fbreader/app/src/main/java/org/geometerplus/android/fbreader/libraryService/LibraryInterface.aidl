@@ -7,6 +7,7 @@ package org.geometerplus.android.fbreader.libraryService;
 import java.util.List;
 
 import org.geometerplus.android.fbreader.libraryService.PositionWithTimestamp;
+import org.geometerplus.fbreader.book.Word;
 
 /**
  * Warning: this file is an inteface for communication with plugins
@@ -82,4 +83,8 @@ interface LibraryInterface {
 
 	int getDefaultHighlightingStyleId();
 	void setDefaultHighlightingStyleId(in int styleId);
+	List<Word> unknownWords(in long bookId);
+	List<Word> allKnownWords(in String language);
+	void saveToKnownWords(in Word word);
+	void saveToUnknownWords(in Word word);
 }

@@ -21,10 +21,11 @@ package org.geometerplus.fbreader.book;
 
 import java.util.*;
 
+import android.database.Cursor;
+
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.util.RationalNumber;
 import org.geometerplus.zlibrary.core.util.ZLColor;
-
 import org.geometerplus.zlibrary.text.view.ZLTextFixedPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextPosition;
 
@@ -65,6 +66,9 @@ public abstract class BooksDatabase {
 
 	protected abstract List<String> listLabels();
 
+	protected abstract void deleteAllBook();
+	protected abstract void updateBookCoverByPath(byte [] cover, String path);
+	
 	protected abstract List<Author> listAuthors(long bookId);
 	protected abstract List<Tag> listTags(long bookId);
 	protected abstract List<Label> listLabels(long bookId);
@@ -74,9 +78,10 @@ public abstract class BooksDatabase {
 	protected abstract RationalNumber getProgress(long bookId);
 
 	protected abstract Long bookIdByUid(UID uid);
-
-	protected abstract void updateBookInfo(long bookId, long fileId, String encoding, String language, String title);
-	protected abstract long insertBookInfo(ZLFile file, String encoding, String language, String title);
+	
+	protected abstract void updateBookInfo(long bookId, long fileId, String encoding, byte[] cover, String language, String title);
+	protected abstract void updateBookInfo(long bookId,byte[] cover);
+	protected abstract long insertBookInfo(ZLFile file, String encoding,String language, String title);
 	protected abstract void deleteAllBookAuthors(long bookId);
 	protected abstract void saveBookAuthorInfo(long bookId, long index, Author author);
 	protected abstract void deleteAllBookTags(long bookId);
@@ -86,6 +91,19 @@ public abstract class BooksDatabase {
 	protected abstract void saveBookUid(long bookId, UID uid);
 	protected abstract void saveBookProgress(long bookId, RationalNumber progress);
 
+	protected abstract List<Long> loadRecentBookIds(int event);
+
+	protected abstract long insertKnownWord(String word, String language, long frequency);
+	protected abstract void updateKnownWord(String word, String language, String newWord);
+	protected abstract void deleteKnownWord(String word, String language);
+	protected abstract long insertUnknownWord(long book_id, String word, long frequency, long paragraph, long wordIndex, long charIndex);
+	protected abstract void deleteUnknownWord(long book_id, String word);
+	protected abstract void updateUnknownWord(long book_id, String word, String newWord);
+	protected abstract List<Word> loadUnknownWords(long bookId);
+	protected abstract List<Word> loadAllKnownWords(String language);
+	protected abstract void deleteAllUnknownWord(long book_id);
+	public abstract void deleteAllKnownWord(String language);
+	
 	protected FileInfo createFileInfo(long id, String name, FileInfo parent) {
 		return new FileInfo(name, parent, id);
 	}

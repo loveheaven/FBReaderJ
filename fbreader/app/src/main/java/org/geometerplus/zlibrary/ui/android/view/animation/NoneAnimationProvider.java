@@ -19,9 +19,14 @@
 
 package org.geometerplus.zlibrary.ui.android.view.animation;
 
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 
+import org.geometerplus.zlibrary.core.application.ZLApplication;
+import org.geometerplus.zlibrary.core.view.ZLView;
 import org.geometerplus.zlibrary.core.view.ZLViewEnums;
+import org.geometerplus.zlibrary.text.view.ZLTextView;
 
 import org.geometerplus.zlibrary.ui.android.view.ViewUtil;
 
@@ -67,18 +72,27 @@ public final class NoneAnimationProvider extends AnimationProvider {
 			return ZLViewEnums.PageIndex.current;
 		}
 
+		final ZLView view = ZLApplication.Instance().getCurrentView();
+		boolean isGuji = false;
+		if(view instanceof ZLTextView) {
+			isGuji = ((ZLTextView)view).isGuji();
+		}
+		ZLViewEnums.PageIndex index = ZLViewEnums.PageIndex.current;
 		switch (myDirection) {
 			case rightToLeft:
-				return myStartX < x ? ZLViewEnums.PageIndex.previous : ZLViewEnums.PageIndex.next;
+				index = myStartX < x ? ZLViewEnums.PageIndex.previous : ZLViewEnums.PageIndex.next;
 			case leftToRight:
-				return myStartX < x ? ZLViewEnums.PageIndex.next : ZLViewEnums.PageIndex.previous;
+				index = myStartX < x ? ZLViewEnums.PageIndex.next : ZLViewEnums.PageIndex.previous;
 			case up:
-				return myStartY < y ? ZLViewEnums.PageIndex.previous : ZLViewEnums.PageIndex.next;
+				index = myStartY < y ? ZLViewEnums.PageIndex.previous : ZLViewEnums.PageIndex.next;
 			case down:
-				return myStartY < y ? ZLViewEnums.PageIndex.next : ZLViewEnums.PageIndex.previous;
+				index = myStartY < y ? ZLViewEnums.PageIndex.next : ZLViewEnums.PageIndex.previous;
 		}
-		return ZLViewEnums.PageIndex.current;
-	}
+		if(isGuji) {
+			if(index == ZLViewEnums.PageIndex.next) return ZLViewEnums.PageIndex.previous;
+			if(index == ZLViewEnums.PageIndex.previous) return ZLViewEnums.PageIndex.next;
+		}
+		return index;	}
 
 	@Override
 	public void drawFooterBitmapInternal(Canvas canvas, Bitmap footerBitmap, int voffset) {

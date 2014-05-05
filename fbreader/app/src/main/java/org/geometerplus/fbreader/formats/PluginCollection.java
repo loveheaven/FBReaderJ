@@ -19,6 +19,7 @@
 
 package org.geometerplus.fbreader.formats;
 
+import org.geometerplus.fbreader.formats.djvu.DjvuPlugin;
 import java.util.*;
 
 import android.os.Build;
@@ -66,9 +67,10 @@ public class PluginCollection implements IFormatPluginCollection {
 	}
 
 	private PluginCollection(SystemInfo systemInfo) {
+		myBuiltinPlugins.add(new DjvuPlugin(systemInfo));
 		if (Build.VERSION.SDK_INT >= 8) {
-			myExternalPlugins.add(new DjVuPlugin(systemInfo));
-			myExternalPlugins.add(new PDFPlugin(systemInfo));
+			//myExternalPlugins.add(new DjVuPlugin(systemInfo));
+			//myExternalPlugins.add(new PDFPlugin(systemInfo));
 			myExternalPlugins.add(new ComicBookPlugin(systemInfo));
 		}
 	}

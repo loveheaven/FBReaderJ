@@ -24,6 +24,8 @@ import java.util.List;
 
 import android.graphics.*;
 import android.util.FloatMath;
+import android.view.MotionEvent;
+import android.widget.Scroller;
 
 import org.geometerplus.zlibrary.core.library.ZLibrary;
 import org.geometerplus.zlibrary.core.view.ZLViewEnums;
@@ -52,6 +54,7 @@ public abstract class AnimationProvider {
 	protected int myEndY;
 	protected ZLViewEnums.Direction myDirection;
 	protected float mySpeed;
+	protected Scroller mScroller;
 
 	protected int myWidth;
 	protected int myHeight;
@@ -77,6 +80,15 @@ public abstract class AnimationProvider {
 			myEndX = myStartX = x;
 			myEndY = myStartY = y;
 		}
+	}
+	
+	public void moveTo(int x, int y) {
+		myEndX = x;
+		myEndY = y;
+	}
+	
+	public boolean doTouchEvent(MotionEvent event) {
+		return true;
 	}
 
 	private final Mode detectManualMode() {
@@ -126,7 +138,7 @@ public abstract class AnimationProvider {
 		final int minDiff = myDirection.IsHorizontal
 			? (myWidth > myHeight ? myWidth / 4 : myWidth / 3)
 			: (myHeight > myWidth ? myHeight / 4 : myHeight / 3);
-		boolean forward = Math.abs(diff) > Math.min(minDiff, dpi / 2);
+		boolean forward = Math.abs(diff) > Math.min(minDiff, dpi / 2);//=====true
 
 		myMode = forward ? Mode.AnimatedScrollingForward : Mode.AnimatedScrollingBackward;
 

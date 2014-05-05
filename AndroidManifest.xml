@@ -56,17 +56,31 @@
 				<category android:name="android.intent.category.DEFAULT"/>
 			</intent-filter>
 		</service>
-		<activity
-			android:name="org.geometerplus.android.fbreader.FBReader"
-			android:launchMode="singleTask"
-			android:icon="@drawable/fbreader"
-			android:label="@string/app_name"
-			android:theme="@style/FBReader.Activity"
-			android:configChanges="orientation|keyboardHidden|screenSize"
-		>
-			<intent-filter>
+        <activity
+            android:configChanges="orientation|keyboardHidden"
+            android:icon="@drawable/fbreader"
+            android:label="@string/epub_reader"
+           	android:screenOrientation="nosensor"
+            android:name="org.geometerplus.android.fbreader.BookShelf"
+            android:theme="@android:style/Theme.NoTitleBar">
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+		<activity android:name="org.geometerplus.android.fbreader.FBReader" 
+		    android:launchMode="singleTask" 
+		    android:icon="@drawable/fbreader" 
+		    android:label="@string/app_name" 
+		    android:theme="@style/FBReader.Activity" 
+		    android:configChanges="orientation|keyboardHidden|screenSize">
+			<!-- <intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter> -->
+			<intent-filter>
+				<action android:name="android.fbreader.action.VIEW"/>
+				<category android:name="android.intent.category.DEFAULT"/>
 			</intent-filter>
 			<intent-filter>
 				<action android:name="android.fbreader.action.VIEW"/>

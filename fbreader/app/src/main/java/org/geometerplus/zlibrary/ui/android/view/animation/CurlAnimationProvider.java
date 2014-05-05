@@ -22,9 +22,11 @@ package org.geometerplus.zlibrary.ui.android.view.animation;
 import android.graphics.*;
 import android.util.FloatMath;
 
+import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.util.BitmapUtil;
+import org.geometerplus.zlibrary.core.view.ZLView;
 import org.geometerplus.zlibrary.core.view.ZLViewEnums;
-
+import org.geometerplus.zlibrary.text.view.ZLTextView;
 import org.geometerplus.zlibrary.ui.android.util.ZLAndroidColorUtil;
 import org.geometerplus.zlibrary.ui.android.view.ViewUtil;
 
@@ -213,18 +215,27 @@ public final class CurlAnimationProvider extends AnimationProvider {
 		if (myDirection == null) {
 			return ZLViewEnums.PageIndex.current;
 		}
-
+		final ZLView view = ZLApplication.Instance().getCurrentView();
+		boolean isGuji = false;
+		if(view instanceof ZLTextView) {
+			isGuji = ((ZLTextView)view).isGuji();
+		}
+		ZLViewEnums.PageIndex index = ZLViewEnums.PageIndex.current;
 		switch (myDirection) {
 			case leftToRight:
-				return myStartX < myWidth / 2 ? ZLViewEnums.PageIndex.next : ZLViewEnums.PageIndex.previous;
+				index = myStartX < myWidth / 2 ? ZLViewEnums.PageIndex.next : ZLViewEnums.PageIndex.previous;
 			case rightToLeft:
-				return myStartX < myWidth / 2 ? ZLViewEnums.PageIndex.previous : ZLViewEnums.PageIndex.next;
+				index = myStartX < myWidth / 2 ? ZLViewEnums.PageIndex.previous : ZLViewEnums.PageIndex.next;
 			case up:
-				return myStartY < myHeight / 2 ? ZLViewEnums.PageIndex.previous : ZLViewEnums.PageIndex.next;
+				index = myStartY < myHeight / 2 ? ZLViewEnums.PageIndex.previous : ZLViewEnums.PageIndex.next;
 			case down:
-				return myStartY < myHeight / 2 ? ZLViewEnums.PageIndex.next : ZLViewEnums.PageIndex.previous;
+				index = myStartY < myHeight / 2 ? ZLViewEnums.PageIndex.next : ZLViewEnums.PageIndex.previous;
 		}
-		return ZLViewEnums.PageIndex.current;
+		if(isGuji) {
+			if(index == ZLViewEnums.PageIndex.next) return ZLViewEnums.PageIndex.previous;
+			if(index == ZLViewEnums.PageIndex.previous) return ZLViewEnums.PageIndex.next;
+		}
+		return index;
 	}
 
 	@Override

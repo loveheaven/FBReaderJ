@@ -29,9 +29,10 @@ import org.geometerplus.zlibrary.ui.android.R;
 
 class SelectionPopup extends PopupPanel implements View.OnClickListener {
 	final static String ID = "SelectionPopup";
-
+	FBReaderApp myReader;
 	SelectionPopup(FBReaderApp fbReader) {
 		super(fbReader);
+		myReader = fbReader;
 	}
 
 	@Override
@@ -53,6 +54,11 @@ class SelectionPopup extends PopupPanel implements View.OnClickListener {
 		setupButton(R.id.selection_panel_share, resource.getResource("share").getValue());
 		setupButton(R.id.selection_panel_translate, resource.getResource("translate").getValue());
 		setupButton(R.id.selection_panel_bookmark, resource.getResource("bookmark").getValue());
+		setupButton(R.id.selection_panel_addknown, resource.getResource("addKnownWord").getValue());
+		setupButton(R.id.selection_panel_addunknown, resource.getResource("addUnknownWord").getValue());
+		if(myReader.Model.Book.isGuji()) {
+			setupButton(R.id.selection_panel_modifyguji, resource.getResource("modifyGuji").getValue());
+		}
 		setupButton(R.id.selection_panel_close, resource.getResource("close").getValue());
 	}
 

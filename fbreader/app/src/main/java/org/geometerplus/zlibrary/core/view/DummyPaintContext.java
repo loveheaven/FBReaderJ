@@ -105,7 +105,7 @@ final class DummyPaintContext extends ZLPaintContext {
 	}
 
 	@Override
-	public void drawString(int x, int y, char[] string, int offset, int length) {
+	public void drawString(int x, int y, char[] string, int offset, int length, boolean isGujiString) {
 	}
 
 	@Override
@@ -119,6 +119,11 @@ final class DummyPaintContext extends ZLPaintContext {
 	@Override
 	public void drawLine(int x0, int y0, int x1, int y1) {
 	}
+	
+	@Override
+	public void drawRectangle(int x0, int y0, int x1, int y1) {
+	}
+	
 	@Override
 	public void fillRectangle(int x0, int y0, int x1, int y1) {
 	}

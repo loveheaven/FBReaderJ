@@ -130,6 +130,8 @@ public final class MimeType {
 	// http://www.iana.org/assignments/media-types/text/index.html
 	public static final MimeType TEXT_PLAIN = get("text/plain");
 	// http://www.iana.org/assignments/media-types/text/index.html
+	public static final MimeType TEXT_GUJI = get("text/guji");
+	// http://www.iana.org/assignments/media-types/text/index.html
 	public static final MimeType TEXT_RTF = get("text/rtf");
 	// unofficial, used by Calibre OPDS server
 	public static final MimeType TEXT_FB2 = get("text/fb2+xml");
@@ -174,6 +176,7 @@ public final class MimeType {
 		 = Arrays.asList(TEXT_HTML, APP_HTML, APP_HTMLHTM);
 	public static final List<MimeType> TYPES_PDF
 		 = Arrays.asList(APP_PDF, APP_XPDF, TEXT_PDF, APP_VND_PDF);
+	public static final List<MimeType> TYPES_GUJI = Arrays.asList(TEXT_GUJI);
 	public static final List<MimeType> TYPES_DJVU
 		 = Arrays.asList(IMAGE_VND_DJVU, IMAGE_XDJVU, APP_DJVU);
 	public static final List<MimeType> TYPES_COMIC_BOOK

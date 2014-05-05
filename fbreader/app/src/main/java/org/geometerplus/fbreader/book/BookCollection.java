@@ -26,10 +26,8 @@ import org.geometerplus.zlibrary.core.filesystem.*;
 import org.geometerplus.zlibrary.core.image.ZLImage;
 import org.geometerplus.zlibrary.core.util.MiscUtil;
 import org.geometerplus.zlibrary.core.util.SystemInfo;
-
 import org.geometerplus.zlibrary.text.view.ZLTextFixedPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextPosition;
-
 import org.geometerplus.fbreader.formats.*;
 
 public class BookCollection extends AbstractBookCollection<DbBook> {
@@ -346,6 +344,10 @@ public class BookCollection extends AbstractBookCollection<DbBook> {
 
 	public List<DbBook> recentlyOpenedBooks(int count) {
 		return books(myDatabase.loadRecentBookIds(BooksDatabase.HistoryEvent.Opened, count));
+	}
+	
+	public List<DbBook> recentlyOpenedBooks() {
+		return books(myDatabase.loadRecentBookIds(BooksDatabase.HistoryEvent.Opened));
 	}
 
 	private List<DbBook> books(List<Long> ids) {
@@ -880,5 +882,24 @@ public class BookCollection extends AbstractBookCollection<DbBook> {
 
 	public DbBook createBook(long id, String url, String title, String encoding, String language) {
 		return new DbBook(id, ZLFile.createFileByUrl(url), title, encoding, language);
+	}
+	
+	public List<Word> unknownWords(long bookId) {
+		return myDatabase.loadUnknownWords(bookId);
+	}
+	
+	public List<Word> allKnownWords(String language) {
+		return myDatabase.loadAllKnownWords(language);
+	}
+
+	@Override
+	public void saveToKnownWords(Word word) {
+		myDatabase.insertKnownWord(word.getText(), word.getLanguage(), word.getFrequency());
+	}
+	
+	@Override
+	public void saveToUnknownWords(Word word) {
+		myDatabase.insertUnknownWord(word.getBookId(), word.getText(), word.getFrequency(), 
+				word.getParagraphIndex(), word.getElementIndex(), word.getCharIndex());
 	}
 }

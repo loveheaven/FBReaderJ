@@ -20,11 +20,13 @@
 package org.geometerplus.fbreader.fbreader;
 
 public interface ActionCode {
-	String SHOW_LIBRARY = "library";
+	String SHOW_SHELF = "library";
+	String SHOW_LIBRARY = "openLocal";
 	String SHOW_PREFERENCES = "preferences";
 	String SHOW_BOOK_INFO = "bookInfo";
 	String SHOW_TOC = "toc";
 	String SHOW_BOOKMARKS = "bookmarks";
+	String SAVE_GUJI = "saveguji";
 	String SHOW_NETWORK_LIBRARY = "networkLibrary";
 
 	String SWITCH_TO_NIGHT_PROFILE = "night";
@@ -77,6 +79,9 @@ public interface ActionCode {
 	String SELECTION_SHARE = "selectionShare";
 	String SELECTION_TRANSLATE = "selectionTranslate";
 	String SELECTION_BOOKMARK = "selectionBookmark";
+	String SELECTION_ADDTOKNOWN = "selectionAddToKnown";
+	String SELECTION_ADDTOUNKNOWN = "selectionAddToUnknown";
+	String SELECTION_MODIFYGUJI = "selectionModifyGuji";
 
 	String OPEN_VIDEO = "video";
 

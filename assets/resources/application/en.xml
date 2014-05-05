@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- English FBReaderJ resources, by FBReader.ORG Limited -->
 <resources>
-	<node name="library" value="FBReader library">
+	<node name="library" value="ZWReader library">
 		<node name="unknownAuthor" value="Unknown author"/>
 		<node name="booksWithNoTags" value="Books with no tags"/>
 		<node name="demo" value="sample"/>
@@ -60,8 +60,8 @@
 			<node name="withIndex" value="Memory card No %s"/>
 			<node name="summary" value="Files on memory card, external or built-in"/>
 		</node>
-		<node name="fileTreeLibrary" value="FBReader library">
-			<node name="summary" value="FBReader books directory"/>
+		<node name="fileTreeLibrary" value="ZWReader library">
+			<node name="summary" value="ZWReader books directory"/>
 		</node>
 		<node name="localSearch" value="Search"/>
 		<node name="rescan" value="Rescan"/>
@@ -78,7 +78,7 @@
 		<node name="uploadAgain" value="Upload again"/>
 		<node name="tryAgain" value="Try again"/>
 	</node>
-	<node name="networkLibrary" value="FBReader network library">
+	<node name="networkLibrary" value="ZWReader network library">
 		<node name="sync" value="FBReader® book network">
 			<node name="summary" value="My personal catalogue"/>
 		</node>
@@ -250,6 +250,22 @@
 		<node name="editBookmark" value="Edit bookmark"/>
 		<node name="deleteBookmark" value="Delete bookmark"/>
 		<node name="search" value="Search"/>
+<!-- bookmark related -->
+		<node name="knownWords" value="All known words"/>
+		<node name="unknownWords" value="Unknown words"/>
+		<node name="found" value="Found"/>
+		<node name="deleteWord" value="Delete word"/>
+		<node name="modifyWord" value="Modify word"/>
+		<node name="changeKnownWord" value="Mark as known"/>
+		<node name="changeUnknownWord" value="Mark as unknown"/>
+		<node name="openWord" value="Goto the word"/>
+		<node name="menu">
+			<node name="search" value="Search"/>
+			<node name="createbak" value="Create backup"/>
+			<node name="importbak" value="Import backup"/>
+			<node name="deleteAllKnownWords" value="Delete all"/>
+		</node>
+<!-- bookmark related end -->	
 	</node>
 	<node name="editBookmark">
 		<node name="text" value="Text"/>
@@ -264,13 +280,26 @@
 		<node name="offline" value="Offline"/>
 	</node>
 	<node name="cancelMenu">
-		<node name="library" value="Open library"/>
+		<node name="openLocal" value="Open local"/>
 		<node name="networkLibrary" value="Open network library"/>
 		<node name="previousBook" value="Open previous book"/>
 		<node name="returnTo" value="Return to …"/>
 		<node name="back" value="Back"/>
 		<node name="forward" value="Forward"/>
-		<node name="close" value="Close FBReader"/>
+		<node name="close" value="Close ZWReader"/>
+	</node>
+	<node name="style" value="Style %s"/>
+	<node name="highlightingStyleMenu">
+		<node name="editStyle" value="Edit style…"/>
+		<node name="deleteBookmark" value="Delete bookmark"/>
+	</node>
+	<node name="editStyle">
+		<node name="name" value="Style name"/>
+		<node name="invisible" value="Invisible">
+			<node name="summaryOn" value="Do not highlight bookmarks"/>
+			<node name="summaryOff" value="Highlight bookmarks"/>
+		</node>
+		<node name="bgColor" value="Background color"/>
 	</node>
 	<node name="style" value="Style %s"/>
 	<node name="editStyle" value="Edit style">
@@ -284,6 +313,11 @@
 	<node name="selection" value="Selection">
 		<node name="quoteFrom" value="Quote from %s"/>
 		<node name="textInBuffer" value="Copied to clipboard:&#10;%s"/>
+		<!-- bookmark related -->
+		<node name="bookmarkCreated" value="Bookmark created:&#10;%s"/>
+		<node name="wordAdded" value="Word added:&#10;%s"/>
+		<node name="clearSelection" value="Clear"/>
+		<!-- bookmark related end -->
 	</node>
 	<node name="sharing">
 		<node name="sharedFrom" value="Shared from &lt;a href=&quot;https://fbreader.org/&quot;&gt;FBReader&lt;/a&gt;"/>
@@ -296,7 +330,8 @@
 		<node name="openStartScreen" value="Start screen"/>
 		<node name="preferences" value="Settings"/>
 		<node name="bookInfo" value="Book info"/>
-		<node name="library" value="Library"/>
+		<node name="openLocal" value="Open local"/>
+		<node name="library" value="Shelf"/>
 		<node name="toc" value="Table of contents"/>
 		<node name="day" value="Day"/>
 		<node name="night" value="Night"/>
@@ -669,6 +704,7 @@
 				<node name="wood" value="Wood"/>
 				<node name="sand" value="Sand"/>
 				<node name="hardpaper" value="Hard paper"/>
+				<node name="parchment" value="Parchment"/>
 			</node>
 			<node name="fillMode" value="Fill mode">
 				<node name="tile" value="Tile"/>
@@ -741,8 +777,8 @@
 				<node name="byTapAndFlick" value="Turn pages by finger tap or flick"/>
 			</node>
 			<node name="enableDoubleTapDetection" value="Double tap detection">
-				<node name="summaryOn" value="Double tap to run navigation dialog/menu"/>
-				<node name="summaryOff" value="Ignore double taps"/>
+				<node name="showMenu" value="Double tap to run navigation dialog/menu"/>
+				<node name="selectWord" value="Select single word, release opens dictionary"/>
 			</node>
 			<node name="volumeKeys" value="Turn page with volume keys">
 				<node name="summaryOn" value="Use volume keys to turn the pages"/>
@@ -847,9 +883,9 @@
 		</node>
 		<node name="cancelMenu" value="Cancel menu">
 			<node name="summary" value="Back button action list"/>
-			<node name="library" value="Library">
-				<node name="summaryOn" value="Show 'open library' item"/>
-				<node name="summaryOff" value="Don't show 'open library' item"/>
+			<node name="openLocal" value="Open local">
+				<node name="summaryOn" value="Show 'open local' item"/>
+				<node name="summaryOff" value="Don't show 'open local' item"/>
 			</node>
 			<node name="networkLibrary" value="Network library">
 				<node name="summaryOn" value="Show 'open network library' item"/>
@@ -864,12 +900,12 @@
 				<node name="summaryOff" value="Don't show items for last 3 positions in the book"/>
 			</node>
 			<node name="backKeyAction" value="Back key action">
-				<node name="exit" value="Close FBReader"/>
+				<node name="exit" value="Close ZWReader"/>
 				<node name="goBack" value="Navigate back"/>
 				<node name="cancelMenu" value="Show cancel menu"/>
 			</node>
 			<node name="backKeyLongPressAction" value="Back key long press action">
-				<node name="exit" value="Close FBReader"/>
+				<node name="exit" value="Close ZWReader"/>
 				<node name="goBack" value="Navigate back"/>
 				<node name="cancelMenu" value="Show cancel menu"/>
 				<node name="none" value="No action"/>
@@ -882,7 +918,7 @@
 				<node name="summaryOff" value="Do not show daily tips"/>
 			</node>
 		</node>
-		<node name="about" value="About FBReader">
+		<node name="about" value="About ZWReader">
 			<node name="summary" value="Version info, contacts, etc."/>
 			<node name="version" value="Version"/>
 			<node name="site" value="Visit our website">
@@ -1042,7 +1078,7 @@
 			<node name="register" value="Sign up"/>
 		</node>
 		<node name="CustomCatalogDialog">
-			<node name="title" value="FBReader: add custom catalogue"/>
+			<node name="title" value="ZWReader: add custom catalogue"/>
 			<node name="catalogTitle" value="Title"/>
 			<node name="catalogUrl" value="URL"/>
 			<node name="catalogSummary" value="Summary"/>
@@ -1060,12 +1096,12 @@
 		</node>
 		<node name="tips">
 			<node name="title" value="Tip of the day"/>
-			<node name="initializationText" value="Would you like to read FBReader's daily tips? New tips would be downloaded from the FBReader site, with expected network traffic 1-2 kilobytes per week.&#10;&#10;Enable tips?"/>
+			<node name="initializationText" value="Would you like to read FBReader's daily tips? New tips would be downloaded from the ZWReader site, with expected network traffic 1-2 kilobytes per week.&#10;&#10;Enable tips?"/>
 			<node name="dontShowAgain" value="Don't show again"/>
 			<node name="more" value="Next tip"/>
 		</node>
 		<node name="screenHint">
-			<node name="message1" value="FBReader works in fullscreen mode by default. Tap the centre third of the screen now to show controls. You can change this in the “Appearance” section of the Settings dialog."/>
+			<node name="message1" value="ZWReader works in fullscreen mode by default. Tap the centre third of the screen now to show controls. You can change this in the “Appearance” section of the Settings dialog."/>
 			<node name="message2" value="Well done! Now tap the centre third of the screen again to hide the controls and this hint. If you want to keep controls on the screen while reading, select the “Show action bar” option in “Appearance” in Settings."/>
 		</node>
 		<node name="folderList">
@@ -1125,7 +1161,7 @@
 		<node name="pluginNotFound" value="No plugin for '%s'"/>
 		<node name="unknownPluginType" value="Unknown plugin type: %s"/>
 		<node name="fileNotFound" value="File not found: %s"/>
-		<node name="unsupportedEncryptionMethod" value="File %s encryption method is not supported by FBReader. Some pages are not readable"/>
+		<node name="unsupportedEncryptionMethod" value="File %s encryption method is not supported by ZWReader. Some pages are not readable"/>
 		<node name="opfFileNotFound" value="OPF is not found in %s"/>
 		<node name="unsupportedFileFormat" value="File format is not supported for '%s'"/>
 		<node name="errorParsingRtf" value="Rtf parsing error in: %s"/>
@@ -1153,17 +1189,17 @@
 	</node>
 	<node name="crash">
 		<node name="fixBooksDirectory">
-			<node name="title" value="FBReader issue"/>
+			<node name="title" value="ZWReader issue"/>
 			<node name="text" value="Cannot write to FBReader cache. Please check that your memory card is inserted correctly, or select another directory."/>
 		</node>
 		<node name="missingNativeLibrary">
-			<node name="title" value="FBReader issue"/>
-			<node name="text" value="FBReader cannot load native library. If the issue persists, please reinstall FBReader."/>
+			<node name="title" value="ZWReader issue"/>
+			<node name="text" value="ZWReader cannot load native library. If the issue persists, please reinstall FBReader."/>
 		</node>
 	</node>
 	<node name="error">
 		<node name="bookReading">
-			<node name="title" value="FBReader issue"/>
+			<node name="title" value="ZWReader issue"/>
 		</node>
 	</node>
 	<node name="links">
@@ -1236,6 +1272,9 @@
 		<node name="translate" value="Translate"/>
 		<!-- this is a verb: make a bookmark -->
 		<node name="bookmark" value="Bookmark"/>
+		<node name="addKnownWord" value="Add known word to word library"/>
+		<node name="addUnknownWord" value="Add unknown word to word library"/>
+		<node name="modifyGuji" value="Modify paragraph text for guji"/>
 		<node name="close" value="Close"/>
 	</node>
 	<node name="dictanErrors">

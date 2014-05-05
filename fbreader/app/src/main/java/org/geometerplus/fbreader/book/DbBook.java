@@ -117,7 +117,7 @@ public final class DbBook extends AbstractBook {
 			public void run() {
 				if (myId >= 0) {
 					final FileInfoSet fileInfos = new FileInfoSet(database, File);
-					database.updateBookInfo(myId, fileInfos.getId(File), myEncoding, myLanguage, getTitle());
+					database.updateBookInfo(myId, fileInfos.getId(File), myEncoding, null, myLanguage, getTitle());
 				} else {
 					myId = database.insertBookInfo(File, myEncoding, myLanguage, getTitle());
 					if (myId == -1) {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Chinese FBReaderJ resources, by http://shucang.com/ -->
 <resources>
-	<node name="library" value="FBReader 书库">
+	<node name="library" value="ZWReader 书库">
 		<node name="unknownAuthor" value="佚名"/>
 		<node name="booksWithNoTags" value="未归类"/>
 		<node name="demo" value="试读"/>
@@ -240,6 +240,20 @@
 		<node name="editBookmark" value="编辑书签"/>
 		<node name="deleteBookmark" value="删除书签"/>
 		<node name="search" value="搜索"/>
+		<node name="knownWords" value="所有熟词"/>
+		<node name="unknownWords" value="生词"/>
+		<node name="found" value="搜索结果"/>
+		<node name="deleteWord" value="删除单词"/>
+		<node name="modifyWord" value="修改单词"/>
+		<node name="changeKnownWord" value="标记为生词"/>
+		<node name="changeUnknownWord" value="标记为熟词"/>
+		<node name="openWord" value="查看原文"/>
+		<node name="menu">
+			<node name="search" value="搜索"/>
+			<node name="createbak" value="创建备份"/>
+			<node name="importbak" value="导入备份"/>
+			<node name="deleteAllKnownWords" value="清空熟词"/>
+		</node>		
 	</node>
 	<node name="editBookmark">
 		<node name="text" value="文本"/>
@@ -254,7 +268,7 @@
 		<node name="offline" value="下线"/>
 	</node>
 	<node name="cancelMenu">
-		<node name="library" value="打开书库"/>
+		<node name="openLocal" value="打开本地"/>
 		<node name="networkLibrary" value="打开网络书库"/>
 		<node name="previousBook" value="打开上一本书"/>
 		<node name="returnTo" value="返回到…"/>
@@ -274,6 +288,10 @@
 	<node name="selection" value="选择">
 		<node name="quoteFrom" value="从%s中引用"/>
 		<node name="textInBuffer" value="复制到剪贴板:&#10;%s"/>
+		<node name="bookmarkCreated" value="创建书签:&#10;%s"/>
+		<node name="wordAdded" value="单词已添加:&#10;%s"/>
+		<node name="gujiModified" value="原文已修改:&#10;%s"/>
+		<node name="clearSelection" value="清除"/>
 	</node>
 	<node name="sharing">
 		<node name="sharedFrom" value="共享自 &lt;a href=&quot;https://fbreader.org/&quot;&gt;FBReader&lt;/a&gt; "/>
@@ -286,8 +304,10 @@
 		<node name="openStartScreen" value="开始屏幕"/>
 		<node name="preferences" value="阅读相关设置"/>
 		<node name="bookInfo" value="书籍信息"/>
+		<node name="openLocal" value="打开本地"/>
 		<node name="library" value="本地书柜"/>
 		<node name="toc" value="本书目录"/>
+		<node name="saveguji" value="保存修改"/>
 		<node name="day" value="白底黑字"/>
 		<node name="night" value="黑底白字"/>
 		<node name="dayNight" value="白天/夜间"/>
@@ -498,6 +518,14 @@
 				<node name="summaryOn" value="自动断字"/>
 				<node name="summaryOff" value="禁止自动断字"/>
 			</node>
+			<node name="ShowGujiZhu" value="显示古籍注">
+				<node name="summaryOn" value="显示"/>
+				<node name="summaryOff" value="不显示"/>
+			</node>
+			<node name="ShowGujiYi" value="显示古籍翻译">
+				<node name="summaryOn" value="显示"/>
+				<node name="summaryOff" value="不显示"/>
+			</node>
 			<node name="allowHyphenations" value="允许断字">
 				<node name="auto" value="断字"/>
 				<node name="none" value="禁止断字"/>
@@ -659,6 +687,7 @@
 				<node name="wood" value="木质"/>
 				<node name="sand" value="沙质"/>
 				<node name="hardpaper" value="硬纸"/>
+				<node name="parchment" value="羊皮书卷"/>
 			</node>
 			<node name="fillMode" value="填充模式">
 				<node name="tile" value="平铺"/>
@@ -731,8 +760,8 @@
 				<node name="byTapAndFlick" value="触滑或者拍触以翻页"/>
 			</node>
 			<node name="enableDoubleTapDetection" value="连续拍触动作设定">
-				<node name="summaryOn" value="连续拍触屏幕两次显示对话框/菜单"/>
-				<node name="summaryOff" value="忽略连续拍触动作"/>
+				<node name="showMenu" value="连续拍触屏幕两次显示对话框/菜单"/>
+				<node name="selectWord" value="连续拍触屏幕两次选择词语打开字典"/>
 			</node>
 			<node name="volumeKeys" value="音量键滚动">
 				<node name="summaryOn" value="使用音量键翻页"/>
@@ -837,9 +866,9 @@
 		</node>
 		<node name="cancelMenu" value="取消菜单设定">
 			<node name="summary" value="设定回退按键动作"/>
-			<node name="library" value="书库">
-				<node name="summaryOn" value="显示 '打开书库' 项目"/>
-				<node name="summaryOff" value="不显示 '打开书库' 项目"/>
+			<node name="openLocal" value="打开本地">
+				<node name="summaryOn" value="显示 '打开本地' 项目"/>
+				<node name="summaryOff" value="不显示 '打开本地' 项目"/>
 			</node>
 			<node name="networkLibrary" value="网络书库">
 				<node name="summaryOn" value="显示 '打开网络书库' 项目"/>
@@ -1227,6 +1256,9 @@
 		<!-- this is a verb: make a bookmark -->
 		<node name="bookmark" value="加入书签"/>
 		<node name="close" value="关闭"/>
+		<node name="addKnownWord" value="添加单词到熟词库"/>
+		<node name="addUnknownWord" value="添加单词到生词库"/>
+		<node name="modifyGuji" value="修改古籍文本"/>
 	</node>
 	<node name="dictanErrors">
 		<node name="unknown" value="未知错误"/>

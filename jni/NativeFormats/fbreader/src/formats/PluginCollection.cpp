@@ -31,6 +31,8 @@
 #include "html/HtmlPlugin.h"
 #include "txt/TxtPlugin.h"
 #include "pdb/PdbPlugin.h"
+#include "pdf/PdfPlugin.h"
+#include "guji/GujiPlugin.h"
 //#include "tcr/TcrPlugin.h"
 #include "oeb/OEBPlugin.h"
 //#include "chm/CHMPlugin.h"
@@ -46,6 +48,8 @@ PluginCollection &PluginCollection::Instance() {
 		ourInstance->myPlugins.push_back(new FB2Plugin());
 		ourInstance->myPlugins.push_back(new HtmlPlugin());
 		ourInstance->myPlugins.push_back(new TxtPlugin());
+		ourInstance->myPlugins.push_back(new PdfPlugin());
+		ourInstance->myPlugins.push_back(new GujiPlugin());
 //		ourInstance->myPlugins.push_back(new PluckerPlugin());
 //		ourInstance->myPlugins.push_back(new PalmDocPlugin());
 		ourInstance->myPlugins.push_back(new MobipocketPlugin());

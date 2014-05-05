@@ -19,7 +19,11 @@
 
 package org.geometerplus.zlibrary.text.model;
 
+
 import java.util.List;
+
+import org.geometerplus.fbreader.book.Book;
+import org.geometerplus.fbreader.book.IBookCollection;
 
 public interface ZLTextModel {
 	String getId();
@@ -40,5 +44,7 @@ public interface ZLTextModel {
 	int getTextLength(int index);
 	int findParagraphByTextLength(int length);
 
+	void makeDictionary(IBookCollection<Book> Collection, Book book);
 	int search(final String text, int startIndex, int endIndex, boolean ignoreCase);
+	void saveGuji(Book book, int indexToModify, String newString);
 }

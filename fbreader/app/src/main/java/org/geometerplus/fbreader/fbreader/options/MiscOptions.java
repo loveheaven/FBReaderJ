@@ -26,7 +26,10 @@ public class MiscOptions {
 	public final ZLBooleanOption AllowScreenBrightnessAdjustment;
 	public final ZLStringOption TextSearchPattern;
 
-	public final ZLBooleanOption EnableDoubleTap;
+	public static enum DoubleTapEnum {
+		showMenu, selectWord
+	}
+	public final ZLEnumOption<DoubleTapEnum> EnableDoubleTap;
 	public final ZLBooleanOption NavigateAllWords;
 
 	public static enum WordTappingActionEnum {
@@ -48,7 +51,7 @@ public class MiscOptions {
 			new ZLStringOption("TextSearch", "Pattern", "");
 
 		EnableDoubleTap =
-			new ZLBooleanOption("Options", "EnableDoubleTap", false);
+			new ZLEnumOption<DoubleTapEnum>("Options", "EnableDoubleTap", DoubleTapEnum.selectWord);
 		NavigateAllWords =
 			new ZLBooleanOption("Options", "NavigateAllWords", false);
 

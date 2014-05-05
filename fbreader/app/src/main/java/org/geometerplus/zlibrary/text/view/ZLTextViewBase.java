@@ -19,15 +19,16 @@
 
 package org.geometerplus.zlibrary.text.view;
 
+import org.geometerplus.fbreader.book.Book;
+import org.geometerplus.fbreader.bookmodel.FBTextKind;
+import org.geometerplus.fbreader.fbreader.FBReaderApp;
 import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.library.ZLibrary;
 import org.geometerplus.zlibrary.core.util.ZLColor;
 import org.geometerplus.zlibrary.core.view.ZLView;
 import org.geometerplus.zlibrary.core.view.ZLPaintContext;
-
 import org.geometerplus.zlibrary.text.model.ZLTextMetrics;
-
 import org.geometerplus.zlibrary.text.view.style.*;
 
 abstract class ZLTextViewBase extends ZLView {
@@ -38,6 +39,7 @@ abstract class ZLTextViewBase extends ZLView {
 	private ZLTextStyle myTextStyle;
 	private int myWordHeight = -1;
 	private ZLTextMetrics myMetrics;
+	private int myGujiBankuangWidth = 10;
 
 	ZLTextViewBase(ZLApplication application) {
 		super(application);
@@ -106,8 +108,23 @@ abstract class ZLTextViewBase extends ZLView {
 		return new ZLPaintContext.Size(getTextColumnWidth(), getTextAreaHeight());
 	}
 
+	//TODO
+	int getGujiBanxinWidth() {
+		if(!isGuji()) return 0;
+		int baseFontSize = getTextStyleCollection().getBaseStyle().getFontSize();
+		int width=  (int)(baseFontSize * getTextStyleCollection().getBaseStyle().getLineSpacePercent() / 100) + getTextStyleCollection().getBaseStyle().getVerticalAlign(metrics());
+		int fontSubSize = getTextStyleCollection().getDescription(FBTextKind.SUB).getFontSize(metrics(), baseFontSize);
+		int fontCodeSize = getTextStyleCollection().getDescription(FBTextKind.CODE).getFontSize(metrics(), baseFontSize);
+		if( fontSubSize*2> width) width=fontSubSize*2;
+		if( fontCodeSize*2> width) width=fontCodeSize*2;
+		return width;
+	}
+	
+	int getFontSize() {
+		return (int)myTextStyle.getFontSize(metrics());
+	}
 	int getTextAreaHeight() {
-		return getContextHeight() - getTopMargin() - getBottomMargin();
+		return getContextHeight() - getTopMargin() - getBottomMargin()-2*getGujiBankuangWidth();
 	}
 
 	protected int getColumnIndex(int x) {
@@ -121,6 +138,40 @@ abstract class ZLTextViewBase extends ZLView {
 		return twoColumnView()
 			? (getContextWidth() - getLeftMargin() - getSpaceBetweenColumns() - getRightMargin()) / 2
 			: getContextWidth() - getLeftMargin() - getRightMargin();
+	}
+
+	int getTextAreaWidth() {
+		return getContextWidth() - getLeftMargin() - getRightMargin()-2*getGujiBankuangWidth();
+	}
+
+	int getBottomLine() {
+		return getContextHeight() - getBottomMargin() - getGujiBankuangWidth();
+	}
+
+	int getRightLine() {
+		return getContextWidth() - getRightMargin() - getGujiBankuangWidth();
+	}
+	
+	public boolean isGuji() {
+		if(myBook != null) return myBook.isGuji();
+		return false;
+	}
+	
+	protected Book myBook;
+	protected FBReaderApp myReader;
+	
+	public boolean isDjvu() {
+		if(myBook != null) return myBook.isDjvu();
+		return false;
+	}
+	
+	public void setBook(Book book, FBReaderApp reader) {
+		myBook = book;
+		myReader = reader;
+	}
+	
+	int getGujiBankuangWidth() {
+		return isGuji()? myGujiBankuangWidth : 0;
 	}
 
 	final ZLTextStyle getTextStyle() {
@@ -158,6 +209,23 @@ abstract class ZLTextViewBase extends ZLView {
 			applyControl((ZLTextControlElement)element);
 		}
 	}
+	
+	byte getLastOpenControlKind(ZLTextParagraphCursor cursor, int index) {
+		if(!isGuji()) return -1;
+		byte ret = -1;
+		for (; index >= 0; index--) {
+			ZLTextElement element = cursor.getElement(index);
+			if (element instanceof ZLTextControlElement) {
+				ZLTextControlElement control = ((ZLTextControlElement)element);
+				if(control.IsStart) {
+					return control.Kind;
+				} else {
+					return -1;
+				}
+			}
+		}
+		return ret;
+	}
 
 	void applyStyleChanges(ZLTextParagraphCursor cursor, int index, int end) {
 		for (; index != end; ++index) {
@@ -173,6 +241,12 @@ abstract class ZLTextViewBase extends ZLView {
 				getTextStyleCollection().getDescription(control.Kind);
 			if (description != null) {
 				setTextStyle(new ZLTextNGStyle(myTextStyle, description, hyperlink));
+
+				if(control.Kind == FBTextKind.CODE) {
+					getTextStyle().TextColor = new ZLColor(0x5b,0,0x12);
+				} else if(control.Kind == FBTextKind.SUB) {
+					getTextStyle().TextColor = new ZLColor(180,0,30);//(211,82,44);
+				}
 			}
 		} else {
 			setTextStyle(myTextStyle.Parent);
@@ -303,13 +377,13 @@ abstract class ZLTextViewBase extends ZLView {
 	final void drawWord(int x, int y, ZLTextWord word, int start, int length, boolean addHyphenationSign, ZLColor color) {
 		final ZLPaintContext context = getContext();
 		if (start == 0 && length == -1) {
-			drawString(context, x, y, word.Data, word.Offset, word.Length, word.getMark(), color, 0);
+			drawString(context, x, y, word.Data, word.Offset, word.Length, word.getMark(), color, 0, isGuji());
 		} else {
 			if (length == -1) {
 				length = word.Length - start;
 			}
 			if (!addHyphenationSign) {
-				drawString(context, x, y, word.Data, word.Offset + start, length, word.getMark(), color, start);
+				drawString(context, x, y, word.Data, word.Offset + start, length, word.getMark(), color, start, isGuji());
 			} else {
 				char[] part = myWordPartArray;
 				if (length + 1 > part.length) {
@@ -318,15 +392,15 @@ abstract class ZLTextViewBase extends ZLView {
 				}
 				System.arraycopy(word.Data, word.Offset + start, part, 0, length);
 				part[length] = '-';
-				drawString(context, x, y, part, 0, length + 1, word.getMark(), color, start);
+				drawString(context, x, y, part, 0, length + 1, word.getMark(), color, start, isGuji());
 			}
 		}
 	}
 
-	private final void drawString(ZLPaintContext context, int x, int y, char[] str, int offset, int length, ZLTextWord.Mark mark, ZLColor color, int shift) {
+	private final void drawString(ZLPaintContext context, int x, int y, char[] str, int offset, int length, ZLTextWord.Mark mark, ZLColor color, int shift, boolean isGujiString) {
 		if (mark == null) {
 			context.setTextColor(color);
-			context.drawString(x, y, str, offset, length);
+			context.drawString(x, y, str, offset, length, isGujiString);
 		} else {
 			int pos = 0;
 			for (; (mark != null) && (pos < length); mark = mark.getNext()) {
@@ -345,7 +419,7 @@ abstract class ZLTextViewBase extends ZLView {
 				if (markStart > pos) {
 					int endPos = Math.min(markStart, length);
 					context.setTextColor(color);
-					context.drawString(x, y, str, offset + pos, endPos - pos);
+					context.drawString(x, y, str, offset + pos, endPos - pos, isGujiString);
 					x += context.getStringWidth(str, offset + pos, endPos - pos);
 				}
 
@@ -355,7 +429,7 @@ abstract class ZLTextViewBase extends ZLView {
 					final int endX = x + context.getStringWidth(str, offset + markStart, endPos - markStart);
 					context.fillRectangle(x, y - context.getStringHeight(), endX - 1, y + context.getDescent());
 					context.setTextColor(getHighlightingForegroundColor());
-					context.drawString(x, y, str, offset + markStart, endPos - markStart);
+					context.drawString(x, y, str, offset + markStart, endPos - markStart, isGujiString);
 					x = endX;
 				}
 				pos = markStart + markLen;
@@ -363,7 +437,7 @@ abstract class ZLTextViewBase extends ZLView {
 
 			if (pos < length) {
 				context.setTextColor(color);
-				context.drawString(x, y, str, offset + pos, length - pos);
+				context.drawString(x, y, str, offset + pos, length - pos, isGujiString);
 			}
 		}
 	}

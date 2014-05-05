@@ -22,7 +22,10 @@
 #include <AndroidUtil.h>
 
 #include <ZLibrary.h>
-
+extern "C"
+{
+#include <fitz.h>
+}
 extern "C"
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
 	if (AndroidUtil::init(jvm)) {
@@ -31,5 +34,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
 		ZLibrary::init(argc, argv);
 		ZLibrary::initApplication("FBReader");
 	}
+
+	/* Fitz library setup */
+	fz_cpudetect();
+	fz_accelerate();
+
 	return JNI_VERSION_1_2;
 }
