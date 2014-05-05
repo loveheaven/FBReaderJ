@@ -81,12 +81,16 @@ public final class NoneAnimationProvider extends AnimationProvider {
 		switch (myDirection) {
 			case rightToLeft:
 				index = myStartX < x ? ZLViewEnums.PageIndex.previous : ZLViewEnums.PageIndex.next;
+				break;
 			case leftToRight:
 				index = myStartX < x ? ZLViewEnums.PageIndex.next : ZLViewEnums.PageIndex.previous;
+				break;
 			case up:
 				index = myStartY < y ? ZLViewEnums.PageIndex.previous : ZLViewEnums.PageIndex.next;
+				break;
 			case down:
 				index = myStartY < y ? ZLViewEnums.PageIndex.next : ZLViewEnums.PageIndex.previous;
+				break;
 		}
 		if(isGuji) {
 			if(index == ZLViewEnums.PageIndex.next) return ZLViewEnums.PageIndex.previous;

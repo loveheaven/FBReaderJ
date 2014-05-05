@@ -73,7 +73,7 @@ final class SQLiteBooksDatabase extends BooksDatabase {
 
 	private void migrate() {
 		final int version = myDatabase.getVersion();
-		final int currentVersion = 40;
+		final int currentVersion = 41;
 		if (version >= currentVersion) {
 			return;
 		}
@@ -161,6 +161,8 @@ final class SQLiteBooksDatabase extends BooksDatabase {
 				updateTables38();
 			case 39:
 				updateTables39();
+			case 40:
+				updateTables40();
 		}
 		myDatabase.setTransactionSuccessful();
 		myDatabase.setVersion(currentVersion);
@@ -1892,9 +1894,9 @@ final class SQLiteBooksDatabase extends BooksDatabase {
 		return statement;
 	}
 	
-	private void updateTables39() {
+	private void updateTables40() {
 		myDatabase.execSQL(
-				"CREATE TABLE KnownWords(" +
+				"CREATE TABLE IF NOT EXISTS KnownWords(" +
 					"word Text NOT NULL," +
 					"language Text NOT NULL," +
 					"frequency INTEGER, primary key (word,language) )");

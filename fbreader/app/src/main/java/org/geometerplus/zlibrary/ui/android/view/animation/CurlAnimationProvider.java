@@ -224,12 +224,16 @@ public final class CurlAnimationProvider extends AnimationProvider {
 		switch (myDirection) {
 			case leftToRight:
 				index = myStartX < myWidth / 2 ? ZLViewEnums.PageIndex.next : ZLViewEnums.PageIndex.previous;
+				break;
 			case rightToLeft:
 				index = myStartX < myWidth / 2 ? ZLViewEnums.PageIndex.previous : ZLViewEnums.PageIndex.next;
+				break;
 			case up:
 				index = myStartY < myHeight / 2 ? ZLViewEnums.PageIndex.previous : ZLViewEnums.PageIndex.next;
+				break;
 			case down:
 				index = myStartY < myHeight / 2 ? ZLViewEnums.PageIndex.next : ZLViewEnums.PageIndex.previous;
+				break;
 		}
 		if(isGuji) {
 			if(index == ZLViewEnums.PageIndex.next) return ZLViewEnums.PageIndex.previous;

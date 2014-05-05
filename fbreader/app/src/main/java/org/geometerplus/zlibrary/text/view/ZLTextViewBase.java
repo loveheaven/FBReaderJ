@@ -123,21 +123,22 @@ abstract class ZLTextViewBase extends ZLView {
 	int getFontSize() {
 		return (int)myTextStyle.getFontSize(metrics());
 	}
+	
 	int getTextAreaHeight() {
-		return getContextHeight() - getTopMargin() - getBottomMargin()-2*getGujiBankuangWidth();
+		return getContextHeight() - getTopMargin() - getBottomMargin() - 2*getGujiBankuangWidth() - getGujiBanxinWidth();
 	}
 
 	protected int getColumnIndex(int x) {
 		if (!twoColumnView()) {
 			return -1;
 		}
-		return 2 * x <= getContextWidth() + getLeftMargin() - getRightMargin() ? 0 : 1;
+		return 2 * x <= (getContextWidth() + getLeftMargin() - getRightMargin() - 2*getGujiBankuangWidth())? 0 : 1;
 	}
 
 	public int getTextColumnWidth() {
 		return twoColumnView()
-			? (getContextWidth() - getLeftMargin() - getSpaceBetweenColumns() - getRightMargin()) / 2
-			: getContextWidth() - getLeftMargin() - getRightMargin();
+			? (getTextAreaWidth() - getSpaceBetweenColumns()) / 2
+			: getTextAreaWidth();
 	}
 
 	int getTextAreaWidth() {
@@ -173,7 +174,7 @@ abstract class ZLTextViewBase extends ZLView {
 	int getGujiBankuangWidth() {
 		return isGuji()? myGujiBankuangWidth : 0;
 	}
-
+	
 	final ZLTextStyle getTextStyle() {
 		if (myTextStyle == null) {
 			resetTextStyle();

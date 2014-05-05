@@ -147,7 +147,7 @@ public final class FBView extends ZLTextView {
 				if(isGuji()) {//rotate 90 degree
 					int tmp = x;
 					x=y;
-					y=this.getContext().getHeight()-tmp;
+					y=this.getContext().getWidth()-tmp;
 				}
 				final ZLTextRegion region = findRegion(x, y, maxSelectionDistance(), ZLTextRegion.AnyRegionFilter);
 				if (region != null) {
@@ -180,7 +180,7 @@ public final class FBView extends ZLTextView {
 		int realY = y;
 		if(isGuji()) {//rotate 90 degree
 			realX=y;
-			realY=this.getContext().getHeight()-x;
+			realY=this.getContext().getWidth()-x;
 		}
 		final float maxDist = ZLibrary.Instance().getDisplayDPI() / 4;
 		final SelectionCursor.Which cursor = findSelectionCursor(realX, realY, maxDist * maxDist);
@@ -225,7 +225,7 @@ public final class FBView extends ZLTextView {
 		int realY = y;
 		if(isGuji()) {//rotate 90 degree
 			realX=y;
-			realY=this.getContext().getHeight()-x;
+			realY=this.getContext().getWidth()-x;
 		}
 		final SelectionCursor.Which cursor = getSelectionCursorInMovement();
 		if (cursor != null) {
@@ -272,7 +272,7 @@ public final class FBView extends ZLTextView {
 		if(isGuji()) {
 			int tmp = x;
 			x=y;
-			y=this.getContext().getHeight()-tmp;
+			y=this.getContext().getWidth()-tmp;
 		}
 		final ZLTextRegion region = findRegion(x, y, maxSelectionDistance(), ZLTextRegion.AnyRegionFilter);
 		if (region != null) {
@@ -316,7 +316,7 @@ public final class FBView extends ZLTextView {
 		if(isGuji()) {//rotate 90 degree
 			int tmp = x;
 			x=y;
-			y=this.getContext().getHeight()-tmp;
+			y=this.getContext().getWidth()-tmp;
 		}
 		final SelectionCursor.Which cursor = getSelectionCursorInMovement();
 		if (cursor != null) {

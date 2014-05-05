@@ -452,11 +452,23 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		}
 		return ChineseNum;
 	}
+	int debugX = -1;
+	int debugY = -1;
+	public void setDebugXY(int x, int y) {
+		debugX = x;
+		debugY = y;
+	}
+	void drawRectangle(ZLPaintContext context) {
+		if(debugX == -1 || debugY == -1) return;
+		context.setLineWidth(4);
+		context.setLineColor(new ZLColor(0,0,0));
+		context.drawRectangle(debugX, debugY, debugX + 50, debugY+ 50);
+	}
 
 	public void drawGujiLayout(ZLPaintContext context) {
-		int gujiBanxinYStart = (getTextAreaHeight() - this.getGujiBanxinWidth())/2+getTopMargin()+getGujiBankuangWidth();
+		int gujiBanxinYStart = getTextAreaHeight()/2+getTopMargin()+getGujiBankuangWidth();
 		int gujiBanxinYEnd = gujiBanxinYStart + this.getGujiBanxinWidth();
-		int gujiLineNum = getGujiLineNum();
+		int gujiLineNum = getGujiHalfLineNum();
 		int gujiLineHeight = getGujiLineHeight();
 		
 		boolean isDrawBanxin = true;
@@ -642,8 +654,8 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		if (page.StartCursor.isNull() || page.EndCursor.isNull()) {
 			return;
 		}
-		
-		int gujiBanxinYStart = (getTextAreaHeight() - this.getGujiBanxinWidth())/2+getTopMargin()+getGujiBankuangWidth();
+		drawRectangle(context);
+		int gujiBanxinYStart = getTextAreaHeight() /2+getTopMargin()+getGujiBankuangWidth();
 		int gujiBanxinYEnd = gujiBanxinYStart + this.getGujiBanxinWidth();
 		int gujiLineHeight = getGujiLineHeight();
 		if(this.isGuji()) {
@@ -656,8 +668,8 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		
 		final ArrayList<ZLTextLineInfo> lineInfos = page.LineInfos;
 		final int[] labels = new int[lineInfos.size() + 1];
-		int x = getLeftMargin();
-		int y = getTopMargin()+ getGujiBankuangWidth();
+		int x = getLeftMargin() + getGujiBankuangWidth();
+		int y = getTopMargin() + getGujiBankuangWidth();
 		int index = 0;
 		int columnIndex = 0;
 		ZLTextLineInfo previousInfo = null;
@@ -673,7 +685,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 				}
 				labels[++index] = page.TextElementMap.size();
 				if (index == page.Column0Height) {
-					y = getTopMargin();
+					y = getTopMargin() + getGujiBankuangWidth();
 					x += page.getTextWidth() + getSpaceBetweenColumns();
 					columnIndex = 1;
 				}
@@ -683,7 +695,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 
 		final List<ZLTextHighlighting> hilites = findHilites(page);
 
-		x = getLeftMargin();
+		x = getLeftMargin() + getGujiBankuangWidth();
 		y = getTopMargin()+getGujiBankuangWidth();
 		if(page.StartCursor.getParagraphIndex() == 0 && isGuji()) {
 			
@@ -698,7 +710,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 				}
 				++index;
 				if (index == page.Column0Height) {
-					y = getTopMargin();
+					y = getTopMargin() + getGujiBankuangWidth();
 					x += page.getTextWidth() + getSpaceBetweenColumns();
 				}
 			}
@@ -754,6 +766,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 
 	@Override
 	public final boolean isScrollbarShown() {
+		if(isGuji()) return false;
 		return scrollbarType() == SCROLLBAR_SHOW || scrollbarType() == SCROLLBAR_SHOW_AS_PROGRESS;
 	}
 
@@ -1144,16 +1157,14 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		return null;
 	}
 	
-	int getGujiLineNum() {
-		int gujiLeftBanWidth = (getTextAreaHeight() - getGujiBanxinWidth())/2;
-		
+	int getGujiHalfLineNum() {
+		int gujiLeftBanWidth = getTextAreaHeight()/2;		
 		return (gujiLeftBanWidth)/getGujiBanxinWidth();
 	}
 	
 	int getGujiLineHeight() {
 		if(!isGuji()) return 0;
-		int gujiLeftBanWidth = (getTextAreaHeight() - getGujiBanxinWidth())/2;
-		
+		int gujiLeftBanWidth = getTextAreaHeight()/2;		
 		int gujiLineNum = (gujiLeftBanWidth)/getGujiBanxinWidth();
 		return gujiLineNum == 0?gujiLeftBanWidth:(gujiLeftBanWidth)/gujiLineNum;
 	}
@@ -1161,7 +1172,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 	private void buildInfos(ZLTextPage page, ZLTextWordCursor start, ZLTextWordCursor result) {
 		result.setCursor(start);
 		resetTextStyle();
-		int textAreaHeight = getTextAreaHeight() - getGujiBanxinWidth();//page.getTextHeight();
+		int textAreaHeight = page.getTextHeight();
 		int gujiLineHeight = getGujiLineHeight();
 		
 		page.LineInfos.clear();
@@ -1652,8 +1663,8 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		boolean wordOccurred = false;
 		boolean changeStyle = true;
 		
-		x += getLeftMargin() + info.LeftIndent+getGujiBankuangWidth();
-		final int maxWidth = getTextAreaWidth();//page.getTextWidth();
+		x += info.LeftIndent;
+		final int maxWidth = page.getTextWidth();
 		switch (getTextStyle().getAlignment()) {
 			case ZLTextAlignmentType.ALIGN_RIGHT:
 				x += maxWidth - getTextStyle().getRightIndent(metrics()) - info.Width;
