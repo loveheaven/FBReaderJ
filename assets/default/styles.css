@@ -35,6 +35,7 @@ section {
 	margin-bottom: 0.4em;
 	text-align: center;
 	hyphens: none;
+	text-indent:0pt;
 }
 
 subtitle {
@@ -228,6 +229,7 @@ code {
 	fbreader-id: 21;
 	fbreader-name: "Code";
 	font-family: Monospace;
+	font-size: 0.8em;
 	hyphens: none;
 }
 

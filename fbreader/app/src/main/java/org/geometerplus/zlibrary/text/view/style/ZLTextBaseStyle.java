@@ -25,9 +25,9 @@ import java.util.List;
 import org.geometerplus.zlibrary.core.fonts.FontEntry;
 import org.geometerplus.zlibrary.core.library.ZLibrary;
 import org.geometerplus.zlibrary.core.options.*;
-
 import org.geometerplus.zlibrary.text.model.ZLTextAlignmentType;
 import org.geometerplus.zlibrary.text.model.ZLTextMetrics;
+import org.geometerplus.zlibrary.text.model.ZLTextStyleEntry;
 import org.geometerplus.zlibrary.text.view.ZLTextStyle;
 import org.geometerplus.zlibrary.text.view.ZLTextHyperlink;
 
@@ -56,6 +56,12 @@ public class ZLTextBaseStyle extends ZLTextStyle {
 
 	public final ZLStringOption FontFamilyOption;
 	public final ZLIntegerRangeOption FontSizeOption;
+	
+	public final ZLStringOption MarginTopOption;
+	public final ZLStringOption MarginBottomOption;
+	public final ZLStringOption MarginLeftOption;
+	public final ZLStringOption MarginRightOption;
+	public final ZLStringOption TextIndentOption;
 
 	public ZLTextBaseStyle(String prefix, String fontFamily, int fontSize) {
 		super(null, ZLTextHyperlink.NO_LINK);
@@ -68,6 +74,12 @@ public class ZLTextBaseStyle extends ZLTextStyle {
 		StrikeThroughOption = new ZLBooleanOption(GROUP, prefix + ":strikeThrough", false);
 		AlignmentOption = new ZLIntegerRangeOption(GROUP, prefix + ":alignment", 1, 4, ZLTextAlignmentType.ALIGN_JUSTIFY);
 		LineSpaceOption = new ZLIntegerRangeOption(GROUP, prefix + ":lineSpacing", 5, 20, 12);
+		
+		MarginTopOption = new ZLStringOption(GROUP, prefix + ":margin-top", "1em");
+		MarginBottomOption = new ZLStringOption(GROUP, prefix + ":margin-bottom", "0em");
+		MarginLeftOption = new ZLStringOption(GROUP, prefix + ":margin-left", "");
+		MarginRightOption = new ZLStringOption(GROUP, prefix + ":margin-right", "");
+		TextIndentOption = new ZLStringOption(GROUP, prefix + ":text-indent", "20pt");
 	}
 
 	private String myFontFamily;
@@ -112,12 +124,24 @@ public class ZLTextBaseStyle extends ZLTextStyle {
 
 	@Override
 	public int getLeftMargin(ZLTextMetrics metrics) {
-		return 0;
+		final ZLTextStyleEntry.Length length = ZLTextNGStyleDescription.parseLength(MarginLeftOption.getValue());
+		if (length == null) {
+			return 0;
+		}
+		return 0 + ZLTextStyleEntry.compute(
+			length, metrics, getFontSize(), ZLTextStyleEntry.Feature.LENGTH_MARGIN_LEFT
+		);
 	}
 
 	@Override
 	public int getRightMargin(ZLTextMetrics metrics) {
-		return 0;
+		final ZLTextStyleEntry.Length length = ZLTextNGStyleDescription.parseLength(MarginRightOption.getValue());
+		if (length == null) {
+			return 0;
+		}
+		return 0 + ZLTextStyleEntry.compute(
+			length, metrics, getFontSize(), ZLTextStyleEntry.Feature.LENGTH_MARGIN_RIGHT
+		);
 	}
 
 	@Override
@@ -132,7 +156,13 @@ public class ZLTextBaseStyle extends ZLTextStyle {
 
 	@Override
 	public int getFirstLineIndent(ZLTextMetrics metrics) {
-		return 0;
+		final ZLTextStyleEntry.Length length = ZLTextNGStyleDescription.parseLength(TextIndentOption.getValue());
+		if (length == null) {
+			return 60;
+		}
+		return ZLTextStyleEntry.compute(
+			length, metrics, getFontSize(), ZLTextStyleEntry.Feature.LENGTH_FIRST_LINE_INDENT
+		);
 	}
 
 	@Override
@@ -152,12 +182,24 @@ public class ZLTextBaseStyle extends ZLTextStyle {
 
 	@Override
 	public int getSpaceBefore(ZLTextMetrics metrics) {
-		return 0;
+		final ZLTextStyleEntry.Length length = ZLTextNGStyleDescription.parseLength(MarginTopOption.getValue());
+		if (length == null) {
+			return 100;
+		}
+		return ZLTextStyleEntry.compute(
+			length, metrics, getFontSize(), ZLTextStyleEntry.Feature.LENGTH_SPACE_BEFORE
+		);
 	}
 
 	@Override
 	public int getSpaceAfter(ZLTextMetrics metrics) {
-		return 0;
+		final ZLTextStyleEntry.Length length = ZLTextNGStyleDescription.parseLength(MarginBottomOption.getValue());
+		if (length == null) {
+			return 100;
+		}
+		return ZLTextStyleEntry.compute(
+			length, metrics, getFontSize(), ZLTextStyleEntry.Feature.LENGTH_SPACE_AFTER
+		);
 	}
 
 	@Override

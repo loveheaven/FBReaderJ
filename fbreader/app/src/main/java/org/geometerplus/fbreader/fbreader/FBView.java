@@ -86,6 +86,8 @@ public final class FBView extends ZLTextView {
 
 	@Override
 	public void onFingerSingleTap(int x, int y) {
+		myReader.hideActivePopup();
+
 		final ZLTextRegion hyperlinkRegion = findRegion(x, y, maxSelectionDistance(), ZLTextRegion.HyperlinkFilter);
 		if (hyperlinkRegion != null) {
 			outlineRegion(hyperlinkRegion);
@@ -136,6 +138,7 @@ public final class FBView extends ZLTextView {
 	@Override
 	public void onFingerDoubleTap(int x, int y) {
 		myReader.runAction(ActionCode.HIDE_TOAST);
+		myReader.hideActivePopup();
 
 		switch (myReader.MiscOptions.EnableDoubleTap.getValue()) {
 			case showMenu:
@@ -771,6 +774,13 @@ public final class FBView extends ZLTextView {
 
 	@Override
 	public Footer getFooterArea() {
+		if(isGuji()) {
+			if (myFooter != null) {
+				myReader.removeTimerTask(myFooter.UpdateTask);
+				myFooter = null;
+			}
+			return null;
+		}
 		switch (myViewOptions.ScrollbarType.getValue()) {
 			case SCROLLBAR_SHOW_AS_FOOTER:
 				if (!(myFooter instanceof FooterNewStyle)) {

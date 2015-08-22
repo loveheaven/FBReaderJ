@@ -286,6 +286,7 @@ public final class FBReader extends FBReaderMainActivity implements ZLApplicatio
 		myFBReaderApp.addAction(ActionCode.SHOW_CANCEL_MENU, new ShowCancelMenuAction(this, myFBReaderApp));
 		myFBReaderApp.addAction(ActionCode.OPEN_START_SCREEN, new StartScreenAction(this, myFBReaderApp));
 
+		myFBReaderApp.addAction(ActionCode.SET_SCREEN_ORIENTATION, new SetScreenOrientationAction(this, myFBReaderApp, null));
 		myFBReaderApp.addAction(ActionCode.SET_SCREEN_ORIENTATION_SYSTEM, new SetScreenOrientationAction(this, myFBReaderApp, ZLibrary.SCREEN_ORIENTATION_SYSTEM));
 		myFBReaderApp.addAction(ActionCode.SET_SCREEN_ORIENTATION_SENSOR, new SetScreenOrientationAction(this, myFBReaderApp, ZLibrary.SCREEN_ORIENTATION_SENSOR));
 		myFBReaderApp.addAction(ActionCode.SET_SCREEN_ORIENTATION_PORTRAIT, new SetScreenOrientationAction(this, myFBReaderApp, ZLibrary.SCREEN_ORIENTATION_PORTRAIT));
@@ -322,8 +323,9 @@ public final class FBReader extends FBReaderMainActivity implements ZLApplicatio
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		setStatusBarVisibility(true);
+		//setStatusBarVisibility(true);
 		setupMenu(menu);
+		this.navigate();
 
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -337,6 +339,7 @@ public final class FBReader extends FBReaderMainActivity implements ZLApplicatio
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		setStatusBarVisibility(false);
+		
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -789,7 +792,7 @@ public final class FBReader extends FBReaderMainActivity implements ZLApplicatio
 		myMenuLanguage = menuLanguage;
 
 		menu.clear();
-		addMenuItem(menu, ActionCode.SHOW_SHELF, R.drawable.ic_menu_library);
+//		addMenuItem(menu, ActionCode.SHOW_SHELF, R.drawable.ic_menu_library);
 		fillMenu(menu, MenuData.topLevelNodes());
 		synchronized (myPluginActions) {
 			int index = 0;

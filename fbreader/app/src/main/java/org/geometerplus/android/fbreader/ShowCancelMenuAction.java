@@ -31,6 +31,10 @@ class ShowCancelMenuAction extends FBAndroidAction {
 	@Override
 	protected void run(Object ... params) {
 		if (!Reader.jumpBack()) {
+			if(Reader.getActivePopup() != null) {
+				Reader.hideActivePopup();
+				return;
+			}
 			if (Reader.hasCancelActions()) {
 				BaseActivity.startActivityForResult(
 					FBReaderIntents.defaultInternalIntent(FBReaderIntents.Action.CANCEL_MENU),

@@ -48,6 +48,7 @@
 				android:src="@drawable/popup_share"
 				android:layout_marginLeft="8dp"
 				android:layout_marginRight="8dp"
+				android:visibility="gone"
 			/>
 			<ImageView
 				android:id="@+id/selection_panel_copy"
@@ -61,25 +62,28 @@
 				android:id="@+id/selection_panel_addknown"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:src="@drawable/popup_copy"
+				android:src="@drawable/popup_addtoknown"
 				android:layout_marginLeft="8dp"
 				android:layout_marginRight="8dp"
+				android:visibility="gone"
 			/>
 			<ImageView
 				android:id="@+id/selection_panel_addunknown"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:src="@drawable/popup_copy"
+				android:src="@drawable/popup_addtounknown"
 				android:layout_marginLeft="8dp"
 				android:layout_marginRight="8dp"
+				android:visibility="gone"
 			/>
 			<ImageView
 				android:id="@+id/selection_panel_modifyguji"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:src="@drawable/popup_copy"
+				android:src="@drawable/popup_modifyguji"
 				android:layout_marginLeft="8dp"
 				android:layout_marginRight="8dp"
+				android:visibility="gone"
 			/>
 			<ImageView
 				android:id="@+id/selection_panel_close"

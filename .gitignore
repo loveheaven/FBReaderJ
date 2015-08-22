@@ -8,8 +8,10 @@ obj/
 epubs/
 mappings/
 READY/
+.project
 .classpath
 .settings
+.DS_Store
 *.so
 *svn*
 *~

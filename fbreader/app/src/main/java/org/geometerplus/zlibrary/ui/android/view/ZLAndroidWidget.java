@@ -252,7 +252,7 @@ public class ZLAndroidWidget extends MainView implements ZLViewWidget, View.OnLo
 				0,
 				0
 			),
-			view.isScrollbarShown() ? getVerticalScrollbarWidth() : 0
+			view.isScrollbarShown() ? getVerticalScrollbarWidth() : 0, isGuji
 		);
 		view.paint(context, index);
 	}
@@ -285,7 +285,7 @@ public class ZLAndroidWidget extends MainView implements ZLViewWidget, View.OnLo
 				0,
 				getMainAreaHeight()
 			),
-			view.isScrollbarShown() ? getVerticalScrollbarWidth() : 0
+			view.isScrollbarShown() ? getVerticalScrollbarWidth() : 0, false
 		);
 		footer.paint(context);
 		final int voffset = getHeight() - footer.getHeight();
@@ -315,7 +315,7 @@ public class ZLAndroidWidget extends MainView implements ZLViewWidget, View.OnLo
 								0,
 								0
 							),
-							view.isScrollbarShown() ? getVerticalScrollbarWidth() : 0
+							view.isScrollbarShown() ? getVerticalScrollbarWidth() : 0, false
 						);
 						view.preparePage(context, ZLView.PageIndex.next);
 					}

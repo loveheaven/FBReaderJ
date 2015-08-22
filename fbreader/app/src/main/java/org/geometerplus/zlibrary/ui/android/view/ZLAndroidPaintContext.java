@@ -22,7 +22,9 @@ package org.geometerplus.zlibrary.ui.android.view;
 import java.util.List;
 
 import android.graphics.*;
+import android.text.TextUtils;
 
+import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.fonts.FontEntry;
 import org.geometerplus.zlibrary.core.image.ZLImageData;
@@ -30,7 +32,8 @@ import org.geometerplus.zlibrary.core.options.ZLBooleanOption;
 import org.geometerplus.zlibrary.core.util.ZLColor;
 import org.geometerplus.zlibrary.core.util.SystemInfo;
 import org.geometerplus.zlibrary.core.view.ZLPaintContext;
-
+import org.geometerplus.zlibrary.core.view.ZLView;
+import org.geometerplus.zlibrary.text.view.ZLTextView;
 import org.geometerplus.zlibrary.ui.android.image.ZLAndroidImageData;
 import org.geometerplus.zlibrary.ui.android.util.ZLAndroidColorUtil;
 
@@ -64,10 +67,12 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 	private final int myScrollbarWidth;
 
 	private ZLColor myBackgroundColor = new ZLColor(0, 0, 0);
+	private boolean mIsGuji = false;
 
-	public ZLAndroidPaintContext(SystemInfo systemInfo, Canvas canvas, Geometry geometry, int scrollbarWidth) {
+	public ZLAndroidPaintContext(SystemInfo systemInfo, Canvas canvas, Geometry geometry, int scrollbarWidth, boolean isGuji) {
 		super(systemInfo);
 
+		mIsGuji = isGuji;
 		myCanvas = canvas;
 		myGeometry = geometry;
 		myScrollbarWidth = scrollbarWidth;
@@ -346,6 +351,12 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 				myTextPaint.setTypeface(previosType);
 				i++;
 				start = i+1;
+			} else if(Character.isDigit(string[i]) && mIsGuji) {
+				if(i != start) {
+					stringWidth += myTextPaint.measureText(new String(string, start, i-start));
+				}
+				stringWidth += getStringHeight();
+				start = i + 1;
 			}
 		}
 		if(start < offset+length) {
@@ -353,6 +364,7 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 		}
 		return (int)(stringWidth + 0.5f);
 	}
+	
 	@Override
 	public int getStringWidth(char[] string, int offset, int length) {
 		boolean containsSoftHyphen = false;
@@ -411,6 +423,7 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 		}
 		return false;
 	}
+	
 	public void drawText(int x, int y, char[] string, int offset, int length) {
 		int stringWidth = 0;
 		for(int i = offset; i < offset + length; i++) {
@@ -420,6 +433,13 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 			} else if(isCharShouldHorizontal(string[i])) {
 				myCanvas.drawText(string, i, 1, x+stringWidth, y - this.getDescent(), myTextPaint);
 				stringWidth += getStringWidth(string, i, 1);
+			} else if(Character.isDigit(string[i])) {
+				myCanvas.translate(x+stringWidth, y);				
+				myCanvas.rotate(-90);
+				myCanvas.drawText(string, i, 1, 0, this.getStringHeight()-this.getDescent() + 1, myTextPaint);
+				myCanvas.rotate(90);
+				myCanvas.translate(-1*(x+stringWidth), -y);
+				stringWidth += getStringHeight();
 			} else {
 				myCanvas.translate(x+stringWidth, y);				
 				myCanvas.rotate(-90);
@@ -544,7 +564,7 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 		myCanvas.translate(x, y);
 		myCanvas.rotate(-90);
 		Typeface previosType = myTextPaint.getTypeface();
-		myTextPaint.setTypeface(AndroidFontUtil.systemTypeface("TW Kai Ext-B", previosType.isBold(), previosType.isItalic()));
+		myTextPaint.setTypeface(AndroidFontUtil.systemTypeface("TW-Kai-Ext-B", previosType.isBold(), previosType.isItalic()));
 		myCanvas.drawText(newGlyph, 0, this.getStringHeight()-this.getDescent() + 1, myTextPaint);
 		myCanvas.rotate(90);
 		myCanvas.translate(-x, -y);

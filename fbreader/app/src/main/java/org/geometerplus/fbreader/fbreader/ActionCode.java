@@ -27,6 +27,7 @@ public interface ActionCode {
 	String SHOW_TOC = "toc";
 	String SHOW_BOOKMARKS = "bookmarks";
 	String SAVE_GUJI = "saveguji";
+	String SHOW_MORE = "moremenu";
 	String SHOW_NETWORK_LIBRARY = "networkLibrary";
 
 	String SWITCH_TO_NIGHT_PROFILE = "night";
@@ -59,6 +60,7 @@ public interface ActionCode {
 	String EXIT = "exit";
 	String SHOW_CANCEL_MENU = "cancelMenu";
 
+	String SET_SCREEN_ORIENTATION = "screenOrientation";
 	String SET_SCREEN_ORIENTATION_SYSTEM = "screenOrientationSystem";
 	String SET_SCREEN_ORIENTATION_SENSOR = "screenOrientationSensor";
 	String SET_SCREEN_ORIENTATION_PORTRAIT = "screenOrientationPortrait";

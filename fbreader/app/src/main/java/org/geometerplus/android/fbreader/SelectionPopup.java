@@ -51,11 +51,13 @@ class SelectionPopup extends PopupPanel implements View.OnClickListener {
 
 		final ZLResource resource = ZLResource.resource("selectionPopup");
 		setupButton(R.id.selection_panel_copy, resource.getResource("copyToClipboard").getValue());
-		setupButton(R.id.selection_panel_share, resource.getResource("share").getValue());
+		//setupButton(R.id.selection_panel_share, resource.getResource("share").getValue());
 		setupButton(R.id.selection_panel_translate, resource.getResource("translate").getValue());
 		setupButton(R.id.selection_panel_bookmark, resource.getResource("bookmark").getValue());
-		setupButton(R.id.selection_panel_addknown, resource.getResource("addKnownWord").getValue());
-		setupButton(R.id.selection_panel_addunknown, resource.getResource("addUnknownWord").getValue());
+		if(myReader.Model.Book.isShouldLearnWord()) {
+			setupButton(R.id.selection_panel_addknown, resource.getResource("addKnownWord").getValue());
+			setupButton(R.id.selection_panel_addunknown, resource.getResource("addUnknownWord").getValue());
+		}
 		if(myReader.Model.Book.isGuji()) {
 			setupButton(R.id.selection_panel_modifyguji, resource.getResource("modifyGuji").getValue());
 		}
@@ -64,6 +66,7 @@ class SelectionPopup extends PopupPanel implements View.OnClickListener {
 
 	private void setupButton(int buttonId, String description) {
 		final View button = myWindow.findViewById(buttonId);
+		button.setVisibility(View.VISIBLE);
 		button.setOnClickListener(this);
 		button.setContentDescription(description);
 	}
@@ -115,6 +118,15 @@ class SelectionPopup extends PopupPanel implements View.OnClickListener {
 				break;
 			case R.id.selection_panel_close:
 				Application.runAction(ActionCode.SELECTION_CLEAR);
+				break;
+			case R.id.selection_panel_addknown:
+				Application.runAction(ActionCode.SELECTION_ADDTOKNOWN);
+				break;
+			case R.id.selection_panel_addunknown:
+				Application.runAction(ActionCode.SELECTION_ADDTOUNKNOWN);
+				break;
+			case R.id.selection_panel_modifyguji:
+				Application.runAction(ActionCode.SELECTION_MODIFYGUJI);
 				break;
 		}
 		Application.hideActivePopup();

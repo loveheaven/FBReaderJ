@@ -51,6 +51,12 @@ public final class Book extends AbstractBook {
 		return myPath.equals(((Book)o).myPath);
 	}
 	
+	public boolean isShouldLearnWord() {
+		return getLanguage() != null && (
+				getLanguage().toLowerCase().startsWith("en") ||
+				getLanguage().toLowerCase().startsWith("fr") || getLanguage().toLowerCase().startsWith("it"));
+	}
+	
 	public boolean isGuji() {
 		return "guji".equalsIgnoreCase(getExtention());
 	}

@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:paddingBottom="0.0px"
-        android:paddingLeft="0.0px"
+        android:paddingLeft="20.0px"
         android:paddingRight="0.0px"
         android:paddingTop="0.0px" >
 
@@ -21,9 +21,17 @@
             android:id="@+id/leftButton"
             android:layout_width="68.0dip"
             android:layout_height="48.0dip"
-            android:background="@drawable/nav_back_0"
+            android:background="@drawable/nav_button"
             android:text="bbb" 
-            android:visibility="invisible"/>
+            android:visibility="gone"/>
+        <ImageButton
+            
+            android:id="@+id/goLocal"
+            android:layout_width="48.0dip"
+            android:layout_height="48.0dip"
+            android:background="@drawable/open_local"
+            
+            ></ImageButton>
     </LinearLayout>
 
     <LinearLayout
@@ -62,16 +70,17 @@
             android:id="@+id/rightButton"
             android:layout_width="68.0dip"
             android:layout_height="48.0dip"
-            android:background="@drawable/nav_button_0"
+            android:background="@drawable/nav_button"
+            android:visibility="gone"
             android:text="@string/my_book_shelf" />
         
         <ImageButton
             
             android:id="@+id/goNetStore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/go_net_store"
-            android:visibility="gone"
+            android:layout_width="48.0dip"
+            android:layout_height="48.0dip"
+            android:background="@drawable/open_library"
+            
             ></ImageButton>
         
     </LinearLayout>

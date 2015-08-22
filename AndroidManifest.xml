@@ -185,6 +185,7 @@
 			</intent-filter>
 		</activity>
 		<activity android:name="org.geometerplus.android.fbreader.PluginListActivity" android:theme="@style/FBReader.Dialog" android:configChanges="orientation|keyboardHidden|screenSize"/>
+		<activity android:name="org.geometerplus.android.fbreader.OrientationActivity" android:theme="@style/FBReader.Dialog" android:configChanges="orientation|keyboardHidden|screenSize"/>
 
 		<activity android:name="org.geometerplus.android.fbreader.bookmark.BookmarksActivity" android:launchMode="singleTask" android:process=":bookmarks" android:theme="@style/FBReader.Activity.NoActionBar" android:configChanges="orientation|keyboardHidden|screenSize">
 			<intent-filter>

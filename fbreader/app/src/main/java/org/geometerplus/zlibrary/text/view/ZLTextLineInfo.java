@@ -40,6 +40,7 @@ final class ZLTextLineInfo {
 	boolean PreviousInfoUsed;
 	int SpaceCounter;
 	ZLTextStyle StartStyle;
+	boolean isFirstParagraphOfSection;
 
 	ZLTextLineInfo(ZLTextParagraphCursor paragraphCursor, int elementIndex, int charIndex, ZLTextStyle style) {
 		ParagraphCursor = paragraphCursor;
@@ -53,6 +54,7 @@ final class ZLTextLineInfo {
 		EndCharIndex = charIndex;
 
 		StartStyle = style;
+		isFirstParagraphOfSection = false;
 	}
 
 	boolean isEndOfParagraph() {

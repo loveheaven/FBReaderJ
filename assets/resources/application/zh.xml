@@ -306,7 +306,7 @@
 		<node name="bookInfo" value="书籍信息"/>
 		<node name="openLocal" value="打开本地"/>
 		<node name="library" value="本地书柜"/>
-		<node name="toc" value="本书目录"/>
+		<node name="toc" value="目录"/>
 		<node name="saveguji" value="保存修改"/>
 		<node name="day" value="白底黑字"/>
 		<node name="night" value="黑底白字"/>
@@ -324,8 +324,8 @@
 			<node name="undo" value="还原"/>
 			<node name="redo" value="重做"/>
 		</node>
-		<node name="shareBook" value="共享书籍"/>
-		<node name="search" value="内容查找"/>
+		<node name="shareBook" value="共享"/>
+		<node name="search" value="搜索"/>
 		<node name="rotate" value="翻转屏幕"/>
 		<node name="screenOrientation" value="屏幕方向"/>
 		<node name="screenOrientationSystem" value="系统"/>
@@ -338,10 +338,11 @@
 		<node name="decreaseFont" value="字体缩小"/>
 		<node name="changeFontSize" value="缩放"/>
 		<node name="toggleFullscreen" value="全屏"/>
-		<node name="bookmarks" value="我的书签"/>
+		<node name="bookmarks" value="书签"/>
 		<node name="help" value="帮助"/>
 		<node name="plugins" value="安装插件"/>
 		<node name="gotoPageNumber" value="翻到页码"/>
+		<node name="moremenu" value="更多"/>
 	</node>
 	<node name="BookInfo">
 		<node name="fileName" value="文件"/>

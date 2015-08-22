@@ -51,6 +51,7 @@ private:
 	bool myInsideContentsParagraph;
 	bool myLastLineIsEmpty;
 	bool myNewLine;
+	bool myHasAddedTitle;
 	int mySpaceCounter;
 };
 

@@ -223,7 +223,7 @@ public class ZLTextNGStyleDescription {
 
 	private static final Map<String,Object> ourCache = new HashMap<String,Object>();
 	private static final Object ourNullObject = new Object();
-	private static ZLTextStyleEntry.Length parseLength(String value) {
+	public static ZLTextStyleEntry.Length parseLength(String value) {
 		if (value.length() == 0) {
 			return null;
 		}

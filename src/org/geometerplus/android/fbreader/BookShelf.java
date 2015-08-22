@@ -77,7 +77,7 @@ public class BookShelf extends Activity implements OnClickListener {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		
-		setContentView(R.layout.screen_shelves);
+		setContentView(R.layout.shelf_activity);
 		init();
 		
 	}
@@ -95,6 +95,7 @@ public class BookShelf extends Activity implements OnClickListener {
 		rightButton.setVisibility(View.GONE);
 		titleTextView.setText(R.string.reader);
 		goNetStoreButton.setOnClickListener(this);
+		findViewById(R.id.goLocal).setOnClickListener(this);
 		
 		mCollection.bindToService(this, null);
 		mShelevesView = (ShelvesView) findViewById(R.id.grid_shelves);
@@ -212,24 +213,13 @@ public class BookShelf extends Activity implements OnClickListener {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		String name = ZLResource.resource("menu")
-				.getResource(ActionCode.SHOW_LIBRARY).getValue();
-		menu.add(0, R.drawable.ic_menu_library, 0, name).setIcon(
-				R.drawable.ic_menu_library);
-		menu.add(
-				0,
-				R.drawable.ic_menu_networklibrary,
-				0,
-				ZLResource.resource("menu")
-						.getResource(ActionCode.SHOW_NETWORK_LIBRARY)
-						.getValue()).setIcon(R.drawable.ic_menu_networklibrary);
 		menu.add(
 				0,
 				R.drawable.cover_ebk,
 				0,
 				ZLResource.resource("menu")
 						.getResource(ActionCode.SHOW_PREFERENCES).getValue())
-				.setIcon(R.drawable.ic_menu_day);
+				.setIcon(R.drawable.popup_settings);
 		
 		return true;
 	}
@@ -238,14 +228,6 @@ public class BookShelf extends Activity implements OnClickListener {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent = null;
 		switch (item.getItemId()) {
-		case R.drawable.ic_menu_library:
-			intent = new Intent(getApplicationContext(), LibraryActivity.class);
-			startActivity(intent);
-			break;
-		case R.drawable.ic_menu_networklibrary:
-			intent = new Intent(getApplicationContext(), NetworkLibraryPrimaryActivity.class);
-			startActivity(intent);
-			break;
 		case R.drawable.cover_ebk:
 			intent = new Intent(getApplicationContext(), PreferenceActivity.class);
 			OrientationUtil.startActivityForResult(this, intent, FBReader.REQUEST_PREFERENCES);
@@ -301,14 +283,14 @@ public class BookShelf extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.goNetStore:
 			// Read
 			startActivity(new Intent(getApplicationContext(),
-					NetworkLibraryActivity.class));
+					NetworkLibraryPrimaryActivity.class));
 			break;
-
+		case R.id.goLocal:
+			startActivity(new Intent(getApplicationContext(), LibraryActivity.class));
 		default:
 			break;
 		}

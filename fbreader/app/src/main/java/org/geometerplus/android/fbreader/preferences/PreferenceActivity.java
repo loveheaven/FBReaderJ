@@ -351,6 +351,31 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 			final int val = spaceOption.MinValue + i;
 			spacings[i] = (char)(val / 10 + '0') + decimalSeparator + (char)(val % 10 + '0');
 		}
+		textScreen.addPreference(new StringPreference(
+				this, baseStyle.MarginTopOption,
+				StringPreference.Constraint.LENGTH,
+				textScreen.Resource, "spaceBefore"
+			));
+		textScreen.addPreference(new StringPreference(
+				this, baseStyle.MarginBottomOption,
+				StringPreference.Constraint.LENGTH,
+				textScreen.Resource, "spaceAfter"
+			));
+		textScreen.addPreference(new StringPreference(
+				this, baseStyle.MarginLeftOption,
+				StringPreference.Constraint.LENGTH,
+				textScreen.Resource, "leftIndent"
+			));
+		textScreen.addPreference(new StringPreference(
+				this, baseStyle.MarginRightOption,
+				StringPreference.Constraint.LENGTH,
+				textScreen.Resource, "rightIndent"
+			));
+		textScreen.addPreference(new StringPreference(
+				this, baseStyle.TextIndentOption,
+				StringPreference.Constraint.LENGTH,
+				textScreen.Resource, "firstLineIndent"
+			));
 		textScreen.addPreference(new ZLChoicePreference(
 			this, textScreen.Resource.getResource("lineSpacing"),
 			spaceOption, spacings
@@ -370,54 +395,6 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 			ngScreen.addPreference(new FontPreference(
 				this, textScreen.Resource.getResource("font"),
 				description.FontFamilyOption, true
-/*=======
-
-		byte styles[] = {
-			FBTextKind.REGULAR,
-			FBTextKind.TITLE,
-			FBTextKind.SECTION_TITLE,
-			FBTextKind.SUBTITLE,
-			FBTextKind.H1,
-			FBTextKind.H2,
-			FBTextKind.H3,
-			FBTextKind.H4,
-			FBTextKind.H5,
-			FBTextKind.H6,
-			FBTextKind.ANNOTATION,
-			FBTextKind.EPIGRAPH,
-			FBTextKind.AUTHOR,
-			FBTextKind.POEM_TITLE,
-			FBTextKind.STANZA,
-			FBTextKind.VERSE,
-			FBTextKind.CITE,
-			FBTextKind.INTERNAL_HYPERLINK,
-			FBTextKind.EXTERNAL_HYPERLINK,
-			FBTextKind.FOOTNOTE,
-			FBTextKind.ITALIC,
-			FBTextKind.EMPHASIS,
-			FBTextKind.BOLD,
-			FBTextKind.STRONG,
-			FBTextKind.DEFINITION,
-			FBTextKind.DEFINITION_DESCRIPTION,
-			FBTextKind.PREFORMATTED,
-			FBTextKind.CODE,
-			FBTextKind.SUB,
-			FBTextKind.SUP
-		};
-		for (int i = 0; i < styles.length; ++i) {
-			final ZLTextStyleDecoration decoration = collection.getDecoration(styles[i]);
-			if (decoration == null) {
-				continue;
-			}
-			ZLTextFullStyleDecoration fullDecoration =
-				decoration instanceof ZLTextFullStyleDecoration
-					? (ZLTextFullStyleDecoration)decoration : null;
-
-			final Screen formatScreen = moreStylesScreen.createPreferenceScreen(decoration.getName());
-			formatScreen.addPreference(new FontPreference(
-				this, textScreen.Resource, "font",
-				decoration.FontFamilyOption, true
->>>>>>> 1. Add Guji support*/
 			));
 			ngScreen.addPreference(new StringPreference(
 				this, description.FontSizeOption,

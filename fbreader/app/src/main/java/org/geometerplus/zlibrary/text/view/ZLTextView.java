@@ -21,6 +21,7 @@ package org.geometerplus.zlibrary.text.view;
 
 import java.util.*;
 
+import org.geometerplus.android.fbreader.FBReader;
 import org.geometerplus.fbreader.book.Book;
 import org.geometerplus.fbreader.bookmodel.FBTextKind;
 import org.geometerplus.fbreader.bookmodel.TOCTree;
@@ -664,6 +665,20 @@ public abstract class ZLTextView extends ZLTextViewBase {
 			if(page.StartCursor.getParagraphIndex() == 0) {
 				drawGujiCover(context);
 			}
+		} else {
+			context.setTextColor(new ZLColor(128,128,128));
+			final ZLTextNGStyleDescription description =
+					getTextStyleCollection().getDescription(FBTextKind.SUB);
+			String oldValue = description.FontSizeOption.getValue();
+			description.FontSizeOption.setValue("30px");
+			if (description != null) {
+				setTextStyle(new ZLTextNGStyle(getTextStyle(), description, null));
+			}
+			TOCTree treeToSelect = myReader.getCurrentTOCElement();
+			if(treeToSelect != null) {
+				context.drawString(getLeftMargin(), 36, treeToSelect.getText(),false);
+			}
+			description.FontSizeOption.setValue(oldValue);
 		}
 		
 		final ArrayList<ZLTextLineInfo> lineInfos = page.LineInfos;
@@ -1064,6 +1079,12 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		if (to > pageAreas.size()) {
 			return;
 		}
+		if(info.isFirstParagraphOfSection && !isGuji()) {
+			final ZLTextElementArea area = pageAreas.get(index);
+			context.setLineWidth(5);
+			context.drawLine(getLeftMargin() , area.YEnd, 
+					getLeftMargin() + page.getTextWidth(), area.YEnd);
+		}
 		for (int wordIndex = info.RealStartElementIndex; wordIndex != endElementIndex && index < to; ++wordIndex, charIndex = 0) {
 			final ZLTextElement element = paragraph.getElement(wordIndex);
 			final ZLTextElementArea area = pageAreas.get(index);
@@ -1212,6 +1233,9 @@ public abstract class ZLTextView extends ZLTextViewBase {
 						break;
 					}
 				}
+			}
+			if(paragraphCursor.isFirstParagraphOfSection() && result.isEndOfParagraph()) {
+				info.isFirstParagraphOfSection = true;
 			}
 			if(isGujiTitle) {
 				result.nextParagraph();
@@ -1370,7 +1394,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		final int maxWidth = page.getTextWidth() - storedStyle.getRightIndent(metrics());
 		info.LeftIndent = storedStyle.getLeftIndent(metrics());
 		if (isFirstLine && storedStyle.getAlignment() != ZLTextAlignmentType.ALIGN_CENTER) {
-			info.LeftIndent += storedStyle.getFirstLineIndent(metrics());
+			info.LeftIndent += isGuji()?0:storedStyle.getFirstLineIndent(metrics());
 		}
 		if (info.LeftIndent > maxWidth - 20) {
 			info.LeftIndent = maxWidth * 3 / 4;

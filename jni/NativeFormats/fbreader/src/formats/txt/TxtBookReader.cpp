@@ -18,7 +18,7 @@
  */
 
 #include <cctype>
-
+#include <android/log.h>
 #include "TxtBookReader.h"
 #include "../../bookmodel/BookModel.h"
 
@@ -56,10 +56,25 @@ bool TxtBookReader::characterDataHandler(std::string &str) {
 			internalEndParagraph();
 			beginParagraph();
 		}
-		addData(str);
-		if (myInsideContentsParagraph) {
+
+		if (myInsideContentsParagraph && str.length() <= 30) {
+			if(!myHasAddedTitle) {
+				internalEndParagraph();
+				insertEndOfSectionParagraph();
+				beginContentsParagraph();
+				enterTitle();
+				pushKind(SECTION_TITLE);
+				beginParagraph();
+				myHasAddedTitle = true;
+			}
+			if(str[str.size() -1] == '\n') {
+				myHasAddedTitle = false;
+			}
+
 			addContentsData(str);
 		}
+
+		addData(str);
 		myNewLine = false;
 	}
 	return true;
@@ -81,17 +96,12 @@ bool TxtBookReader::newLineHandler() {
 //		if (!myInsideContentsParagraph && (myLineFeedCounter == myFormat.emptyLinesBeforeNewSection() + 1)) {
 			/* Fixed by Hatred: remove '+ 1' for emptyLinesBeforeNewSection, it looks like very strange
 				 when we should point count of empty string decrised by 1 in settings dialog */
-		if (!myInsideContentsParagraph && (myLineFeedCounter == myFormat.emptyLinesBeforeNewSection())) {
+		//__android_log_print(ANDROID_LOG_INFO, "love", "!!!!!,,,%d!!!!!!%d", myLineFeedCounter, myFormat.emptyLinesBeforeNewSection());
+		if (!myInsideContentsParagraph && (myLineFeedCounter >= myFormat.emptyLinesBeforeNewSection())) {
 			myInsideContentsParagraph = true;
-			internalEndParagraph();
-			insertEndOfSectionParagraph();
-			beginContentsParagraph();
-			enterTitle();
-			pushKind(SECTION_TITLE);
-			beginParagraph();
 			paragraphBreak = false;
-		}
-		if (myInsideContentsParagraph && (myLineFeedCounter == 1)) {
+		} else
+		if (myInsideContentsParagraph && (myLineFeedCounter <= 1)) {
 			exitTitle();
 			endContentsParagraph();
 			popKind();
@@ -116,6 +126,7 @@ void TxtBookReader::startDocumentHandler() {
 	enterTitle();
 	myLastLineIsEmpty = true;
 	myNewLine = true;
+	myHasAddedTitle = false;
 	mySpaceCounter = 0;
 }
 

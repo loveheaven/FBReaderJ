@@ -295,9 +295,9 @@ public class LibraryActivity extends TreeActivity<LibraryTree> implements MenuIt
 		addMenuItem(menu, OptionsItemId.UploadAgain, "uploadAgain", -1);
 		addMenuItem(menu, OptionsItemId.TryAgain, "tryAgain", -1);
 		addMenuItem(menu, OptionsItemId.DeleteAll, "deleteAll", -1);
-		if (Build.VERSION.SDK_INT >= 9) {
-			addMenuItem(menu, OptionsItemId.ExternalView, "bookshelfView", -1);
-		}
+//		if (Build.VERSION.SDK_INT >= 9) {
+//			addMenuItem(menu, OptionsItemId.ExternalView, "bookshelfView", -1);
+//		}
 		return true;
 	}
 

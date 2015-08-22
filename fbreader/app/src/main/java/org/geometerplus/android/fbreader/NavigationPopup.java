@@ -26,13 +26,11 @@ import android.widget.*;
 
 import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.resources.ZLResource;
-
 import org.geometerplus.zlibrary.text.view.ZLTextView;
 import org.geometerplus.zlibrary.text.view.ZLTextWordCursor;
-
 import org.geometerplus.zlibrary.ui.android.R;
-
 import org.geometerplus.fbreader.bookmodel.TOCTree;
+import org.geometerplus.fbreader.fbreader.ActionCode;
 import org.geometerplus.fbreader.fbreader.FBReaderApp;
 
 final class NavigationPopup extends ZLApplication.PopupPanel {
@@ -78,6 +76,15 @@ final class NavigationPopup extends ZLApplication.PopupPanel {
 
 	@Override
 	protected void hide_() {
+		final ZLTextWordCursor position = myStartPosition;
+			if (myStartPosition != null &&
+				!myStartPosition.equals(myFBReader.getTextView().getStartCursor())) {
+				myFBReader.addInvisibleBookmark(myStartPosition);
+				myFBReader.storePosition();
+			}
+		myStartPosition = null;
+		myFBReader.getViewWidget().reset();
+		myFBReader.getViewWidget().repaint();
 		if (myWindow != null) {
 			myWindow.hide();
 		}
@@ -103,6 +110,140 @@ final class NavigationPopup extends ZLApplication.PopupPanel {
 		activity.getLayoutInflater().inflate(R.layout.navigation_panel, root);
 		myWindow = (NavigationWindow)root.findViewById(R.id.navigation_panel);
 
+		TextView changeFontSize = (TextView)myWindow.findViewById(R.id.navigation_fontsize);
+		changeFontSize.setText(ZLResource.resource("Preferences").getResource("text").getResource("font").getValue());
+		final ImageButton zoomin = (ImageButton)myWindow.findViewById(R.id.navigation_zoomin);
+		zoomin.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				myFBReader.runAction(ActionCode.INCREASE_FONT);
+			}
+		});
+		final ImageButton zoomout = (ImageButton)myWindow.findViewById(R.id.navigation_zoomout);
+		zoomout.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				myFBReader.runAction(ActionCode.DECREASE_FONT);
+			}
+		});
+		
+		ImageButton toc = (ImageButton)myWindow.findViewById(R.id.navigation_toc);
+		boolean visible = myFBReader.isActionVisible(ActionCode.SHOW_TOC) && myFBReader.isActionEnabled(ActionCode.SHOW_TOC);
+		toc.setVisibility(visible?View.VISIBLE:View.GONE);
+		//toc.setText(ZLResource.resource("menu").getResource(ActionCode.SHOW_TOC).getValue());
+		toc.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				myFBReader.runAction(ActionCode.SHOW_TOC);
+			}
+		});
+		ImageButton bookmark = (ImageButton)myWindow.findViewById(R.id.navigation_bookmark);
+		//bookmark.setText(ZLResource.resource("menu").getResource(ActionCode.SHOW_BOOKMARKS).getValue());
+		bookmark.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				myFBReader.runAction(ActionCode.SHOW_BOOKMARKS);
+			}
+		});
+		ImageButton settings = (ImageButton)myWindow.findViewById(R.id.navigation_settings);
+		//settings.setText(ZLResource.resource("menu").getResource(ActionCode.SHOW_PREFERENCES).getValue());
+		settings.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				myFBReader.runAction(ActionCode.SHOW_PREFERENCES);
+			}
+		});
+		ImageButton search = (ImageButton)myWindow.findViewById(R.id.navigation_search);
+		//search.setText(ZLResource.resource("menu").getResource(ActionCode.SEARCH).getValue());
+		search.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				myFBReader.runAction(ActionCode.SEARCH);
+			}
+		});
+		ImageButton share = (ImageButton)myWindow.findViewById(R.id.navigation_share);
+		//share.setText(ZLResource.resource("menu").getResource(ActionCode.SHARE_BOOK).getValue());
+		share.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				myFBReader.runAction(ActionCode.SHARE_BOOK);
+			}
+		});
+		ImageButton info = (ImageButton)myWindow.findViewById(R.id.navigation_info);
+		//info.setText(ZLResource.resource("menu").getResource(ActionCode.SHOW_BOOK_INFO).getValue());
+		info.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				myFBReader.runAction(ActionCode.SHOW_BOOK_INFO);
+			}
+		});
+		
+		ImageButton orientation = (ImageButton)myWindow.findViewById(R.id.navigation_orientation);
+		//orientation.setText(ZLResource.resource("menu").getResource(ActionCode.SET_SCREEN_ORIENTATION).getValue());
+		orientation.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				myFBReader.runAction(ActionCode.SET_SCREEN_ORIENTATION);
+			}
+		});
+		ImageButton install = (ImageButton)myWindow.findViewById(R.id.navigation_install);
+		//install.setText(ZLResource.resource("menu").getResource(ActionCode.INSTALL_PLUGINS).getValue());
+		install.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				myFBReader.runAction(ActionCode.INSTALL_PLUGINS);
+			}
+		});
+	
+		ImageButton more = (ImageButton)myWindow.findViewById(R.id.navigation_more);
+		//more.setText(ZLResource.resource("menu").getResource(ActionCode.SHOW_MORE).getValue());
+		more.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				myActivity.openOptionsMenu();
+			}
+		});
+		final Button night = (Button)myWindow.findViewById(R.id.navigation_night);
+		night.setText(ZLResource.resource("menu").getResource(ActionCode.SWITCH_TO_NIGHT_PROFILE).getValue());
+		visible = myFBReader.isActionVisible(ActionCode.SWITCH_TO_NIGHT_PROFILE) && myFBReader.isActionEnabled(ActionCode.SWITCH_TO_NIGHT_PROFILE);
+		night.setVisibility(visible?View.VISIBLE:View.GONE);
+		
+		final Button day = (Button)myWindow.findViewById(R.id.navigation_day);
+		day.setText(ZLResource.resource("menu").getResource(ActionCode.SWITCH_TO_DAY_PROFILE).getValue());
+		visible = myFBReader.isActionVisible(ActionCode.SWITCH_TO_DAY_PROFILE) && myFBReader.isActionEnabled(ActionCode.SWITCH_TO_DAY_PROFILE);
+		day.setVisibility(visible?View.VISIBLE:View.GONE);
+		night.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				myFBReader.runAction(ActionCode.SWITCH_TO_NIGHT_PROFILE);
+				night.setVisibility(View.GONE);
+				day.setVisibility(View.VISIBLE);
+				
+			}
+		});
+		day.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				myFBReader.runAction(ActionCode.SWITCH_TO_DAY_PROFILE);
+				day.setVisibility(View.GONE);
+				night.setVisibility(View.VISIBLE);
+			}
+		});
+		
+		
 		final SeekBar slider = (SeekBar)myWindow.findViewById(R.id.navigation_slider);
 		final TextView text = (TextView)myWindow.findViewById(R.id.navigation_text);
 
@@ -136,32 +277,6 @@ final class NavigationPopup extends ZLApplication.PopupPanel {
 			}
 		});
 
-		final Button btnOk = (Button)myWindow.findViewById(R.id.navigation_ok);
-		final Button btnCancel = (Button)myWindow.findViewById(R.id.navigation_cancel);
-		View.OnClickListener listener = new View.OnClickListener() {
-			public void onClick(View v) {
-				final ZLTextWordCursor position = myStartPosition;
-				if (v == btnCancel && position != null) {
-					myFBReader.getTextView().gotoPosition(position);
-				} else if (v == btnOk) {
-					if (myStartPosition != null &&
-						!myStartPosition.equals(myFBReader.getTextView().getStartCursor())) {
-						myFBReader.addInvisibleBookmark(myStartPosition);
-						myFBReader.storePosition();
-					}
-				}
-				myStartPosition = null;
-				Application.hideActivePopup();
-				myFBReader.getViewWidget().reset();
-				myFBReader.getViewWidget().repaint();
-			}
-		};
-		btnOk.setOnClickListener(listener);
-		btnCancel.setOnClickListener(listener);
-
-		final ZLResource buttonResource = ZLResource.resource("dialog").getResource("button");
-		btnOk.setText(buttonResource.getResource("ok").getValue());
-		btnCancel.setText(buttonResource.getResource("cancel").getValue());
 	}
 
 	private void setupNavigation() {

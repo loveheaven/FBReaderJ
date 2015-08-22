@@ -20,6 +20,7 @@
 package org.geometerplus.android.fbreader;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 
 import org.fbreader.util.Boolean3;
@@ -53,12 +54,19 @@ class SetScreenOrientationAction extends FBAndroidAction {
 
 	@Override
 	public Boolean3 isChecked() {
+		if(myOptionValue == null) {
+			return Boolean3.FALSE;
+		}
 		return myOptionValue.equals(ZLibrary.Instance().getOrientationOption().getValue())
 			? Boolean3.TRUE : Boolean3.FALSE;
 	}
 
 	@Override
 	protected void run(Object ... params) {
+		if(myOptionValue == null) {
+			BaseActivity.startActivity(new Intent(BaseActivity.getApplicationContext(), OrientationActivity.class));
+			return;
+		}
 		setOrientation(BaseActivity, myOptionValue);
 		ZLibrary.Instance().getOrientationOption().setValue(myOptionValue);
 		Reader.onRepaintFinished();

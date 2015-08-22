@@ -383,10 +383,7 @@ public final class FBReaderApp extends ZLApplication {
 			gotoStoredPosition();
 			final String path = book.getPath();
 			final Book bookId = book;
-			if(book.getLanguage() != null && (
-					book.getLanguage().toLowerCase().startsWith("en") ||
-					book.getLanguage().toLowerCase().startsWith("fr") || book.getLanguage().toLowerCase().startsWith("it")
-					)) {
+			if(bookId.isShouldLearnWord()) {
 				Thread t = new Thread(new Runnable() {
 
 					public void run() {

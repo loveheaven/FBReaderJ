@@ -32,7 +32,7 @@
     </ImageView>
      -->
      
-     <include layout="@layout/titlebar"/>
+     <include layout="@layout/shelf_titlebar"/>
     
 
     <org.geometerplus.zlibrary.ui.android.view.ShelvesView
