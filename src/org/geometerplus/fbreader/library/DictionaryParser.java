@@ -8,6 +8,8 @@ import org.geometerplus.zlibrary.text.model.ZLTextModel;
 import org.geometerplus.zlibrary.text.model.ZLTextParagraph;
 import org.geometerplus.zlibrary.text.model.ZLTextPlainModel.EntryIteratorImpl;
 
+import com.iwobanas.hunspellchecker.Hunspell;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -113,15 +115,34 @@ public class DictionaryParser {
 		return map;
 	}
 
+	public static String getRealWord(String word, String language) {
+		String[] results = Hunspell.Instance(language).analyze(word);
+		if(results != null) {
+			for(String result:results) {
+				int index = result.indexOf("st:");
+				if(index > -1 ) {
+					int endIndex = result.indexOf(" ", index + 3);
+					if(endIndex > -1) {
+						word = result.substring(index+3, endIndex);
+					} else {
+						word = result.substring(index+3);
+					}
+					break;
+				}
+			}
+		}
+		return word;
+	}
 	public static void statisticsString(String text,
-			LinkedHashMap<String, FileWord> map, int paragraphIndex) {
+			LinkedHashMap<String, FileWord> map, int paragraphIndex, String language) {
 		String[] array = text.split(seperate);
 		for (String word : array) {
 			word = word.trim();
 			if (word.trim().length() > 0 && !word.startsWith("-")
 					&& !word.startsWith("'")) {
 				word = word.toLowerCase();
-				word = checkEndWithSuffix(word);
+				word = getRealWord(word, language);
+				//word = checkEndWithSuffix(word);
 				if (map.containsKey(word)) {
 					FileWord temp = map.get(word);
 					temp.frequency++;
@@ -185,7 +206,7 @@ public class DictionaryParser {
 
 	public static String seperate = "[0-9~/&%$@#^*‘’“”《》—|_«»\\\n\t\",;=:().{}?　! ]";
 	
-	public static String readFileToDictionary(IBookCollection<Book> collection, Book book, String fileName) {
+	public static String readFileToDictionary(IBookCollection<Book> collection, Book book, String fileName, String language) {
 
 		String output = "";
 		File file = new File(fileName);
@@ -205,7 +226,7 @@ public class DictionaryParser {
 				int index=0;
 				while ((text = input.readLine()) != null) {
 					// buffer.append(text +"/n");
-					statisticsString(text, map, index);
+					statisticsString(text, map, index, language);
 					index++;
 				}
 				List<Word> knownWords = collection.allKnownWords(book.getLanguage());

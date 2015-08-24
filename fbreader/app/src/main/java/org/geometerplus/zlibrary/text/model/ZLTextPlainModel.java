@@ -37,6 +37,8 @@ import org.geometerplus.zlibrary.core.fonts.FontManager;
 import org.geometerplus.zlibrary.core.image.ZLImage;
 import org.geometerplus.zlibrary.core.util.*;
 
+import com.iwobanas.hunspellchecker.Hunspell;
+
 import android.text.TextUtils;
 
 public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Feature {
@@ -411,7 +413,7 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 					
 					System.arraycopy(textData, textOffset, textDataDst, 0, textLength);
 					
-					DictionaryParser.statisticsString(new String(textDataDst), map, index);
+					DictionaryParser.statisticsString(new String(textDataDst), map, index, book.getLanguage());
 					
 					offset += textLength;
 				}
@@ -436,11 +438,14 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
             	}
         	} else {
         		boolean isKnown = false;
-        		for(Word wo:knownWords) {
-        			if(word.equals(wo.getText().toLowerCase())) {
-        				isKnown = true;
-        				break;
-        			}
+        		if(Hunspell.Instance(book.getLanguage()).spell(word) != 0) {
+	        		for(Word wo:knownWords) {
+	        			word = DictionaryParser.getRealWord(word, book.getLanguage());
+	        			if(word.equals(wo.getText().toLowerCase())) {
+	        				isKnown = true;
+	        				break;
+	        			}
+	        		}
         		}
         		if(!isKnown) {
         			collection.saveToUnknownWords(w);
