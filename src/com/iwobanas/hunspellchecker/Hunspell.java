@@ -1,11 +1,9 @@
 package com.iwobanas.hunspellchecker;
 
-import java.util.HashMap;
-
 public class Hunspell {
-	private static Hunspell mHunspell;
-	private static HashMap<String, Hunspell> ourCache = new HashMap<String, Hunspell>();
-	public native void create(String aff, String dic);
+	private static Hunspell mHunspell = new Hunspell();
+	public static String Language;
+	public native void create(String aff, String dic, Hunspell mutex);
 	
 	// 0 means no such word.
 	public native int spell(String word);
@@ -18,11 +16,12 @@ public class Hunspell {
     }
 	public static Hunspell Instance(String language) {
         String fileBase = "/sdcard/Dictdata/hunspell/" + language;
-        Hunspell hunspell = ourCache.get(language);
-        if(hunspell == null) {
-        	hunspell = new Hunspell();
-        	hunspell.create( fileBase + ".aff", fileBase + ".dic");
-        }
-        return hunspell;
+    	synchronized (mHunspell) {
+    		if(Language == null || !Language.equals(language)) {
+    			mHunspell.create( fileBase + ".aff", fileBase + ".dic", mHunspell);
+    			Language = language;
+    		}
+		}
+        return mHunspell;
 	}
 }

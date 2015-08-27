@@ -54,7 +54,11 @@ final class ZLTextLineInfo {
 		EndCharIndex = charIndex;
 
 		StartStyle = style;
-		isFirstParagraphOfSection = false;
+		if(paragraphCursor.isFirstParagraphOfSection()) {
+			isFirstParagraphOfSection = true;
+		} else {
+			isFirstParagraphOfSection = false;
+		}
 	}
 
 	boolean isEndOfParagraph() {

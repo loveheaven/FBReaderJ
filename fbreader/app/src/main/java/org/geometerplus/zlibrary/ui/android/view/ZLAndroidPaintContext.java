@@ -19,23 +19,33 @@
 
 package org.geometerplus.zlibrary.ui.android.view;
 
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
-import android.graphics.*;
-import android.text.TextUtils;
-
-import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.fonts.FontEntry;
 import org.geometerplus.zlibrary.core.image.ZLImageData;
 import org.geometerplus.zlibrary.core.options.ZLBooleanOption;
-import org.geometerplus.zlibrary.core.util.ZLColor;
 import org.geometerplus.zlibrary.core.util.SystemInfo;
+import org.geometerplus.zlibrary.core.util.ZLColor;
 import org.geometerplus.zlibrary.core.view.ZLPaintContext;
-import org.geometerplus.zlibrary.core.view.ZLView;
-import org.geometerplus.zlibrary.text.view.ZLTextView;
 import org.geometerplus.zlibrary.ui.android.image.ZLAndroidImageData;
 import org.geometerplus.zlibrary.ui.android.util.ZLAndroidColorUtil;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.CornerPathEffect;
+import android.graphics.EmbossMaskFilter;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 
 public final class ZLAndroidPaintContext extends ZLPaintContext {
 	public static ZLBooleanOption AntiAliasOption = new ZLBooleanOption("Fonts", "AntiAlias", true);
@@ -67,7 +77,6 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 	private final int myScrollbarWidth;
 
 	private ZLColor myBackgroundColor = new ZLColor(0, 0, 0);
-	private boolean mIsGuji = false;
 
 	public ZLAndroidPaintContext(SystemInfo systemInfo, Canvas canvas, Geometry geometry, int scrollbarWidth, boolean isGuji) {
 		super(systemInfo);
@@ -101,7 +110,12 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 
 	private static ZLFile ourWallpaperFile;
 	private static Bitmap ourWallpaper;
+	private static ZLFile ourWallpaperFileOdd;
+	private static Bitmap ourWallpaperOdd;
+	private static ZLFile ourWallpaperFileEven;
+	private static Bitmap ourWallpaperEven;
 	private static FillMode ourFillMode;
+	
 	@Override
 	public void clear(ZLFile wallpaperFile, FillMode mode) {
 		if (!wallpaperFile.equals(ourWallpaperFile) || mode != ourFillMode) {
@@ -221,7 +235,163 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 			clear(new ZLColor(128, 128, 128));
 		}
 	}
+	
+	@Override
+	public void clear(ZLFile wallpaperFile, FillMode mode, boolean isPageOdd) {
+		boolean change = isPageOdd?!wallpaperFile.equals(ourWallpaperFileOdd) : !wallpaperFile.equals(ourWallpaperFileEven);
+		if (change || mode != ourFillMode) {
+			if(isPageOdd) {
+				ourWallpaperFileOdd = wallpaperFile;
+				ourWallpaperOdd = null;
+			} else {
+				ourWallpaperFileEven = wallpaperFile;
+				ourWallpaperEven = null;
+			}
+			ourFillMode = mode;
+			
+			try {
+				final Bitmap fileBitmap =
+					BitmapFactory.decodeStream(wallpaperFile.getInputStream());
+				switch (mode) {
+					case tileMirror:
+					default:
+						if(isPageOdd) {
+							ourWallpaperOdd = fileBitmap;
+						} else {
+							ourWallpaperEven = fileBitmap;
+						}
+						break;
+				}
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}
+		Bitmap ourWallpaper = isPageOdd? ourWallpaperOdd:ourWallpaperEven;
+		if (ourWallpaper != null) {
+			myBackgroundColor = ZLAndroidColorUtil.getAverageColor(ourWallpaper);
+			final int w = ourWallpaper.getWidth();
+			final int h = ourWallpaper.getHeight();
+			final Geometry g = myGeometry;
+			switch (mode) {
+				case fullscreen:
+				{
+					final Matrix m = new Matrix();
+					m.preScale(1f * g.ScreenSize.Width / w, 1f * g.ScreenSize.Height / h);
+					m.postTranslate(-g.LeftMargin, -g.TopMargin);
+					myCanvas.drawBitmap(ourWallpaper, m, myFillPaint);
+					break;
+				}
+				case stretch:
+				{
+					final Matrix m = new Matrix();
+					final float sw = 1f * g.ScreenSize.Width / w;
+					final float sh = 1f * g.ScreenSize.Height / h;
+					final float scale;
+					float dx = g.LeftMargin;
+					float dy = g.TopMargin;
+					if (sw < sh) {
+						scale = sh;
+						dx += (scale * w - g.ScreenSize.Width) / 2;
+					} else {
+						scale = sw;
+						dy += (scale * h - g.ScreenSize.Height) / 2;
+					}
+					m.preScale(scale, scale);
+					m.postTranslate(-dx, -dy);
+					myCanvas.drawBitmap(ourWallpaper, m, myFillPaint);
+					break;
+				}
+				case tileVertically:
+				{
+					final Matrix m = new Matrix();
+					final int dx = g.LeftMargin;
+					final int dy = g.TopMargin % h;
+					m.preScale(1f * g.ScreenSize.Width / w, 1);
+					m.postTranslate(-dx, -dy);
+					for (int ch = g.AreaSize.Height + dy; ch > 0; ch -= h) {
+						myCanvas.drawBitmap(ourWallpaper, m, myFillPaint);
+						m.postTranslate(0, h);
+					}
+					break;
+				}
+				case tileHorizontally:
+				{
+					final Matrix m = new Matrix();
+					final int dx = g.LeftMargin % w;
+					final int dy = g.TopMargin;
+					m.preScale(1, 1f * g.ScreenSize.Height / h);
+					m.postTranslate(-dx, -dy);
+					for (int cw = g.AreaSize.Width + dx; cw > 0; cw -= w) {
+						myCanvas.drawBitmap(ourWallpaper, m, myFillPaint);
+						m.postTranslate(w, 0);
+					}
+					break;
+				}
+				case tile:
+				case tileMirror:
+				{
+					final int dx = g.LeftMargin % w;
+					final int dy = g.TopMargin % h;
+					final int fullw = g.AreaSize.Width + dx;
+					final int fullh = g.AreaSize.Height + dy;
+					for (int cw = 0; cw < fullw; cw += w) {
+						for (int ch = 0; ch < fullh; ch += h) {
+							myCanvas.drawBitmap(ourWallpaper, cw - dx, ch - dy, myFillPaint);
+						}
+					}
+					break;
+				}
+			}
+		} else {
+			clear(new ZLColor(128, 128, 128));
+		}
+	}
 
+	@Override
+	public void clear(ZLFile wallpaperFileOdd, ZLFile wallpaperFileEven, FillMode mode) {
+		boolean change = !wallpaperFileOdd.equals(ourWallpaperFileOdd) || !wallpaperFileEven.equals(ourWallpaperFileEven);
+		if (change || mode != ourFillMode) {
+			ourWallpaperFileOdd = wallpaperFileOdd;
+			ourWallpaperOdd = null;
+			ourWallpaperFileEven = wallpaperFileEven;
+			ourWallpaperEven = null;
+			ourFillMode = mode;
+			
+			try {
+				final Bitmap fileBitmapOdd =
+					BitmapFactory.decodeStream(wallpaperFileOdd.getInputStream());
+				final Bitmap fileBitmapEven =
+						BitmapFactory.decodeStream(wallpaperFileEven.getInputStream());
+				switch (mode) {
+					case fullscreen:
+					default:
+						ourWallpaperOdd = fileBitmapOdd;
+						ourWallpaperEven = fileBitmapEven;
+						break;
+				}
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}
+		if (ourWallpaperOdd != null && ourWallpaperEven != null) {
+			myBackgroundColor = ZLAndroidColorUtil.getAverageColor(ourWallpaperOdd);
+			final int w = ourWallpaperOdd.getWidth();
+			final int h = ourWallpaperOdd.getHeight();
+			final Geometry g = myGeometry;
+			
+			final int dx = g.LeftMargin % w;
+			final int dy = g.TopMargin % h;
+			final int fullw = g.AreaSize.Width + dx;
+			final int fullh = g.AreaSize.Height + dy;
+			
+			myCanvas.drawBitmap(ourWallpaperOdd, fullw/2 - w, 0, myFillPaint);
+			myCanvas.drawBitmap(ourWallpaperEven, fullw/2 , 0, myFillPaint);
+					
+		} else {
+			clear(new ZLColor(128, 128, 128));
+		}
+	}
+	
 	@Override
 	public void clear(ZLColor color) {
 		myBackgroundColor = color;
@@ -329,13 +499,25 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 		}
 	}
 
-	public int getWidth() {
+	protected int getWidth() {
 		return myGeometry.AreaSize.Width - myScrollbarWidth;
 	}
 
-	public int getHeight() {
+	protected int getHeight() {
 		return myGeometry.AreaSize.Height;
 	}
+	
+	public static boolean isDigit(int codePoint) {
+        // Optimized case for ASCII
+        if ('0' <= codePoint && codePoint <= '9') {
+            return true;
+        } else if(codePoint == '（' || codePoint == '）') {
+        	return true;
+        } else if(codePoint == '《' || codePoint == '》') {
+        	return true;
+        }
+        return false;
+    }
 	
 	public int measureText(char[] string, int offset, int length) {
 		int start = offset;
@@ -343,24 +525,30 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 		for(int i = offset;i < offset + length; i++) {
 			if(Character.isHighSurrogate(string[i])) {
 				if(i != start) {
-					stringWidth += myTextPaint.measureText(new String(string, start, i-start));
+					stringWidth += mIsGuji? (i-start)*getStringHeight():myTextPaint.measureText(new String(string, start, i-start));
 				}
 				Typeface previosType = myTextPaint.getTypeface();
-				myTextPaint.setTypeface(AndroidFontUtil.systemTypeface("TW Kai Ext-B", previosType.isBold(), previosType.isItalic()));
+				myTextPaint.setTypeface(AndroidFontUtil.systemTypeface("TW-Kai-Ext-B", previosType.isBold(), previosType.isItalic()));
 				stringWidth += myTextPaint.measureText(new String(string, i, 2));
 				myTextPaint.setTypeface(previosType);
 				i++;
 				start = i+1;
-			} else if(Character.isDigit(string[i]) && mIsGuji) {
+			} else if(mIsGuji && isDigit(string[i]) ) {
 				if(i != start) {
-					stringWidth += myTextPaint.measureText(new String(string, start, i-start));
+					stringWidth += (i-start)*getStringHeight();//myTextPaint.measureText(new String(string, start, i-start));
 				}
 				stringWidth += getStringHeight();
+				start = i + 1;
+			} else if(mIsGuji && !myIsShowGujiPunctuation && isCharPunctuation(string[i]) ) {
+				if(i != start) {
+					stringWidth += (i-start)*getStringHeight();//myTextPaint.measureText(new String(string, start, i-start));
+				}
 				start = i + 1;
 			}
 		}
 		if(start < offset+length) {
-			stringWidth += myTextPaint.measureText(new String(string, start, offset+length - start));
+			stringWidth += mIsGuji?(offset+length - start)*getStringHeight() : 
+				myTextPaint.measureText(new String(string, start, offset+length - start));
 		}
 		return (int)(stringWidth + 0.5f);
 	}
@@ -414,38 +602,68 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 	protected int getDescentInternal() {
 		return (int)(myTextPaint.descent() + 0.5f);
 	}
-
-
-	private boolean isCharShouldHorizontal(char ch) {
-		char[] horizontalChar = new char[]{'(', ')', '[', ']', '（', '）', '【', '】','《','》'};
-		for(int i = 0; i < horizontalChar.length; i++) {
-			if(ch == horizontalChar[i]) return true;
+	
+	static LinkedHashSet<Character> PUNCTUATION_CHARS = new LinkedHashSet<Character>();
+	static char[] PUNCTUATION_CHARS_ARRAY = new char[] {',', '.', ';', ':', '!', '?', '，', '。', '；', '？', '：', '！', '「', '」', '、', '『', '』', '\'', '"',
+			'“', '”', '‘', '’', '(', ')', '[', ']', '（', '）', '【', '】','《','》'};
+	public static boolean isCharPunctuation(char ch) {
+		if(PUNCTUATION_CHARS.size() == 0) {
+			for(int i = 0; i < PUNCTUATION_CHARS_ARRAY.length; i++) {
+				PUNCTUATION_CHARS.add(PUNCTUATION_CHARS_ARRAY[i]);
+			}
 		}
+
+		if(PUNCTUATION_CHARS.contains(ch)) return true;
 		return false;
 	}
 	
+	LinkedHashSet<Character> HORIZONTAL_CHARS = new LinkedHashSet<Character>();
+	char[] HORIZONTAL_CHARS_ARRAY = new char[]{'(', ')', '[', ']', '（', '）', '【', '】','《','》'};
+	private boolean isCharShouldHorizontal(char ch) {
+		if(HORIZONTAL_CHARS.size() == 0) {
+			for(int i = 0; i < HORIZONTAL_CHARS_ARRAY.length; i++) {
+				HORIZONTAL_CHARS.add(HORIZONTAL_CHARS_ARRAY[i]);
+			}
+		}
+		if(HORIZONTAL_CHARS.contains(ch)) return true;
+		return false;
+	}
+	
+	public Canvas getCanvas() {
+		return myCanvas;
+	}
+	
+	public static boolean isPUA(char ch) {
+        return ('\uE000' <= ch && '\uF8FF' >= ch);
+    }
+	
 	public void drawText(int x, int y, char[] string, int offset, int length) {
 		int stringWidth = 0;
+//		myFillPaint.setColor(Color.BLUE);
+//		myCanvas.drawRect(new Rect(-45, 20, -200, 400), myFillPaint);
+//		myFillPaint.setColor(Color.YELLOW);
+//		myCanvas.drawText("我爱你", -45, 20,myFillPaint);
+		//y'=x, x'=-y;
 		for(int i = offset; i < offset + length; i++) {
+//			if(isPUA(string[i])) {
+//				stringWidth += drawUTF16Text(""+string[i], x + stringWidth, y, "EUDC");
+//			} else
 			if(Character.isHighSurrogate(string[i])) {
-				stringWidth +=drawUTF16Text(""+string[i]+string[i+1], x+stringWidth, y);
+				stringWidth += drawUTF16Text(""+string[i]+string[i+1], x + stringWidth, y, "TW-Kai-Ext-B");
 				i++;
 			} else if(isCharShouldHorizontal(string[i])) {
-				myCanvas.drawText(string, i, 1, x+stringWidth, y - this.getDescent(), myTextPaint);
-				stringWidth += getStringWidth(string, i, 1);
-			} else if(Character.isDigit(string[i])) {
-				myCanvas.translate(x+stringWidth, y);				
-				myCanvas.rotate(-90);
-				myCanvas.drawText(string, i, 1, 0, this.getStringHeight()-this.getDescent() + 1, myTextPaint);
 				myCanvas.rotate(90);
-				myCanvas.translate(-1*(x+stringWidth), -y);
+				myCanvas.drawText(string, i, 1, x+stringWidth, y, myTextPaint);
+				stringWidth += getStringWidth(string, i, 1);
+				myCanvas.rotate(-90);
+			} else if(!myIsShowGujiPunctuation && isCharPunctuation(string[i])) {
+				
+			} else if(isDigit(string[i])) {
+				myCanvas.drawText(string, i, 1, -y+ 3, x + stringWidth + this.getStringHeight() -3, myTextPaint);
 				stringWidth += getStringHeight();
 			} else {
-				myCanvas.translate(x+stringWidth, y);				
-				myCanvas.rotate(-90);
-				myCanvas.drawText(string, i, 1, 0, this.getStringHeight()-this.getDescent() + 1, myTextPaint);
-				myCanvas.rotate(90);
-				myCanvas.translate(-1*(x+stringWidth), -y);
+				// set x', y'
+				myCanvas.drawText(string, i, 1, -y, x + stringWidth + this.getStringHeight() -3, myTextPaint);
 				stringWidth += getStringWidth(string, i, 1);
 			}
 		}
@@ -489,6 +707,24 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 		final Bitmap bitmap = ((ZLAndroidImageData)imageData).getBitmap(maxSize, scaling);
 		return (bitmap != null && !bitmap.isRecycled())
 			? new Size(bitmap.getWidth(), bitmap.getHeight()) : null;
+	}
+	
+	@Override
+	public void drawImage(int x, int y, Bitmap bitmap, Size maxSize, ScalingType scaling, ColorAdjustingMode adjustingMode) {
+		if (bitmap != null) {
+			switch (adjustingMode) {
+				case LIGHTEN_TO_BACKGROUND:
+					myFillPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.LIGHTEN));
+					break;
+				case DARKEN_TO_BACKGROUND:
+					myFillPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DARKEN));
+					break;
+				case NONE:
+					break;
+			}
+			myCanvas.drawBitmap(bitmap, x, y, myFillPaint);
+			myFillPaint.setXfermode(null);
+		}
 	}
 
 	@Override
@@ -560,14 +796,10 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 		myCanvas.drawCircle(x, y, radius, myFillPaint);
 	}
 	
-	public float drawUTF16Text(String newGlyph, int x, int y) {
-		myCanvas.translate(x, y);
-		myCanvas.rotate(-90);
+	public float drawUTF16Text(String newGlyph, int x, int y, String fontName) {
 		Typeface previosType = myTextPaint.getTypeface();
-		myTextPaint.setTypeface(AndroidFontUtil.systemTypeface("TW-Kai-Ext-B", previosType.isBold(), previosType.isItalic()));
-		myCanvas.drawText(newGlyph, 0, this.getStringHeight()-this.getDescent() + 1, myTextPaint);
-		myCanvas.rotate(90);
-		myCanvas.translate(-x, -y);
+		myTextPaint.setTypeface(AndroidFontUtil.systemTypeface(fontName, previosType.isBold(), previosType.isItalic()));
+		myCanvas.drawText(newGlyph, -y, x + this.getStringHeight()- 3, myTextPaint);
 		float width = myTextPaint.measureText(newGlyph);
 		myTextPaint.setTypeface(previosType);
 		return width;

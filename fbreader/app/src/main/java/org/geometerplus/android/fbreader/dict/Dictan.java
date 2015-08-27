@@ -23,13 +23,13 @@ import com.github.johnpersano.supertoasts.SuperActivityToast;
 import com.github.johnpersano.supertoasts.SuperToast;
 import com.github.johnpersano.supertoasts.util.OnClickWrapper;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.view.View;
 
 import org.geometerplus.zlibrary.core.resources.ZLResource;
-
 import org.geometerplus.android.fbreader.FBReaderMainActivity;
 
 final class Dictan extends DictionaryUtil.PackageInfo {
@@ -40,7 +40,7 @@ final class Dictan extends DictionaryUtil.PackageInfo {
 	}
 
 	@Override
-	void open(String text, Runnable outliner, FBReaderMainActivity fbreader, DictionaryUtil.PopupFrameMetric frameMetrics) {
+	void open(String text, Runnable outliner, Activity fbreader, DictionaryUtil.PopupFrameMetric frameMetrics) {
 		final Intent intent = getActionIntent(text);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

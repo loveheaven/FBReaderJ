@@ -41,7 +41,7 @@ public class Util {
 	 * @param str
 	 */
 	public static void log(String str){
-		System.out.println(str);
+		//System.out.println(str);
 	}
 
 	/**

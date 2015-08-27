@@ -18,6 +18,9 @@
 <resources>
     <declare-styleable name="ShelvesView">
         <attr name="shelfBackground" format="reference" />
+        <attr name="shelfLeftLayer" format="reference" />
+        <attr name="shelfRightLayer" format="reference" />
+        <attr name="shelfDock" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="BookStore">

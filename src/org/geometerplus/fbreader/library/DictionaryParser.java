@@ -115,7 +115,11 @@ public class DictionaryParser {
 		return map;
 	}
 
+	public static java.util.HashMap<String, String> wordCache = new java.util.HashMap<String, String>();
 	public static String getRealWord(String word, String language) {
+		
+		String realWord = wordCache.get(word);
+		if(realWord != null) return realWord;
 		String[] results = Hunspell.Instance(language).analyze(word);
 		if(results != null) {
 			for(String result:results) {
@@ -123,15 +127,16 @@ public class DictionaryParser {
 				if(index > -1 ) {
 					int endIndex = result.indexOf(" ", index + 3);
 					if(endIndex > -1) {
-						word = result.substring(index+3, endIndex);
+						realWord = result.substring(index+3, endIndex);
 					} else {
-						word = result.substring(index+3);
+						realWord = result.substring(index+3);
 					}
 					break;
 				}
 			}
 		}
-		return word;
+		wordCache.put(word, realWord);
+		return realWord;
 	}
 	public static void statisticsString(String text,
 			LinkedHashMap<String, FileWord> map, int paragraphIndex, String language) {

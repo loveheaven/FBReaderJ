@@ -20,7 +20,6 @@
 package org.geometerplus.fbreader.formats.djvu;
 
 import org.geometerplus.fbreader.book.AbstractBook;
-import org.geometerplus.fbreader.book.Book;
 import org.geometerplus.fbreader.bookmodel.BookModel;
 import org.geometerplus.fbreader.formats.BookReadingException;
 import org.geometerplus.fbreader.formats.BuiltinFormatPlugin;
@@ -28,6 +27,10 @@ import org.geometerplus.zlibrary.core.encodings.AutoEncodingCollection;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.image.ZLImage;
 import org.geometerplus.zlibrary.core.util.SystemInfo;
+import org.geometerplus.zlibrary.ui.android.image.ZLBitmapImage;
+
+import android.graphics.Bitmap;
+import android.graphics.RectF;
 
 public class DjvuPlugin extends BuiltinFormatPlugin {
 	public DjvuPlugin(SystemInfo systemInfo) {
@@ -52,7 +55,12 @@ public class DjvuPlugin extends BuiltinFormatPlugin {
 
 	@Override
 	public ZLImage readCover(ZLFile file) {
-		return null;
+		DjvuDocument document = new DjvuContext().openDocument(file.getPath());
+		// TODO：270, 360 is the default bookcover size in xxhdpi. This should be get from dimens.xml.
+		Bitmap bitmap = document.getPage(0).renderBitmap(270, 360, new RectF(0, 0, 1, 1));
+		ZLImage result = new ZLBitmapImage(bitmap);
+		document.recycle();
+		return result;
 	}
 
 	@Override

@@ -27,6 +27,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jopencc.util.ChineseConvertor;
+
 import org.geometerplus.fbreader.book.Book;
 import org.geometerplus.fbreader.book.IBookCollection;
 import org.geometerplus.fbreader.book.Word;
@@ -290,14 +292,26 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 				}
 				case ZLTextParagraph.Entry.EXTENSION:
 				{
-					final short kindLength = (short)data[dataOffset++];
+					short kindLength = (short)data[dataOffset++];
+					if((kindLength + dataOffset) > data.length) {
+						kindLength = (short)(data.length - dataOffset);
+					}
+					if(kindLength < 0 || dataOffset < 0) {
+						break;
+					}
 					final String kind = new String(data, dataOffset, kindLength);
 					dataOffset += kindLength;
 
 					final Map<String,String> map = new HashMap<String,String>();
 					final short dataSize = (short)((first >> 8) & 0xFF);
 					for (short i = 0; i < dataSize; ++i) {
-						final short keyLength = (short)data[dataOffset++];
+						short keyLength = (short)data[dataOffset++];
+						if((keyLength + dataOffset) > data.length) {
+							keyLength = (short)(data.length - dataOffset);
+						}
+						if(keyLength < 0 || dataOffset < 0) {
+							break;
+						}
 						final String key = new String(data, dataOffset, keyLength);
 						dataOffset += keyLength;
 						final short valueLength = (short)data[dataOffset++];
@@ -438,6 +452,7 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
             	}
         	} else {
         		boolean isKnown = false;
+        		if(!book.getLanguage().equals(Hunspell.Language)) return;
         		if(Hunspell.Instance(book.getLanguage()).spell(word) != 0) {
 	        		for(Word wo:knownWords) {
 	        			word = DictionaryParser.getRealWord(word, book.getLanguage());
@@ -582,6 +597,16 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 	    }
 	    return result.replaceAll("\\|\\{", "").replaceAll("\\}", "");
 	}
+	public String extractZhuFromString(String text) {
+		if(text == null || text.length() == 0) return text;
+		Pattern p = Pattern.compile("\\\\sub\\{[^}]*\\}");
+	    Matcher m = p.matcher(text);
+	    String result ="";
+	    while(m.find()) {
+	    	result+=m.group();
+	    }
+	    return result.replaceAll("\\\\sub\\{", "").replaceAll("\\}", "");
+	}
 	public final void saveGuji(Book book, int indexToModify, String newString) {
 		int	startIndex = 0;
 		int	endIndex = myParagraphsNumber;
@@ -625,7 +650,7 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 							newString +="\n";
 						}
 						out.write(newString);
-					} else if(newString.startsWith("|c")) {
+					} else if(newString.startsWith("|c")) {//保留译文，将原文放后段
 						newString = newString.substring(2);
 						String yuan = extractGujiFromString(newString);
 						String yi = extractCommentFromString(newString);
@@ -633,7 +658,7 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 							out.write(yi+"\n");
 						}
 						lastString = yuan;
-					} else if(newString.startsWith("|t")) {
+					} else if(newString.startsWith("|t")) {//保留原文，将译文放后段
 						newString = newString.substring(2);
 						String yuan = extractGujiFromString(newString);
 						String yi = extractCommentFromString(newString);
@@ -641,6 +666,30 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 							out.write(yuan.trim()+"\n");
 						}
 						lastYiString = yi;
+					} else if(newString.startsWith("|f")) {//简体转换成繁体
+						newString = newString.substring(2);
+						Pattern p = Pattern.compile("\\\\sub\\{[^}]*\\}");
+					    Matcher m = p.matcher(newString);
+					    int startSubIndex = 0;
+					    int endSubIndex = -1;
+					    StringBuilder str = new StringBuilder();
+					    while(m.find()) {
+					    	String group = m.group();
+					    	endSubIndex = newString.indexOf(group);
+					    	if(startSubIndex != endSubIndex)
+					    	str.append(newString.substring(startSubIndex, endSubIndex));
+					    	str.append(ChineseConvertor.convertToZht(group));
+					    	startSubIndex = endSubIndex + group.length();
+					    	endSubIndex = startSubIndex;
+					    }
+					    if(endSubIndex != -1) {
+					    	str.append(newString.substring(endSubIndex));
+					    	newString = str.toString();
+					    }
+						if(!newString.endsWith("\n")) {
+							newString +="\n";
+						}
+						out.write(newString);
 					} else {
 						String[] lines = newString.split("\\|n");
 						newString = lines[0];

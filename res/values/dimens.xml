@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-<dimen name="BookWidth">120px</dimen> 
+<dimen name="BookShelf_HorizontalSpacing">5.0dip</dimen> 
+<dimen name="BookShelf_ColumnWidth">96.0dip</dimen> 
+<dimen name="BookShelf_CoverWidth">90.0dip</dimen>
+<dimen name="BookShelf_CoverHeight">120.0dip</dimen>
 </resources>

@@ -64,20 +64,12 @@ public final class ZLTextParagraphCursor {
 			ZLTextHyperlink hyperlink = null;
 
 			final ArrayList<ZLTextElement> elements = myElements;
-			final ZLAndroidLibrary zlibrary = (ZLAndroidLibrary)ZLAndroidLibrary.Instance();
-			boolean isCodeStart = false;
-			boolean isSubStart = false;
+	
 			for (ZLTextParagraph.EntryIterator it = myParagraph.iterator(); it.next(); ) {
 				//it.next();
 				switch (it.getType()) {
 					case ZLTextParagraph.Entry.TEXT:
-						if(!zlibrary.ShowGujiYiOption.getValue() && isCodeStart) {
-							
-						} else if(!zlibrary.ShowGujiZhuOption.getValue() && isSubStart) {
-							
-						} else {
-							processTextEntry(it.getTextData(), it.getTextOffset(), it.getTextLength(), hyperlink);
-						}
+						processTextEntry(it.getTextData(), it.getTextOffset(), it.getTextLength(), hyperlink);
 						break;
 					case ZLTextParagraph.Entry.CONTROL:
 						if (hyperlink != null) {
@@ -86,19 +78,8 @@ public final class ZLTextParagraphCursor {
 								hyperlink = null;
 							}
 						}
-						if(it.getControlKind() == FBTextKind.CODE) {
-							isCodeStart = it.getControlIsStart();
-						} else if(it.getControlKind() == FBTextKind.SUB) {
-							isSubStart = it.getControlIsStart();
-						}
 						
-						if(!zlibrary.ShowGujiYiOption.getValue() && it.getControlKind() == FBTextKind.CODE) {
-							
-						} else if(!zlibrary.ShowGujiZhuOption.getValue() && it.getControlKind() == FBTextKind.SUB) {
-							
-						} else {
-							elements.add(ZLTextControlElement.get(it.getControlKind(), it.getControlIsStart()));
-						}
+						elements.add(ZLTextControlElement.get(it.getControlKind(), it.getControlIsStart()));
 						break;
 					case ZLTextParagraph.Entry.HYPERLINK_CONTROL:
 					{

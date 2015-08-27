@@ -69,7 +69,7 @@ public final class FBReaderApp extends ZLApplication {
 	public final FBView BookTextView;
 	public final FBView FootnoteView;
 	private String myFootnoteModelId;
-	public DjvuDocument Document;
+	public DjvuDocument DJVUDocument;
 
 	public volatile BookModel Model;
 	public volatile Book ExternalBook;
@@ -331,7 +331,7 @@ public final class FBReaderApp extends ZLApplication {
 		hideActivePopup();
 		if (Model != null) {
 			if(Model.Book.isDjvu()) {
-				storePosition(new ZLTextFixedPosition(Document.currentPageIndex, 0 ,0));
+				storePosition(new ZLTextFixedPosition(DJVUDocument.currentPageIndex, 0 ,0));
 			} else {
 				storePosition();
 			}
@@ -374,11 +374,11 @@ public final class FBReaderApp extends ZLApplication {
 			Model = BookModel.createModel(book, plugin);
 			Collection.saveBook(book);
 			if("djvu".equalsIgnoreCase(book.getExtention())) {
-				Document = new DjvuContext().openDocument(book.getPath());
+				DJVUDocument = new DjvuContext().openDocument(book.getPath());
 			}
 			ZLTextHyphenator.Instance().load(book.getLanguage());
 			BookTextView.setModel(Model.getTextModel());
-			BookTextView.setBook(book, this);
+			BookTextView.setBook(book);
 			setBookmarkHighlightings(BookTextView, null);
 			gotoStoredPosition();
 			final String path = book.getPath();
@@ -530,8 +530,8 @@ public final class FBReaderApp extends ZLApplication {
 //	}
 
 	public void onWindowClosing() {
-		if(Model.Book.isDjvu()) {
-			storePosition(new ZLTextFixedPosition(Document.currentPageIndex, 0 ,0));
+		if(Model != null && Model.Book != null && Model.Book.isDjvu()) {
+			storePosition(new ZLTextFixedPosition(DJVUDocument.currentPageIndex, 0 ,0));
 			return;
 		} else {
 			storePosition();
@@ -552,7 +552,7 @@ public final class FBReaderApp extends ZLApplication {
 		public void run() {
 			Collection.storePosition(myBook.getId(), myPosition);
 			myBook.setProgress(myProgress);
-			Collection.saveBook(myBook);
+			//Collection.saveBook(myBook);
 		}
 	}
 

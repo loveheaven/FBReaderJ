@@ -51,8 +51,12 @@ public class DjvuPage
     public Bitmap renderBitmap(int width, int height, RectF pageSliceBounds)
     {
         final int[] buffer = new int[width * height];
-        renderPage(pageHandle, width, height, pageSliceBounds.left, pageSliceBounds.top, pageSliceBounds.width(), pageSliceBounds.height(), buffer);
-        return Bitmap.createBitmap(buffer, width, height, Bitmap.Config.RGB_565);
+        boolean result = renderPage(pageHandle, width, height, pageSliceBounds.left, pageSliceBounds.top, pageSliceBounds.width(), pageSliceBounds.height(), buffer);
+        if(result) {
+        	return Bitmap.createBitmap(buffer, width, height, Bitmap.Config.RGB_565);
+        } else {
+        	return null;
+        }
     }
 
     @Override

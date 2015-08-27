@@ -20,9 +20,13 @@
 package org.geometerplus.zlibrary.core.options;
 
 public abstract class ZLOption {
+	public interface ZLOptionCallback {
+		void setValueCallback();
+	}
 	private final StringPair myId;
 	protected String myDefaultStringValue;
 	protected String mySpecialName;
+	ZLOptionCallback myCallback;
 
 	protected ZLOption(String group, String optionName, String defaultStringValue) {
 		myId = new StringPair(group, optionName);
@@ -35,6 +39,10 @@ public abstract class ZLOption {
 
 	public void saveSpecialValue() {
 	}
+	
+	public void setCallback(ZLOptionCallback callback) {
+		myCallback = callback;
+	}
 
 	protected final String getConfigValue() {
 		final Config config = Config.Instance();
@@ -46,6 +54,9 @@ public abstract class ZLOption {
 		if (config != null) {
 			if (!myDefaultStringValue.equals(value)) {
 				config.setValue(myId, value);
+				if(myCallback != null) {
+					myCallback.setValueCallback();
+				}
 			} else {
 				config.unsetValue(myId);
 			}

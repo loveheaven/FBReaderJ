@@ -27,6 +27,9 @@ import org.geometerplus.zlibrary.core.image.ZLImageData;
 import org.geometerplus.zlibrary.core.util.SystemInfo;
 import org.geometerplus.zlibrary.core.util.ZLColor;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+
 abstract public class ZLPaintContext {
 	private final SystemInfo mySystemInfo;
 	private final ArrayList<String> myFamilies = new ArrayList<String>();
@@ -44,13 +47,16 @@ abstract public class ZLPaintContext {
 		tileHorizontally
 	}
 
-	protected final SystemInfo getSystemInfo() {
+	public final SystemInfo getSystemInfo() {
 		return mySystemInfo;
 	}
 
+	abstract public void clear(ZLFile wallpaperFile, FillMode mode, boolean isPageOdd);
+	abstract public void clear(ZLFile wallpaperFileOdd, ZLFile wallpaperFileEven, FillMode mode);
 	abstract public void clear(ZLFile wallpaperFile, FillMode mode);
 	abstract public void clear(ZLColor color);
 	abstract public ZLColor getBackgroundColor();
+	abstract public Canvas getCanvas();
 
 	private boolean myResetFont = true;
 	private List<FontEntry> myFontEntries;
@@ -59,6 +65,30 @@ abstract public class ZLPaintContext {
 	private boolean myFontIsItalic;
 	private boolean myFontIsUnderlined;
 	private boolean myFontIsStrikedThrough;
+	protected boolean myIsShowGujiPunctuation = false;
+	protected boolean myIsSHowGUjiPunctuationChanged = false;
+	protected boolean mIsGuji = false;
+	public void setIsShowGujiPunctuation(boolean isGuji, boolean value) {
+		mIsGuji = isGuji;
+		myIsShowGujiPunctuation = value;
+		if(!mIsGuji) {
+			myIsSHowGUjiPunctuationChanged = false;
+		}
+		
+	}
+	public boolean isShowGujiPunctuation() {
+		if(!mIsGuji) return true;
+		return myIsShowGujiPunctuation;
+	}
+	
+	public boolean isShowGujiPunctuationChanged() {
+		if(!mIsGuji) return false;
+		return myIsSHowGUjiPunctuationChanged;
+	}
+	public void setShowGujiPunctuationChanged(boolean value) {
+		myIsSHowGUjiPunctuationChanged = value;
+	}
+	
 
 	public final void setFont(List<FontEntry> entries, int size, boolean bold, boolean italic, boolean underline, boolean strikeThrough) {
 		if (entries != null && !entries.equals(myFontEntries)) {
@@ -106,8 +136,8 @@ abstract public class ZLPaintContext {
 	}
 	abstract public void setFillColor(ZLColor color, int alpha);
 
-	abstract public int getWidth();
-	abstract public int getHeight();
+	protected abstract int getWidth();
+	protected abstract int getHeight();
 
 	public final int getStringWidth(String string) {
 		return getStringWidth(string.toCharArray(), 0, string.length());
@@ -160,7 +190,13 @@ abstract public class ZLPaintContext {
 	abstract protected int getDescentInternal();
 
 	public final void drawString(int x, int y, String string, boolean isGujiString) {
+		if(isGujiString) {
+			this.getCanvas().rotate(-90);
+		}
 		drawString(x, y, string.toCharArray(), 0, string.length(), isGujiString);
+		if(isGujiString) {
+			this.getCanvas().rotate(90);
+		}
 	}
 	abstract public void drawString(int x, int y, char[] string, int offset, int length, boolean isGujiString);
 
@@ -203,6 +239,7 @@ abstract public class ZLPaintContext {
 
 	abstract public Size imageSize(ZLImageData image, Size maxSize, ScalingType scaling);
 	abstract public void drawImage(int x, int y, ZLImageData image, Size maxSize, ScalingType scaling, ColorAdjustingMode adjustingMode);
+	abstract public void drawImage(int x, int y, Bitmap bitmap, Size maxSize, ScalingType scaling, ColorAdjustingMode adjustingMode);
 
 	abstract public void drawLine(int x0, int y0, int x1, int y1);
 	abstract public void drawRectangle(int x0, int y0, int x1, int y1);

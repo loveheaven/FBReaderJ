@@ -22,11 +22,19 @@ package org.geometerplus.zlibrary.text.view;
 import java.util.ArrayList;
 
 final class ZLTextPage {
+	enum PageType {
+		GujiCover,
+		GujiInternalCover,
+		GujiEndofSection,
+		Other
+	}
+	PageType Type = PageType.Other;
 	final ZLTextWordCursor StartCursor = new ZLTextWordCursor();
 	final ZLTextWordCursor EndCursor = new ZLTextWordCursor();
 	final ArrayList<ZLTextLineInfo> LineInfos = new ArrayList<ZLTextLineInfo>();
 	int Column0Height;
 	int PaintState = PaintStateEnum.NOTHING_TO_PAINT;
+	public int PAGENO = -1;
 
 	final ZLTextElementAreaVector TextElementMap = new ZLTextElementAreaVector();
 
@@ -69,6 +77,7 @@ final class ZLTextPage {
 		EndCursor.reset();
 		LineInfos.clear();
 		PaintState = PaintStateEnum.NOTHING_TO_PAINT;
+		PAGENO = -1;
 	}
 
 	void moveStartCursor(ZLTextParagraphCursor cursor) {

@@ -19,6 +19,7 @@
         android:gravity="center_horizontal"
         android:paddingTop="10px"
         android:singleLine="true"
+        android:layout_marginTop="6dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <SeekBar
@@ -47,7 +48,9 @@
             android:gravity="center_vertical"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
+            android:layout_marginTop="6dp"
             android:singleLine="true"
+            android:textColor="@android:color/white"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <ImageButton
@@ -68,19 +71,46 @@
             android:id="@+id/navigation_night"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:background="@drawable/navigation_button"
             android:drawableRight="@drawable/popup_night"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/white"
             android:visibility="gone" />
 
         <Button
             android:id="@+id/navigation_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:background="@drawable/navigation_button"
             android:drawableRight="@drawable/popup_day"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/white"
             android:visibility="gone" />
+        
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="#90909090" />
+        <Button
+            android:id="@+id/navigation_showtranditional"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/navigation_button"
+            android:drawableRight="@drawable/popup_zho"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/white"
+             />
+        
     </LinearLayout>
 
     <View

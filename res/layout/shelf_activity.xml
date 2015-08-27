@@ -17,12 +17,12 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:shelves="http://schemas.android.com/apk/res/org.geometerplus.zlibrary.ui.android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical"
-     >
-     
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
     <!-- add by wenyd on 2011-12-21 -->
-    <!-- 
+    <!--
        <ImageView
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -30,21 +30,29 @@
         android:background=screen_shelves"@drawable/bookshelf_header_bg"
          >
     </ImageView>
-     -->
-     
-     <include layout="@layout/shelf_titlebar"/>
-    
+    -->
+
+    <include layout="@layout/shelf_titlebar" />
 
     <org.geometerplus.zlibrary.ui.android.view.ShelvesView
         android:id="@+id/grid_shelves"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:cacheColorHint="#00000000"
-        android:columnWidth="@dimen/BookWidth"
-        android:scrollbars="none"
+        android:cacheColorHint="@android:color/transparent"
+        android:columnWidth="@dimen/BookShelf_ColumnWidth"
+        android:fadingEdge="none"
+        android:fadingEdgeLength="0.0dip"
+        android:horizontalSpacing="@dimen/BookShelf_HorizontalSpacing"
         android:listSelector="@android:color/transparent"
         android:numColumns="auto_fit"
-        shelves:shelfBackground="@drawable/shelf_panel" />
+        android:paddingLeft="10.0dip"
+        android:paddingRight="10.0dip"
+        android:scrollbars="none"
+        android:scrollingCache="false"
+        android:stretchMode="columnWidth"
+        shelves:shelfBackground="@drawable/bookshelf_layer_center"
+        shelves:shelfLeftLayer="@drawable/bookshelf_layer_left"
+        shelves:shelfRightLayer="@drawable/bookshelf_layer_right" />
 
     <!--
     <ViewStub

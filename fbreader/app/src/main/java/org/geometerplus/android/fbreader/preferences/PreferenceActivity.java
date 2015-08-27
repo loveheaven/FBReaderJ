@@ -322,6 +322,22 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 			einkPreferences.add(updateIntervalPreference);
 			einkPreferences.run();
 		}
+		final Screen gujiScreen = appearanceScreen.createPreferenceScreen("guji");
+		gujiScreen.addOption(viewOptions.ShowGujiCoverOption, "ShowGujiCover");
+		gujiScreen.addOption(viewOptions.ShowGujiBanxinOption, "ShowGujiBanxin");
+		gujiScreen.addOption(viewOptions.ShowGujiJielanOption, "ShowGujiJielan");
+		gujiScreen.addOption(viewOptions.DoubleLeftBankuangOption, "DoubleLeftBankuang");
+		gujiScreen.addOption(viewOptions.DoubleRightBankuangOption, "DoubleRightBankuang");
+		gujiScreen.addOption(viewOptions.DoubleTopBankuangOption, "DoubleTopBankuang");
+		gujiScreen.addOption(viewOptions.DoubleBottomBankuangOption, "DoubleBottomBankuang");
+		gujiScreen.addOption(viewOptions.WaiBankuangWidthOption, "WaiBankuangWidth");
+		gujiScreen.addOption(viewOptions.NeiBankuangWidthOption, "NeiBankuangWidth");
+		gujiScreen.addOption(viewOptions.SpaceBetweenBankuangOption, "SpaceBetweenBankuang");
+		gujiScreen.addOption(viewOptions.ShowGujiZhuOption, "ShowGujiZhu");
+		gujiScreen.addOption(viewOptions.ShowGujiYiOption, "ShowGujiYi");
+		gujiScreen.addOption(viewOptions.ShowGujiPunctuationOption, "ShowGujiPunctuation");
+		gujiScreen.addOption(viewOptions.GujiYiColorOption, "GujiYiColor");
+		gujiScreen.addOption(viewOptions.GujiZhuColorOption, "GujiZhuColor");
 
 		final Screen textScreen = createPreferenceScreen("text");
 
@@ -386,8 +402,6 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 			baseStyle.AlignmentOption, alignments
 		));
 		textScreen.addOption(baseStyle.AutoHyphenationOption, "autoHyphenations");
-		textScreen.addOption(androidLibrary.ShowGujiZhuOption, "ShowGujiZhu");
-		textScreen.addOption(androidLibrary.ShowGujiYiOption, "ShowGujiYi");
 
 		final Screen moreStylesScreen = textScreen.createPreferenceScreen("more");
 		for (ZLTextNGStyleDescription description : collection.getDescriptionList()) {
@@ -587,6 +601,14 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 			}
 		});
 
+		footerPreferences.add(statusLineScreen.addPreference(new ZLBooleanPreference(
+				this, 
+				viewOptions.HeaderHidden, statusLineScreen.Resource.getResource("headerHidden")
+			)));
+		footerPreferences.add(statusLineScreen.addPreference(new ZLIntegerRangePreference(
+				this, statusLineScreen.Resource.getResource("headerHeight"),
+				viewOptions.HeaderHeight
+			)));
 		footerPreferences.add(statusLineScreen.addPreference(new ZLIntegerRangePreference(
 			this, statusLineScreen.Resource.getResource("footerHeight"),
 			viewOptions.FooterHeight

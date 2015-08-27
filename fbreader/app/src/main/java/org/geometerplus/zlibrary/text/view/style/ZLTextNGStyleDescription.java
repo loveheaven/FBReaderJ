@@ -24,8 +24,12 @@ import java.util.HashMap;
 
 import org.fbreader.util.Boolean3;
 
+import org.geometerplus.zlibrary.core.application.ZLApplication;
+import org.geometerplus.zlibrary.core.options.ZLOption;
 import org.geometerplus.zlibrary.core.options.ZLStringOption;
+import org.geometerplus.zlibrary.core.view.ZLView;
 import org.geometerplus.zlibrary.text.model.*;
+import org.geometerplus.zlibrary.text.view.ZLTextView;
 
 public class ZLTextNGStyleDescription {
 	public final String Name;
@@ -54,6 +58,22 @@ public class ZLTextNGStyleDescription {
 
 		FontFamilyOption = createOption(selector, "font-family", valueMap);
 		FontSizeOption = createOption(selector, "font-size", valueMap);
+		FontSizeOption.setCallback(new ZLOption.ZLOptionCallback() {
+			
+			@Override
+			public void setValueCallback() {
+				final ZLView view = ZLApplication.Instance().getCurrentView();
+				boolean isGuji = false;
+				if(view != null && view instanceof ZLTextView) {
+					ZLTextView textview = (ZLTextView)view;
+					isGuji = textview.isGuji();
+					if(isGuji) {
+						textview.clearCaches();
+					}
+				}
+				
+			}
+		});
 		FontWeightOption = createOption(selector, "font-weight", valueMap);
 		FontStyleOption = createOption(selector, "font-style", valueMap);
 		TextDecorationOption = createOption(selector, "text-decoration", valueMap);

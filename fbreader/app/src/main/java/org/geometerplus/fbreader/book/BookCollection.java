@@ -884,12 +884,39 @@ public class BookCollection extends AbstractBookCollection<DbBook> {
 		return new DbBook(id, ZLFile.createFileByUrl(url), title, encoding, language);
 	}
 	
+	@Override
 	public List<Word> unknownWords(long bookId) {
 		return myDatabase.loadUnknownWords(bookId);
 	}
 	
+	@Override
 	public List<Word> allKnownWords(String language) {
 		return myDatabase.loadAllKnownWords(language);
+	}
+	
+	@Override
+	public void deleteAllKnownWord(String language) {
+		myDatabase.deleteAllKnownWord(language);
+	}
+	
+	@Override
+	public void deleteKnownWord(Word word) {
+		myDatabase.deleteKnownWord(word.getText(), word.getLanguage());
+	}
+	
+	@Override
+	public void deleteUnknownWord(Word word) {
+		myDatabase.deleteUnknownWord(word.getBookId(), word.getText());
+	}
+	
+	@Override
+	public void updateKnownWord(Word word, String newText) {
+		myDatabase.updateKnownWord(word.getText(), word.getLanguage(), newText);
+	}
+	
+	@Override
+	public void updateUnknownWord(Word word, String newText) {
+		myDatabase.updateUnknownWord(word.getBookId(), word.getText(), newText);
 	}
 
 	@Override

@@ -743,6 +743,8 @@
 				<node name="showAsFooter" value="Horizontal footer"/>
 				<node name="showAsFooterOldStyle" value="Horizontal footer (old style)"/>
 			</node>
+			<node name="headerHidden" value="Hide header"/>
+			<node name="headerHeight" value="Header Height"/>
 			<node name="footerHeight" value="Footer height"/>
 			<node name="footerOldStyleColor" value="Footer (old style) colour"/>
 			<node name="footerBackgroundColor" value="Footer background colour"/>

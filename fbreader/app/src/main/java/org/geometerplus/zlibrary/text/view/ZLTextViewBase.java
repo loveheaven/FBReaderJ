@@ -19,17 +19,29 @@
 
 package org.geometerplus.zlibrary.text.view;
 
-import org.geometerplus.fbreader.book.Book;
+import jopencc.util.ChineseConvertor;
+
 import org.geometerplus.fbreader.bookmodel.FBTextKind;
+import org.geometerplus.fbreader.fbreader.ActionCode;
 import org.geometerplus.fbreader.fbreader.FBReaderApp;
+import org.geometerplus.fbreader.fbreader.options.ViewOptions.BanxinStyleEnum;
+import org.geometerplus.fbreader.fbreader.options.ViewOptions.GujiCoverStyleEnum;
 import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.library.ZLibrary;
+import org.geometerplus.zlibrary.core.options.ZLStringOption;
+import org.geometerplus.zlibrary.core.util.ZLBoolean3;
 import org.geometerplus.zlibrary.core.util.ZLColor;
 import org.geometerplus.zlibrary.core.view.ZLView;
 import org.geometerplus.zlibrary.core.view.ZLPaintContext;
+import org.geometerplus.zlibrary.core.view.ZLPaintContext.Size;
 import org.geometerplus.zlibrary.text.model.ZLTextMetrics;
 import org.geometerplus.zlibrary.text.view.style.*;
+import org.geometerplus.zlibrary.ui.android.R;
+
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 
 abstract class ZLTextViewBase extends ZLView {
 	public static enum ImageFitting {
@@ -39,9 +51,8 @@ abstract class ZLTextViewBase extends ZLView {
 	private ZLTextStyle myTextStyle;
 	private int myWordHeight = -1;
 	private ZLTextMetrics myMetrics;
-	private int myGujiBankuangWidth = 10;
 
-	ZLTextViewBase(ZLApplication application) {
+	ZLTextViewBase(FBReaderApp application) {
 		super(application);
 	}
 
@@ -92,6 +103,7 @@ abstract class ZLTextViewBase extends ZLView {
 	public abstract int getTopMargin();
 	public abstract int getBottomMargin();
 	public abstract int getSpaceBetweenColumns();
+	public abstract int getTextAreaHeight();
 
 	public abstract boolean twoColumnView();
 
@@ -108,31 +120,15 @@ abstract class ZLTextViewBase extends ZLView {
 		return new ZLPaintContext.Size(getTextColumnWidth(), getTextAreaHeight());
 	}
 
-	//TODO
-	int getGujiBanxinWidth() {
-		if(!isGuji()) return 0;
-		int baseFontSize = getTextStyleCollection().getBaseStyle().getFontSize();
-		int width=  (int)(baseFontSize * getTextStyleCollection().getBaseStyle().getLineSpacePercent() / 100) + getTextStyleCollection().getBaseStyle().getVerticalAlign(metrics());
-		int fontSubSize = getTextStyleCollection().getDescription(FBTextKind.SUB).getFontSize(metrics(), baseFontSize);
-		int fontCodeSize = getTextStyleCollection().getDescription(FBTextKind.CODE).getFontSize(metrics(), baseFontSize);
-		if( fontSubSize*2> width) width=fontSubSize*2;
-		if( fontCodeSize*2> width) width=fontCodeSize*2;
-		return width;
-	}
-	
 	int getFontSize() {
 		return (int)myTextStyle.getFontSize(metrics());
 	}
 	
-	int getTextAreaHeight() {
-		return getContextHeight() - getTopMargin() - getBottomMargin() - 2*getGujiBankuangWidth() - getGujiBanxinWidth();
-	}
-
 	protected int getColumnIndex(int x) {
 		if (!twoColumnView()) {
 			return -1;
 		}
-		return 2 * x <= (getContextWidth() + getLeftMargin() - getRightMargin() - 2*getGujiBankuangWidth())? 0 : 1;
+		return 2 * x <= (getContextWidth() + getLeftMargin() - getRightMargin() -getGujiLeftBankuangWidth() - getGujiRightBankuangWidth())? 0 : 1;
 	}
 
 	public int getTextColumnWidth() {
@@ -142,37 +138,198 @@ abstract class ZLTextViewBase extends ZLView {
 	}
 
 	int getTextAreaWidth() {
-		return getContextWidth() - getLeftMargin() - getRightMargin()-2*getGujiBankuangWidth();
-	}
-
-	int getBottomLine() {
-		return getContextHeight() - getBottomMargin() - getGujiBankuangWidth();
+		return getContextWidth() - getLeftMargin() - getRightMargin()-getGujiLeftBankuangWidth() - getGujiRightBankuangWidth();
 	}
 
 	int getRightLine() {
-		return getContextWidth() - getRightMargin() - getGujiBankuangWidth();
+		return getContextWidth() - getRightMargin() - getGujiRightBankuangWidth();
 	}
 	
-	public boolean isGuji() {
-		if(myBook != null) return myBook.isGuji();
-		return false;
+	int getGujiWaiBankuangWidth() {
+		return isGuji()? Application.ViewOptions.WaiBankuangWidthOption.getValue() : 0;
+	}
+	int getGujiNeiBankuangWidth() {
+		return isGuji()? Application.ViewOptions.NeiBankuangWidthOption.getValue() : 0;
+	}
+	int getGujiSpaceBetweenBankuang() {
+		return isGuji()? Application.ViewOptions.SpaceBetweenBankuangOption.getValue() : 0;
 	}
 	
-	protected Book myBook;
-	protected FBReaderApp myReader;
-	
-	public boolean isDjvu() {
-		if(myBook != null) return myBook.isDjvu();
-		return false;
+	int myGujiLeftBankuangWidth = -1;
+	int getGujiLeftBankuangWidth() {
+		if(!isGuji()) return 0;
+		if(myGujiLeftBankuangWidth != -1) return myGujiLeftBankuangWidth;
+		myGujiLeftBankuangWidth = Application.ViewOptions.DoubleLeftBankuangOption.getValue()? 
+				getGujiWaiBankuangWidth() + getGujiNeiBankuangWidth() + getGujiSpaceBetweenBankuang(): 
+					getGujiWaiBankuangWidth();
+		return myGujiLeftBankuangWidth;
 	}
 	
-	public void setBook(Book book, FBReaderApp reader) {
-		myBook = book;
-		myReader = reader;
+	int myGujiRightBankuangWidth = -1;
+	int getGujiRightBankuangWidth() {
+		if(!isGuji()) return 0;
+		if(myGujiRightBankuangWidth != -1) return myGujiRightBankuangWidth;
+		myGujiRightBankuangWidth = Application.ViewOptions.DoubleRightBankuangOption.getValue()? 
+				getGujiWaiBankuangWidth() + getGujiNeiBankuangWidth() + getGujiSpaceBetweenBankuang(): 
+					getGujiWaiBankuangWidth();
+		return myGujiRightBankuangWidth;
 	}
 	
-	int getGujiBankuangWidth() {
-		return isGuji()? myGujiBankuangWidth : 0;
+	int myGujiTopBankuangWidth = -1;
+	int getGujiTopBankuangWidth() {
+		if(!isGuji()) return 0;
+		if(myGujiTopBankuangWidth != -1) return myGujiTopBankuangWidth;
+		myGujiTopBankuangWidth = Application.ViewOptions.DoubleTopBankuangOption.getValue()? 
+				getGujiWaiBankuangWidth() + getGujiNeiBankuangWidth() + getGujiSpaceBetweenBankuang(): 
+					getGujiWaiBankuangWidth();
+		return myGujiTopBankuangWidth;
+	}
+	
+	int myGujiBottomBankuangWidth = -1;
+	int getGujiBottomBankuangWidth() {
+		if(!isGuji()) return 0;
+		if(myGujiBottomBankuangWidth != -1) return myGujiBottomBankuangWidth;
+		myGujiBottomBankuangWidth = Application.ViewOptions.DoubleBottomBankuangOption.getValue()? 
+				getGujiWaiBankuangWidth() + getGujiNeiBankuangWidth() + getGujiSpaceBetweenBankuang(): 
+					getGujiWaiBankuangWidth();
+		return myGujiBottomBankuangWidth;
+	}
+	
+	int getGujiHudieHalfLineNum() {
+		int gujiLeftBanWidth = getTextAreaHeight()/2;		
+		return (gujiLeftBanWidth)/getGujiPossibleLineHeight();
+	}
+	
+	int getGujiBaobeiLineNum() {
+		return getTextAreaHeight()/getGujiPossibleLineHeight();
+	}
+	
+	int getGujiBaobeiLineHeight() {
+		if(!isGuji()) return 0;
+		int gujiBanWidth = getTextAreaHeight();		
+		int gujiLineNum = getTextAreaHeight()/getGujiPossibleLineHeight();
+		return gujiLineNum == 0?gujiBanWidth:(gujiBanWidth)/gujiLineNum;
+	}
+	
+	int getGujiLineHeight() {
+		if(!isGuji()) return 0;
+		return getGujiStyle() == BanxinStyleEnum.baobei? 
+				getGujiBaobeiLineHeight() : getGujiHudieLineHeight();
+	}
+	
+	int myTextAreaHeight = -1;
+	public void clearGujiTextCache() {
+		if(!isGuji()) return;
+		myGujiPossibleLineHeight = -1;
+		myGujiStyle = null;
+		myTextAreaHeight = -1;
+		myGujiLeftBankuangWidth = -1;
+		myGujiRightBankuangWidth = -1;
+		myGujiTopBankuangWidth = -1;
+		myGujiBottomBankuangWidth = -1;
+	}
+	
+	//TODO
+	protected int myGujiPossibleLineHeight = -1;
+	int getGujiPossibleLineHeight() {
+		if(!isGuji()) return 0;
+		if(myGujiPossibleLineHeight != -1) return myGujiPossibleLineHeight;
+		int baseFontSize = getTextStyleCollection().getBaseStyle().getFontSize();
+		int width=  (int)(baseFontSize * getTextStyleCollection().getBaseStyle().getLineSpacePercent() / 100) + getTextStyleCollection().getBaseStyle().getVerticalAlign(metrics());
+		int fontSubSize = getTextStyleCollection().getDescription(FBTextKind.SUB).getFontSize(metrics(), baseFontSize);
+		int fontCodeSize = getTextStyleCollection().getDescription(FBTextKind.CODE).getFontSize(metrics(), baseFontSize);
+		if( fontSubSize*2> width) width=fontSubSize*2;
+		if( fontCodeSize*2> width) width=fontCodeSize*2;
+		myGujiPossibleLineHeight = width;
+		return width;
+	}
+	
+	int getGujiBanxinHeight() {
+		if(!isGuji()) return 0;
+		if(getGujiStyle() == BanxinStyleEnum.jingzhe) {
+			return getGujiLeftBankuangWidth();
+		} else {
+			return getGujiPossibleLineHeight();
+		}
+	}
+	
+	int getGujiHudieLineHeight() {
+		if(!isGuji()) return 0;
+		int gujiLeftBanWidth = getTextAreaHeight()/2;		
+		int gujiLineNum = (gujiLeftBanWidth)/getGujiPossibleLineHeight();
+		return gujiLineNum == 0?gujiLeftBanWidth:(gujiLeftBanWidth)/gujiLineNum;
+	}
+	
+	boolean isLandscape() {
+		String option = ZLibrary.Instance().getOrientationOption().getValue();
+		return option.equals(ZLibrary.SCREEN_ORIENTATION_LANDSCAPE) || 
+				option.equals(ZLibrary.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+	}
+	
+	BanxinStyleEnum myGujiStyle = null;
+	BanxinStyleEnum getGujiStyle() {
+		if(myGujiStyle != null) return myGujiStyle;
+		BanxinStyleEnum ret = Application.ViewOptions.ShowGujiBanxinOption.getValue();
+		if(ret == BanxinStyleEnum.baobei && isLandscape()) {
+			ret = BanxinStyleEnum.hudie;
+		}
+		myGujiStyle =  ret;
+		return ret;
+	}
+	
+	Bitmap myGujiCoverbitmap = null;
+	GujiCoverStyleEnum myCoverStyle;
+	public Bitmap getGujiCover() {
+		GujiCoverStyleEnum value = Application.ViewOptions.ShowGujiCoverOption.getValue();
+		if(myCoverStyle == value && myGujiCoverbitmap != null) {
+			return myGujiCoverbitmap;
+		}
+		myCoverStyle = value;
+		if(value == GujiCoverStyleEnum.sike) {
+			myGujiCoverbitmap = getImage(R.drawable.guji_cover_type1, new Size(getContextHeight() -4, getContextWidth()-4));
+		} else if(value == GujiCoverStyleEnum.royal) {
+			myGujiCoverbitmap = getImage(R.drawable.guji_cover_type2, new Size(getContextHeight()-4, getContextWidth()-4));
+		} else if(value == GujiCoverStyleEnum.fangke) {
+			myGujiCoverbitmap = getImage(R.drawable.guji_cover_type3, new Size(getContextHeight()-4, getContextWidth()-4));
+		}
+		return myGujiCoverbitmap;
+	}
+	
+	public Bitmap getImage(int resId, Size maxSize) {
+		Drawable d = ZLibrary.Instance().getResources().getDrawable(resId);
+		Bitmap bitmap = ((android.graphics.drawable.BitmapDrawable)d).getBitmap();
+		Matrix a = new Matrix();
+		if(maxSize != null) {
+			a.setScale(((float)maxSize.Width)/bitmap.getWidth(), ((float)maxSize.Height)/bitmap.getHeight());
+			a.postRotate(-90);
+		} else {
+			a.setRotate(-90);
+		}
+		try {
+			Bitmap result = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), a, true);
+			bitmap.recycle();
+			return result;
+		} catch(OutOfMemoryError e) {
+			
+		}
+		return null;
+	}
+	
+	private Bitmap myGujiYinzhang;
+	public Bitmap getGujiYinZhang(Size maxSize) {
+		if(myGujiYinzhang != null && !myGujiYinzhang.isRecycled()) return myGujiYinzhang;
+		Drawable d = ZLibrary.Instance().getResources().getDrawable(R.drawable.guji_yinzhang_yinwen);
+		Bitmap bitmap = ((android.graphics.drawable.BitmapDrawable)d).getBitmap();
+		Matrix a = new Matrix();
+		if(maxSize != null) {
+			a.setScale(((float)maxSize.Width)/bitmap.getWidth(), ((float)maxSize.Height)/bitmap.getHeight());
+			a.postRotate(-88);
+		} else {
+			a.setRotate(-88);
+		}
+		myGujiYinzhang = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), a, true);
+		bitmap.recycle();
+		return myGujiYinzhang;
 	}
 	
 	final ZLTextStyle getTextStyle() {
@@ -244,9 +401,9 @@ abstract class ZLTextViewBase extends ZLView {
 				setTextStyle(new ZLTextNGStyle(myTextStyle, description, hyperlink));
 
 				if(control.Kind == FBTextKind.CODE) {
-					getTextStyle().TextColor = new ZLColor(0x5b,0,0x12);
+					getTextStyle().TextColor = Application.ViewOptions.GujiYiColorOption.getValue();
 				} else if(control.Kind == FBTextKind.SUB) {
-					getTextStyle().TextColor = new ZLColor(180,0,30);//(211,82,44);
+					getTextStyle().TextColor = Application.ViewOptions.GujiZhuColorOption.getValue();//(211,82,44);
 				}
 			}
 		} else {
@@ -291,7 +448,8 @@ abstract class ZLTextViewBase extends ZLView {
 			return Math.min(300, getTextColumnWidth());
 		} else if (element instanceof ExtensionElement) {
 			return ((ExtensionElement)element).getWidth();
-		} else if (element == ZLTextElement.NBSpace) {
+		} else if (element == ZLTextElement.NBSpace || element == ZLTextElement.HSpace) {
+			if(isGuji()) return getContext().getStringHeight();
 			return getContext().getSpaceWidth();
 		} else if (element == ZLTextElement.Indent) {
 			return myTextStyle.getFirstLineIndent(metrics());
@@ -399,6 +557,18 @@ abstract class ZLTextViewBase extends ZLView {
 	}
 
 	private final void drawString(ZLPaintContext context, int x, int y, char[] str, int offset, int length, ZLTextWord.Mark mark, ZLColor color, int shift, boolean isGujiString) {
+		if(myBook != null && myBook.getLanguage().startsWith("zh")) {
+			ZLBoolean3 type = Application.ViewOptions.ShowTranditionalOption.getValue();
+			if(type == ZLBoolean3.B3_TRUE) {
+				String zhString = new String(str, offset, length);
+				str = ChineseConvertor.convertToZht(zhString).toCharArray();
+				offset = 0;
+			} else if(type == ZLBoolean3.B3_FALSE) {
+				String zhString = new String(str, offset, length);
+				str = ChineseConvertor.convertToZhs(zhString).toCharArray();
+				offset = 0;
+			}
+		}
 		if (mark == null) {
 			context.setTextColor(color);
 			context.drawString(x, y, str, offset, length, isGujiString);

@@ -26,6 +26,7 @@ import android.widget.*;
 
 import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.resources.ZLResource;
+import org.geometerplus.zlibrary.core.util.ZLBoolean3;
 import org.geometerplus.zlibrary.text.view.ZLTextView;
 import org.geometerplus.zlibrary.text.view.ZLTextWordCursor;
 import org.geometerplus.zlibrary.ui.android.R;
@@ -242,6 +243,44 @@ final class NavigationPopup extends ZLApplication.PopupPanel {
 				night.setVisibility(View.VISIBLE);
 			}
 		});
+		
+		final Button showTranditional = (Button)myWindow.findViewById(R.id.navigation_showtranditional);
+		ZLBoolean3 value = myFBReader.ViewOptions.ShowTranditionalOption.getValue();
+		switch(value) {
+		case  B3_UNDEFINED:
+			showTranditional.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_zho, 0);
+			break;
+		case  B3_TRUE:
+			showTranditional.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_zht, 0);
+			break;
+		case  B3_FALSE:
+			showTranditional.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_zhs, 0);
+			break;
+		} 
+		showTranditional.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ZLBoolean3 value = myFBReader.ViewOptions.ShowTranditionalOption.getValue();
+				switch(value) {
+				case  B3_UNDEFINED:
+					myFBReader.ViewOptions.ShowTranditionalOption.setValue(ZLBoolean3.B3_TRUE);
+					showTranditional.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_zht, 0);
+					break;
+				case  B3_TRUE:
+					myFBReader.ViewOptions.ShowTranditionalOption.setValue(ZLBoolean3.B3_FALSE);
+					showTranditional.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_zhs, 0);
+					break;
+				case  B3_FALSE:
+					myFBReader.ViewOptions.ShowTranditionalOption.setValue(ZLBoolean3.B3_UNDEFINED);
+					showTranditional.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_zho, 0);
+					break;
+				} 
+				
+				myFBReader.getViewWidget().reset();
+				myFBReader.getViewWidget().repaint();
+			}
+		});
+		
 		
 		
 		final SeekBar slider = (SeekBar)myWindow.findViewById(R.id.navigation_slider);

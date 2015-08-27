@@ -37,7 +37,7 @@ public class ChineseConvertor {
 	 * @param src
 	 * @return Text in Traditional Chinese
 	 */
-	public String convertToZht(StringBuffer src){
+	public static String convertToZht(StringBuffer src){
 		if (Util.isMissing(src))
 			return src == null? null: src.toString();
 		
@@ -58,7 +58,7 @@ public class ChineseConvertor {
 	 * @param src
 	 * @return Text in Traditional Chinese
 	 */
-	public String convertToZht(String src){
+	public static String convertToZht(String src){
 		return Util.isMissing(src)? src: convertToZht(new StringBuffer(src));
 	}
 	
@@ -67,7 +67,7 @@ public class ChineseConvertor {
 	 * @param src
 	 * @return Text in Traditional Chinese
 	 */
-	public String convertToZhs(StringBuffer src){
+	public static String convertToZhs(StringBuffer src){
 		if (Util.isMissing(src))
 			return src == null? null: src.toString();
 		
@@ -88,7 +88,7 @@ public class ChineseConvertor {
 	 * @param src
 	 * @return Text in Traditional Chinese
 	 */
-	public String convertToZhs(String src){
+	public static String convertToZhs(String src){
 		return Util.isMissing(src)? src: convertToZhs(new StringBuffer(src));
 	}
 }

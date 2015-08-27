@@ -25,6 +25,8 @@ import org.geometerplus.zlibrary.core.filesystem.ZLResourceFile;
 import org.geometerplus.zlibrary.core.options.ZLIntegerOption;
 import org.geometerplus.zlibrary.core.options.ZLStringOption;
 
+import android.content.res.Resources;
+
 public abstract class ZLibrary {
 	public static ZLibrary Instance() {
 		return ourImplementation;
@@ -42,14 +44,16 @@ public abstract class ZLibrary {
 	public final ZLIntegerOption ScreenHintStageOption =
 		new ZLIntegerOption("LookNFeel", "ScreenHintStage", 0);
 
+	public final ZLStringOption OrientationOption = new ZLStringOption("LookNFeel", "Orientation", "system");
 	public final ZLStringOption getOrientationOption() {
-		return new ZLStringOption("LookNFeel", "Orientation", "system");
+		return OrientationOption;
 	}
 
 	protected ZLibrary() {
 		ourImplementation = this;
 	}
 
+	abstract public Resources getResources();
 	abstract public ZLResourceFile createResourceFile(String path);
 	abstract public ZLResourceFile createResourceFile(ZLResourceFile parent, String name);
 

@@ -216,10 +216,7 @@ public final class CurlAnimationProvider extends AnimationProvider {
 			return ZLViewEnums.PageIndex.current;
 		}
 		final ZLView view = ZLApplication.Instance().getCurrentView();
-		boolean isGuji = false;
-		if(view instanceof ZLTextView) {
-			isGuji = ((ZLTextView)view).isGuji();
-		}
+		boolean isGuji = view.isGuji();
 		ZLViewEnums.PageIndex index = ZLViewEnums.PageIndex.current;
 		switch (myDirection) {
 			case leftToRight:

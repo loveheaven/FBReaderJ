@@ -403,26 +403,47 @@ public class LibraryService extends Service {
 
 		@Override
 		public List<Word> unknownWords(long bookId) throws RemoteException {
-			// TODO Auto-generated method stub
 			return myCollection.unknownWords(bookId);
 		}
 		
 		@Override
 		public List<Word> allKnownWords(String language) throws RemoteException {
-			// TODO Auto-generated method stub
 			return myCollection.allKnownWords(language);
+		}
+		
+		@Override
+		public void deleteAllKnownWord(String language) throws RemoteException {
+			myCollection.deleteAllKnownWord(language);
 		}
 
 		@Override
 		public void saveToKnownWords(Word word) throws RemoteException {
-			// TODO Auto-generated method stub
 			myCollection.saveToKnownWords(word);
 		}
 
 		@Override
 		public void saveToUnknownWords(Word word) throws RemoteException {
-			// TODO Auto-generated method stub
 			myCollection.saveToUnknownWords(word);
+		}
+		
+		@Override
+		public void deleteKnownWord(Word word) throws RemoteException {
+			myCollection.deleteKnownWord(word);
+		}
+		
+		@Override
+		public void deleteUnknownWord(Word word) throws RemoteException {
+			myCollection.deleteUnknownWord(word);
+		}
+		
+		@Override
+		public void updateKnownWord(Word word, String newText) throws RemoteException {
+			myCollection.updateKnownWord(word, newText);
+		}
+		
+		@Override
+		public void updateUnknownWord(Word word, String newText) throws RemoteException {
+			myCollection.updateUnknownWord(word, newText);
 		}
 	}
 

@@ -29,6 +29,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.format.DateFormat;
@@ -38,8 +39,8 @@ import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.filesystem.ZLResourceFile;
 import org.geometerplus.zlibrary.core.library.ZLibrary;
 import org.geometerplus.zlibrary.core.options.*;
-
 import org.geometerplus.android.util.DeviceType;
+import org.geometerplus.fbreader.fbreader.options.MiscOptions.FootnoteToastEnum;
 
 public final class ZLAndroidLibrary extends ZLibrary {
 	public final ZLBooleanOption ShowStatusBarOption = new ZLBooleanOption("LookNFeel", "ShowStatusBar", false);
@@ -57,10 +58,6 @@ public final class ZLAndroidLibrary extends ZLibrary {
 	public final ZLIntegerRangeOption BatteryLevelToTurnScreenOffOption = new ZLIntegerRangeOption("LookNFeel", "BatteryLevelToTurnScreenOff", 0, 100, 50);
 	public final ZLBooleanOption DontTurnScreenOffDuringChargingOption = new ZLBooleanOption("LookNFeel", "DontTurnScreenOffDuringCharging", true);
 	public final ZLIntegerRangeOption ScreenBrightnessLevelOption = new ZLIntegerRangeOption("LookNFeel", "ScreenBrightnessLevel", 0, 100, 0);
-	public final ZLBooleanOption ShowGujiZhuOption =
-			new ZLBooleanOption("Options", "ShowGujiZhu", true);
-	public final ZLBooleanOption ShowGujiYiOption =
-			new ZLBooleanOption("Options", "ShowGujiYi", true);
 
 	private final Application myApplication;
 
@@ -70,6 +67,10 @@ public final class ZLAndroidLibrary extends ZLibrary {
 
 	public AssetManager getAssets() {
 		return myApplication.getAssets();
+	}
+	
+	public Resources getResources() {
+		return myApplication.getResources();
 	}
 
 	@Override

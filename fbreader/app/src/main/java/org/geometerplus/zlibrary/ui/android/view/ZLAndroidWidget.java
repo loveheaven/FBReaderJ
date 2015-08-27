@@ -78,10 +78,15 @@ public class ZLAndroidWidget extends MainView implements ZLViewWidget, View.OnLo
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
 		getAnimationProvider().terminate();
+		final ZLView view = ZLApplication.Instance().getCurrentView();
+		if(view.isGuji() && view instanceof ZLTextView) {
+			((ZLTextView)view).clearGujiTextCache();
+		}
 		if (myScreenIsTouched) {
-			final ZLView view = ZLApplication.Instance().getCurrentView();
 			myScreenIsTouched = false;
+			
 			view.onScrollingFinished(ZLView.PageIndex.current);
+			
 		}
 	}
 
@@ -233,26 +238,21 @@ public class ZLAndroidWidget extends MainView implements ZLViewWidget, View.OnLo
 
 	void drawOnBitmap(Bitmap bitmap, ZLView.PageIndex index) {
 		final ZLView view = ZLApplication.Instance().getCurrentView();
-		if (view == null) {
+		if (view == null || bitmap == null) {
 			return;
 		}
-		boolean isGuji = false;
-		if(view instanceof ZLTextView) {
-			isGuji = ((ZLTextView)view).isGuji();
-		}
-		
 		final ZLAndroidPaintContext context = new ZLAndroidPaintContext(
 			mySystemInfo,
 			new Canvas(bitmap),
 			new ZLAndroidPaintContext.Geometry(
 				getWidth(),
 				getHeight(),
-				isGuji?getMainAreaHeight():getWidth(),
-				isGuji?getWidth():getMainAreaHeight(),
+				getWidth(),
+				getMainAreaHeight(),
 				0,
 				0
 			),
-			view.isScrollbarShown() ? getVerticalScrollbarWidth() : 0, isGuji
+			view.isScrollbarShown() ? getVerticalScrollbarWidth() : 0, view.isGuji()
 		);
 		view.paint(context, index);
 	}
@@ -297,27 +297,16 @@ public class ZLAndroidWidget extends MainView implements ZLViewWidget, View.OnLo
 	}
 
 	private void onDrawStatic(final Canvas canvas) {
-		canvas.drawBitmap(myBitmapManager.getBitmap(ZLView.PageIndex.current), 0, 0, myPaint);
+		Bitmap bitmap = myBitmapManager.getBitmap(ZLView.PageIndex.current);
+		if(bitmap != null) {
+			canvas.drawBitmap(bitmap, 0, 0, myPaint);
+		}
 		drawFooter(canvas, null);
 		post(new Runnable() {
 			public void run() {
 				PrepareService.execute(new Runnable() {
 					public void run() {
-						final ZLView view = ZLApplication.Instance().getCurrentView();
-						final ZLAndroidPaintContext context = new ZLAndroidPaintContext(
-							mySystemInfo,
-							canvas,
-							new ZLAndroidPaintContext.Geometry(
-								getWidth(),
-								getHeight(),
-								getWidth(),
-								getMainAreaHeight(),
-								0,
-								0
-							),
-							view.isScrollbarShown() ? getVerticalScrollbarWidth() : 0, false
-						);
-						view.preparePage(context, ZLView.PageIndex.next);
+						myBitmapManager.getBitmap(ZLView.PageIndex.next);
 					}
 				});
 			}

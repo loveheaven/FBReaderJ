@@ -87,7 +87,6 @@ public class Dict {
 		if (init)
 			return;
 		
-		log("initialize map...");
 
 		InputStream is = null;
 		String p0 = config.equals(ZHT_TO_ZHS)? ZHT_TO_ZHS_PHRASE:ZHS_TO_ZHT_PHRASE;
@@ -102,7 +101,6 @@ public class Dict {
 		
 		
 		if (isMissing(dictPhrase) || isMissing(dictChar)){
-			log("cannot get dict");
 			return;
 		}
 		
@@ -113,28 +111,19 @@ public class Dict {
 	 * Convert the source
 	 */
 	public void convert() {
-		// return if source is empty
-		if (isMissing(src)){
-			log("missing src");
-			return;
-		}
-		
 		// initialize the map once
 		initDict();
 		
 		// map the phrases
 //		log("map phrases...");
 		if (!isMissing(dictPhrase))
-			map(src, dictPhrase);
-		else 
-			log("missing dictPhrase");
+			map(src, dictPhrase, true);
+		
 		
 		// map the characters
 //		log("map characters...");
 		if (!isMissing(dictChar))
-			map(src, dictChar);
-		else 
-			log("missing dictChar");
+			map(src, dictChar, false);
 	}
 
 	/**
@@ -142,22 +131,31 @@ public class Dict {
 	 * @param src
 	 * @param dict
 	 */
-	private static void map(StringBuffer src, Map<String, String> dict) {
-		String key, value;
-		int idx, pos, len;
-		Iterator<String> it = dict.keySet().iterator();
-		while (it.hasNext()){
-			key = it.next();
-			pos = 0;
-			while ((idx = src.indexOf(key, pos)) > -1){
-				value = dict.get(key);
-				len = value.length();
-//				log(key + " -> " + value + ", idx: " + idx + ", len: " + len);
-				src.replace(idx, idx + len, value);
-				pos = idx + len;
+	private static void map(StringBuffer src, Map<String, String> dict, boolean isPhrase) {
+		if(isPhrase) {
+			if(src.length() < 10) return;
+			String key, value;
+			int idx, pos, len;
+			Iterator<String> it = dict.keySet().iterator();
+			while (it.hasNext()){
+				key = it.next();
+				pos = 0;
+				while ((idx = src.indexOf(key, pos)) > -1){
+					value = dict.get(key);
+					len = value.length();
+					src.replace(idx, idx + len, value);
+					pos = idx + len;
+				}
+			}
+			it = null;
+		} else {
+			for(int i= 0; i < src.length(); i++) {
+				String value = dict.get(""+ src.charAt(i));
+				if(value != null) {
+					src.replace(i, i+1, value);
+				}
 			}
 		}
-		it = null;
 	}
 	
 	public void clear() {

@@ -63,8 +63,6 @@ public class BookShelf extends Activity implements OnClickListener {
 	private ShelvesView mShelevesView;
 	private BookShelfAdapter mCursorAdapter;
 	
-	private long mBookId = -1;
-
 	private BookOptionListener mOptionListener;
 	final BookCollectionShadow mCollection = new BookCollectionShadow();
 	public final AndroidImageSynchronizer ImageSynchronizer = new AndroidImageSynchronizer(this);
@@ -104,8 +102,11 @@ public class BookShelf extends Activity implements OnClickListener {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 					int arg2, long id) {
-				mBookId = id;
-				mOptionListener = new BookOptionListener();
+				if(mOptionListener == null) {
+					mOptionListener = new BookOptionListener(id);
+				} else {
+					mOptionListener.setBookId(id);
+				}
 				showDialog(DIALOG_OPTION);
 				return true;
 			}
@@ -143,18 +144,12 @@ public class BookShelf extends Activity implements OnClickListener {
 			}
 
 		});
+		
+		mCursorAdapter = new BookShelfAdapter(BookShelf.this, null, ImageSynchronizer);
+		mShelevesView.setAdapter(mCursorAdapter);
 
 		
 	}
-
-	private DataSetObserver mObserver = new DataSetObserver() {
-
-		@Override
-		public void onChanged() {
-			super.onChanged();
-		}
-
-	};
 
 	public boolean isExistOnSdcard(String path) {
 		File file = new File(path);
@@ -195,10 +190,11 @@ public class BookShelf extends Activity implements OnClickListener {
 			@Override
 			public void run() {
 				List<Book> books = mCollection.recentlyOpenedBooks();
-				mCursorAdapter = new BookShelfAdapter(BookShelf.this, books, ImageSynchronizer);
-				mShelevesView.setAdapter(mCursorAdapter);
+				mCursorAdapter.refresh(books);
+				
 			}
 		});
+		
 	}
 
 	@Override
@@ -215,7 +211,7 @@ public class BookShelf extends Activity implements OnClickListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(
 				0,
-				R.drawable.cover_ebk,
+				R.drawable.popup_settings,
 				0,
 				ZLResource.resource("menu")
 						.getResource(ActionCode.SHOW_PREFERENCES).getValue())
@@ -228,7 +224,7 @@ public class BookShelf extends Activity implements OnClickListener {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent = null;
 		switch (item.getItemId()) {
-		case R.drawable.cover_ebk:
+		case R.drawable.popup_settings:
 			intent = new Intent(getApplicationContext(), PreferenceActivity.class);
 			OrientationUtil.startActivityForResult(this, intent, FBReader.REQUEST_PREFERENCES);
 			break;
@@ -312,14 +308,15 @@ public class BookShelf extends Activity implements OnClickListener {
 	private class BookOptionListener implements DialogInterface.OnClickListener {
 
 		private long bookId = -1;
-		private Book book = null;
 
-		public BookOptionListener() {
-			//bookId = id;
+		public BookOptionListener(long id) {
+			bookId = id;
 		}
+		
 		public void setBookId(long id) {
 			bookId = id;
 		}
+
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
 			String path = null;
@@ -328,7 +325,7 @@ public class BookShelf extends Activity implements OnClickListener {
 				mCollection.bindToService(BookShelf.this, new Runnable() {
 					@Override
 					public void run() {
-						Book book = mCollection.getRecentBook(0);
+						Book book = mCollection.getBookById(bookId);
 						if (book != null) {
 							FBReader.openBookActivity(BookShelf.this, book, null);
 						}
@@ -340,7 +337,7 @@ public class BookShelf extends Activity implements OnClickListener {
 				mCollection.bindToService(BookShelf.this, new Runnable() {
 					@Override
 					public void run() {
-						Book book = mCollection.getRecentBook(0);
+						Book book = mCollection.getBookById(bookId);
 						if (book != null) {
 							final Intent intent =
 									new Intent(BookShelf.this, BookInfoActivity.class)
@@ -355,7 +352,7 @@ public class BookShelf extends Activity implements OnClickListener {
 				mCollection.bindToService(BookShelf.this, new Runnable() {
 					@Override
 					public void run() {
-						Book book = mCollection.getBookById(mBookId);
+						Book book = mCollection.getBookById(bookId);
 						
 						if (book != null) {
 							mCollection.removeBook(book, false);

@@ -62,6 +62,7 @@
             android:label="@string/epub_reader"
            	android:screenOrientation="nosensor"
             android:name="org.geometerplus.android.fbreader.BookShelf"
+            android:process=":bookshelf"
             android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
@@ -72,7 +73,7 @@
 		    android:launchMode="singleTask" 
 		    android:icon="@drawable/fbreader" 
 		    android:label="@string/app_name" 
-		    android:theme="@style/FBReader.Activity" 
+		    android:theme="@style/FBReader.Transparent" 
 		    android:configChanges="orientation|keyboardHidden|screenSize">
 			<!-- <intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
@@ -254,7 +255,7 @@
 			</intent-filter>
 		</activity>
 		<activity android:name="org.geometerplus.android.fbreader.TOCActivity" android:theme="@style/FBReader.Activity" android:configChanges="orientation|keyboardHidden|screenSize"/>
-		<activity android:name="org.geometerplus.android.fbreader.preferences.PreferenceActivity" android:theme="@style/FBReader.Activity" android:configChanges="orientation|keyboardHidden|screenSize" android:process=":preferences">
+		<activity android:name="org.geometerplus.android.fbreader.preferences.PreferenceActivity" android:theme="@style/FBReader.Activity" android:configChanges="orientation|keyboardHidden|screenSize">
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW"/>
 				<category android:name="android.intent.category.DEFAULT"/>

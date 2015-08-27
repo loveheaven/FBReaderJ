@@ -22,14 +22,17 @@ package org.geometerplus.zlibrary.text.view.style;
 import java.util.Collections;
 import java.util.List;
 
+import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.fonts.FontEntry;
 import org.geometerplus.zlibrary.core.library.ZLibrary;
 import org.geometerplus.zlibrary.core.options.*;
+import org.geometerplus.zlibrary.core.view.ZLView;
 import org.geometerplus.zlibrary.text.model.ZLTextAlignmentType;
 import org.geometerplus.zlibrary.text.model.ZLTextMetrics;
 import org.geometerplus.zlibrary.text.model.ZLTextStyleEntry;
 import org.geometerplus.zlibrary.text.view.ZLTextStyle;
 import org.geometerplus.zlibrary.text.view.ZLTextHyperlink;
+import org.geometerplus.zlibrary.text.view.ZLTextView;
 
 public class ZLTextBaseStyle extends ZLTextStyle {
 	private static final String GROUP = "Style";
@@ -68,6 +71,22 @@ public class ZLTextBaseStyle extends ZLTextStyle {
 		FontFamilyOption = new ZLStringOption(GROUP, prefix + ":fontFamily", fontFamily);
 		fontSize = fontSize * ZLibrary.Instance().getDisplayDPI() / 160;
 		FontSizeOption = new ZLIntegerRangeOption(GROUP, prefix + ":fontSize", 5, Math.max(144, fontSize * 2), fontSize);
+		FontSizeOption.setCallback(new ZLOption.ZLOptionCallback() {
+			
+			@Override
+			public void setValueCallback() {
+				final ZLView view = ZLApplication.Instance().getCurrentView();
+				boolean isGuji = false;
+				if(view != null && view instanceof ZLTextView) {
+					ZLTextView textview = (ZLTextView)view;
+					isGuji = textview.isGuji();
+					if(isGuji) {
+						textview.clearCaches();
+					}
+				}
+				
+			}
+		});
 		BoldOption = new ZLBooleanOption(GROUP, prefix + ":bold", false);
 		ItalicOption = new ZLBooleanOption(GROUP, prefix + ":italic", false);
 		UnderlineOption = new ZLBooleanOption(GROUP, prefix + ":underline", false);

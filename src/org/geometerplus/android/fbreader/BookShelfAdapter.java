@@ -3,8 +3,9 @@ package org.geometerplus.android.fbreader;
 import java.util.List;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,14 +19,21 @@ import org.geometerplus.android.fbreader.util.AndroidImageSynchronizer;
 import org.geometerplus.fbreader.book.Book;
 import org.geometerplus.zlibrary.core.image.ZLImageProxy;
 import org.geometerplus.zlibrary.ui.android.R;
+import org.geometerplus.zlibrary.ui.android.drawable.CrossFadeDrawable;
+import org.geometerplus.zlibrary.ui.android.drawable.FastBitmapDrawable;
+import org.geometerplus.zlibrary.ui.android.view.VerticalTextView;
 
 public class BookShelfAdapter extends BaseAdapter {
 
-	private static final String TAG = "BookCursorAdapter";
+	private static final String TAG = "BookShelfAdapter";
+	private static final int COVER_TRANSITION_DURATION = 175;  
 
 	public final class ViewHolder{  
         public ImageView bookCover;  
-        public TextView bookTitle;  
+        public VerticalTextView bookTitle;  
+        public TextView bookType;  
+        boolean isGettingCover = false;
+        boolean hasCover = false;
         public class CoverSync implements Runnable {
         	ZLImageProxy mImage;
         	Book mBook;
@@ -35,11 +43,24 @@ public class BookShelfAdapter extends BaseAdapter {
         	}
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				if(!mImage.isSynchronized()) return;
-				Bitmap bitmap = BookShelfCoverCache.convertZLImageToBitmap(mImage);
-				mCache.putCache(mBook, bitmap);
-				bookCover.setImageBitmap(bitmap);
+				
+				Bitmap bitmap = BookShelfCoverCache.convertZLImageToBitmap(mImage,mCoverWidth,mCoverHeight);
+				if(bitmap == null) return;
+				hasCover = true;
+				isGettingCover = false;
+				BitmapDrawable drawable = new BitmapDrawable(bitmap);
+				mCache.putCache(mBook, drawable);
+				bookTitle.setVisibility(View.GONE);
+				bookType.setVisibility(View.GONE);
+				
+//				final CrossFadeDrawable transition = new CrossFadeDrawable(mDefaultCoverBitmap, bitmap);
+//				transition.setCallback(bookCover);
+//		        transition.setCrossFadeEnabled(true);
+//		        transition.setBounds(0, 0, bookCover.getWidth(), bookCover.getHeight());
+//              bookCover.setBackgroundDrawable(transition);
+//              transition.startTransition(COVER_TRANSITION_DURATION);
+				bookCover.setBackgroundDrawable(drawable);
 			}
         	
         }
@@ -48,8 +69,12 @@ public class BookShelfAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;  
 	private Context mContext;
 	private List<Book> mBooks;
+//	private Bitmap mDefaultCoverBitmap;
 
 	private BookShelfCoverCache mCache = null;
+	public int mCoverWidth;
+	public int mCoverHeight;
+	
 
 	public BookShelfAdapter(Context context, List<Book> books, AndroidImageSynchronizer synchronizer) {
 		super();
@@ -57,12 +82,23 @@ public class BookShelfAdapter extends BaseAdapter {
 		mInflater = LayoutInflater.from(context);  
 		mBooks = books;
 		mCache = BookShelfCoverCache.getInstance(mContext, synchronizer);
+		mCoverWidth = mContext.getResources().getDimensionPixelOffset(R.dimen.BookShelf_CoverWidth);
+		mCoverHeight = mContext.getResources().getDimensionPixelOffset(R.dimen.BookShelf_CoverHeight);
+//		mDefaultCoverBitmap = BitmapFactory.decodeResource(context.getResources(),
+//                R.drawable.cover_epub);
 		
+	}
+	
+	public void refresh(List<Book> books) {
+		mBooks = books;
+		this.notifyDataSetChanged();
+		if(mBooks != null)android.util.Log.v("BOOKSHELF", "refresh:" + mBooks.size());
 	}
 
 	@Override
 	public int getCount() {
 		if(mBooks == null) return 0;
+		android.util.Log.v("BOOKSHELF", "count:" + mBooks.size());
 		return mBooks.size();
 	}
 
@@ -89,33 +125,37 @@ public class BookShelfAdapter extends BaseAdapter {
 		ViewHolder holder;
 		if(convertView == null) {
 			holder = new ViewHolder();
-			convertView = mInflater.inflate(R.layout.shelf_book, null);
+			convertView = mInflater.inflate(R.layout.shelf_book, parent, false);
 			holder.bookCover = (ImageView) convertView.findViewById(R.id.book_cover);
-			holder.bookTitle = (TextView) convertView.findViewById(R.id.book_title);
+			holder.bookTitle = (VerticalTextView) convertView.findViewById(R.id.book_title);
+			holder.bookType = (TextView) convertView.findViewById(R.id.book_type);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder)convertView.getTag();
 		}
 		
 		Book book = mBooks.get(position);
-		Bitmap drawable = mCache.get(book, holder);
+		BitmapDrawable drawable = mCache.get(book, holder);
 		if (drawable != null) {
-			holder.bookCover.setImageBitmap(drawable);
+			holder.bookCover.setBackgroundDrawable(drawable);
+			holder.bookTitle.setVisibility(View.GONE);
+			holder.bookType.setVisibility(View.GONE);
 		} else {
-			String path = book.getExtention().toLowerCase();
-
-			if(path.endsWith("txt")) {
-				holder.bookCover.setBackgroundResource(R.drawable.cover_txt);
-			} else if(path.endsWith("epub")) {
-				holder.bookCover.setBackgroundResource(R.drawable.cover_epub);
+			String path = book.getExtention().toUpperCase();
+			String title = book.getTitle();
+			if(path.endsWith("GUJI")) {
+				holder.bookCover.setBackgroundResource(R.drawable.cover_guji);
+				holder.bookType.setVisibility(View.GONE);
+				holder.bookTitle.setText(title, true);
 			} else {
-				holder.bookCover.setBackgroundResource(R.drawable.cover_epub);
+				holder.bookCover.setBackgroundResource(R.drawable.cover_default);
+				holder.bookType.setText("ㄧ"+path+"ㄧ");
+				holder.bookType.setVisibility(View.VISIBLE);
+				holder.bookTitle.setText(title, false);
 			}
+			holder.bookTitle.setVisibility(View.VISIBLE);
 		}
 		
-		String title = book.getTitle();
-		holder.bookTitle.setText(title);
-
 		return convertView;
 	}
 

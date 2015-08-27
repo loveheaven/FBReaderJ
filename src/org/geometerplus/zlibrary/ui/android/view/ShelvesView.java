@@ -24,6 +24,7 @@ public class ShelvesView extends GridView {
 
 	private Bitmap mShelfLeftLayer;
 	private Bitmap mShelfRightLayer;
+	private Bitmap mShelfDock;
 	private int mShelfWidth;
 	private int mShelfHeight;
 
@@ -58,12 +59,15 @@ public class ShelvesView extends GridView {
 		final Bitmap shelfBackground = BitmapFactory.decodeResource(resources,
 				background);
 		mShelfLeftLayer = BitmapFactory.decodeResource(resources,
-				R.drawable.bookshelf_layer_left);
+				a.getResourceId(R.styleable.ShelvesView_shelfLeftLayer, 0));
 		mShelfRightLayer = BitmapFactory.decodeResource(resources,
-				R.drawable.bookshelf_layer_right);
+				a.getResourceId(R.styleable.ShelvesView_shelfRightLayer, 0));
+		mShelfDock = BitmapFactory.decodeResource(resources,
+				a.getResourceId(R.styleable.ShelvesView_shelfDock, 0));
 		if (shelfBackground != null) {
 			mShelfWidth = shelfBackground.getWidth();
 			mShelfHeight = shelfBackground.getHeight();
+			//mShelfHeight = getResources().getDimensionPixelSize(R.dimen.BookHeight);
 			mShelfBackground = shelfBackground;
 		}
 		
@@ -98,59 +102,70 @@ public class ShelvesView extends GridView {
         
         Resources r=getResources();
 
-        mDefaultBookItemWidth =r.getDimensionPixelSize(R.dimen.BookWidth);
+        mDefaultBookItemWidth =r.getDimensionPixelSize(R.dimen.BookShelf_ColumnWidth);
 
 	}
 	protected int mDefaultBookItemWidth;
 	
-	@Override
-	protected void layoutChildren() {
-		super.layoutChildren();
-		final int count = getChildCount();
-		int leftWidth = mShelfLeftLayer.getWidth();
-		int rightWidth = mShelfRightLayer.getWidth();
-		final int top = count > 0 ? getChildAt(0).getTop() : 0;
-		final int width = getWidth();
-		int column = (width-leftWidth-rightWidth)/mDefaultBookItemWidth;
-		int columnSpace = ((width-leftWidth-rightWidth) - (column*mDefaultBookItemWidth))/(column+1);
-		Log.i("info", "leftWidth"+leftWidth+",rightWidth"+rightWidth+",top:"+top+",width:"+width+",column:"+column+"columnSpace"+columnSpace
-				+",mShelfHeight"+mShelfHeight+",mDefaultBookItemWidth"+mDefaultBookItemWidth);
-		
-		for(int i = 0; i< count; i++) {
-			int row = i/column;
-			int col = i%column;
-			View child = this.getChildAt(i);
-			child.layout(leftWidth+columnSpace + col* (mDefaultBookItemWidth+columnSpace), 
-					top+row*mShelfHeight, 
-					leftWidth+columnSpace + col* (mDefaultBookItemWidth+columnSpace)+mDefaultBookItemWidth, 
-					top+row*mShelfHeight+mShelfHeight);
-		}
-	}
+//	@Override
+//	protected void layoutChildren() {
+//		super.layoutChildren();
+//		final int count = getChildCount();
+//		int leftWidth = mShelfLeftLayer.getWidth();
+//		int rightWidth = mShelfRightLayer.getWidth();
+//		final int top = count > 0 ? getChildAt(0).getTop() : 0;
+//		final int width = getWidth();
+//		int column = (width-leftWidth-rightWidth)/mDefaultBookItemWidth;
+//		int columnSpace = ((width-leftWidth-rightWidth) - (column*mDefaultBookItemWidth))/(column+1);
+//		
+//		android.util.Log.v("BOOKSHELF", top + ";" + column + ";" + count);
+//		
+//		for(int i = 0; i< count; i++) {
+//			int row = i/column;
+//			int col = i%column;
+//			View child = this.getChildAt(i);
+//			child.layout(leftWidth+columnSpace + col* (mDefaultBookItemWidth+columnSpace), 
+//					top+row*mShelfHeight, 
+//					leftWidth+columnSpace + col* (mDefaultBookItemWidth+columnSpace)+mDefaultBookItemWidth, 
+//					top+row*mShelfHeight+mShelfHeight);
+//		}
+//	}
 
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
 		final int count = getChildCount();
-		// RLog.v("ShelevesView","dispatchDraw:count:"+count);
+		
 		final int top = count > 0 ? getChildAt(0).getTop() : 0;
 		final int shelfWidth = mShelfWidth;
 		final int shelfHeight = mShelfHeight;
 		final int width = getWidth();
 		final int height = getHeight();
 		final Bitmap background = mShelfBackground;
+		//android.util.Log.v("BOOKSHELF", "dispatchDraw:"+ top  + ";" + count);
 
-		int leftWidth = mShelfLeftLayer.getWidth();
-		int rightWidth = mShelfRightLayer.getWidth();
+		int leftWidth = (mShelfLeftLayer == null)? 0 : mShelfLeftLayer.getWidth();
+		int rightWidth = (mShelfRightLayer == null)? 0 :mShelfRightLayer.getWidth();
 		
 		int height1 = (height / shelfHeight + 1) * shelfHeight + top;
 		for (int y = top; y <= height1; y += shelfHeight) {
-			canvas.drawBitmap(mShelfLeftLayer, 0, y, null);
+			if(mShelfLeftLayer  != null) {
+				canvas.drawBitmap(mShelfLeftLayer, 0, y, null);
+			}
 			for (int x = leftWidth; x < width-rightWidth; x += shelfWidth) {
 				// 仿照IReader书架效果
 				canvas.drawBitmap(background, x, y, null);
-				
 			}
-			canvas.drawBitmap(mShelfRightLayer, width - rightWidth, y,
+			if(mShelfRightLayer != null) {
+				canvas.drawBitmap(mShelfRightLayer, width - rightWidth, y,
 					null);
+			}
+			if(mShelfDock != null) {
+				for (int x = 0; x < width-rightWidth; x += shelfWidth) {
+					canvas.drawBitmap(mShelfDock, 0, y + shelfHeight - mShelfDock.getHeight(), null);
+				}
+			}
+			
+			
 		}
 		if (count == 0) {
             canvas.drawBitmap(mWebLeft, 0.0f, top + 1, null);

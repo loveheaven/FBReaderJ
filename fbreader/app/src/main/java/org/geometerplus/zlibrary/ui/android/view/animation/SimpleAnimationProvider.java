@@ -19,9 +19,9 @@
 
 package org.geometerplus.zlibrary.ui.android.view.animation;
 
-import org.geometerplus.zlibrary.core.view.ZLViewEnums;
 import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.view.ZLView;
+import org.geometerplus.zlibrary.core.view.ZLViewEnums;
 import org.geometerplus.zlibrary.text.view.ZLTextView;
 
 abstract class SimpleAnimationProvider extends AnimationProvider {
@@ -37,11 +37,6 @@ abstract class SimpleAnimationProvider extends AnimationProvider {
 			return ZLViewEnums.PageIndex.current;
 		}
 
-		final ZLView view = ZLApplication.Instance().getCurrentView();
-		boolean isGuji = false;
-		if(view instanceof ZLTextView) {
-			isGuji = ((ZLTextView)view).isGuji();
-		}
 		ZLViewEnums.PageIndex index = ZLViewEnums.PageIndex.current;
 		switch (myDirection) {
 			case rightToLeft:
@@ -57,8 +52,12 @@ abstract class SimpleAnimationProvider extends AnimationProvider {
 				index = myStartY < y ? ZLViewEnums.PageIndex.next : ZLViewEnums.PageIndex.previous;
 				break;
 		}
+		final ZLView view = ZLApplication.Instance().getCurrentView();
+		boolean isGuji = view.isGuji();
 		if(isGuji) {
-			if(index == ZLViewEnums.PageIndex.next) return ZLViewEnums.PageIndex.previous;
+			if(index == ZLViewEnums.PageIndex.next) {
+				return ZLViewEnums.PageIndex.previous;
+			}
 			if(index == ZLViewEnums.PageIndex.previous) return ZLViewEnums.PageIndex.next;
 		}
 		return index;
@@ -66,6 +65,11 @@ abstract class SimpleAnimationProvider extends AnimationProvider {
 
 	@Override
 	protected void setupAnimatedScrollingStart(Integer x, Integer y) {
+		final ZLView view = ZLApplication.Instance().getCurrentView();
+		boolean isGuji = view.isGuji();
+		if(isGuji) {
+			mySpeed = -1 * mySpeed;
+		}
 		if (x == null || y == null) {
 			if (myDirection.IsHorizontal) {
 				x = mySpeed < 0 ? myWidth : 0;
@@ -81,7 +85,12 @@ abstract class SimpleAnimationProvider extends AnimationProvider {
 
 	@Override
 	protected void startAnimatedScrollingInternal(int speed) {
-		mySpeedFactor = (float)Math.pow(1.5, 0.25 * speed);
+		final ZLView view = ZLApplication.Instance().getCurrentView();
+		boolean isGuji = view.isGuji();
+		if(isGuji) {
+			mySpeed = -1 * mySpeed;
+		}
+		mySpeedFactor = (float)Math.pow(1.5, 0.25 * speed*0.6);
 		doStep();
 	}
 
@@ -90,7 +99,7 @@ abstract class SimpleAnimationProvider extends AnimationProvider {
 		if (!getMode().Auto) {
 			return;
 		}
-
+		
 		switch (myDirection) {
 			case leftToRight:
 				myEndX -= (int)mySpeed;

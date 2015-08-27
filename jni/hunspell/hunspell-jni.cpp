@@ -12,14 +12,16 @@ extern "C" {
 Hunspell* hunspell;
 
 void Java_com_iwobanas_hunspellchecker_Hunspell_create( JNIEnv* env,
-                                                  jobject thiz, jstring jaff, jstring jdic )
+                                                  jobject thiz, jstring jaff, jstring jdic, jobject mutex )
 {
 	jboolean isCopy;
 	const char *aff = env->GetStringUTFChars(jaff, &isCopy);
 	const char *dic = env->GetStringUTFChars(jdic, &isCopy);
 
-	delete hunspell;
+	env->MonitorEnter(mutex);
+	if(hunspell != NULL) delete hunspell;
 	hunspell = new Hunspell(aff, dic);
+	env->MonitorExit(mutex);
 }
 
 jobjectArray Java_com_iwobanas_hunspellchecker_Hunspell_getSuggestions( JNIEnv* env,
@@ -67,9 +69,11 @@ jint Java_com_iwobanas_hunspellchecker_Hunspell_spell( JNIEnv* env,
 {
 	jboolean isCopy;
 	const char *word = env->GetStringUTFChars(jword, &isCopy);
-
+	if(hunspell != NULL && word != NULL) {
 	int result = hunspell->spell(word);
 	return result;
+	}
+	return 0;
 }
 
 #ifdef __cplusplus

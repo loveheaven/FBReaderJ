@@ -634,6 +634,56 @@ public class BookCollectionShadow extends AbstractBookCollection<Book> implement
 		});
 	}
 	
+	public void deleteAllKnownWord(final String language) {
+		try {
+			if (myInterface != null) {
+				myInterface.deleteAllKnownWord(language);
+			}
+		} catch(RemoteException e) {
+			
+		}
+	}
+	
+	public void deleteKnownWord(Word word) {
+		try {
+			if (myInterface != null) {
+				myInterface.deleteKnownWord(word);
+			}
+		} catch(RemoteException e) {
+			
+		}
+	}
+	
+	public void deleteUnknownWord(Word word) {
+		try {
+			if (myInterface != null) {
+				myInterface.deleteUnknownWord(word);
+			}
+		} catch(RemoteException e) {
+			
+		}
+	}
+	
+	public void updateKnownWord(Word word, String newText) {
+		try {
+			if (myInterface != null) {
+				myInterface.updateKnownWord(word, newText);
+			}
+		} catch(RemoteException e) {
+			
+		}
+	}
+	
+	public void updateUnknownWord(Word word, String newText) {
+		try {
+			if (myInterface != null) {
+				myInterface.updateUnknownWord(word, newText);
+			}
+		} catch(RemoteException e) {
+			
+		}
+	}
+	
 	public void saveToKnownWords(Word word) {
 		try {
 			if (myInterface != null) {
@@ -647,7 +697,7 @@ public class BookCollectionShadow extends AbstractBookCollection<Book> implement
 	public void saveToUnknownWords(Word word) {
 		try {
 			if (myInterface != null) {
-				myInterface.saveToKnownWords(word);
+				myInterface.saveToUnknownWords(word);
 			}
 		} catch(RemoteException e) {
 			

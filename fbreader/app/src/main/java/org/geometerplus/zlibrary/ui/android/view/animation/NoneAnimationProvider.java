@@ -73,10 +73,7 @@ public final class NoneAnimationProvider extends AnimationProvider {
 		}
 
 		final ZLView view = ZLApplication.Instance().getCurrentView();
-		boolean isGuji = false;
-		if(view instanceof ZLTextView) {
-			isGuji = ((ZLTextView)view).isGuji();
-		}
+		boolean isGuji = view.isGuji();
 		ZLViewEnums.PageIndex index = ZLViewEnums.PageIndex.current;
 		switch (myDirection) {
 			case rightToLeft:
@@ -96,7 +93,8 @@ public final class NoneAnimationProvider extends AnimationProvider {
 			if(index == ZLViewEnums.PageIndex.next) return ZLViewEnums.PageIndex.previous;
 			if(index == ZLViewEnums.PageIndex.previous) return ZLViewEnums.PageIndex.next;
 		}
-		return index;	}
+		return index;	
+	}
 
 	@Override
 	public void drawFooterBitmapInternal(Canvas canvas, Bitmap footerBitmap, int voffset) {

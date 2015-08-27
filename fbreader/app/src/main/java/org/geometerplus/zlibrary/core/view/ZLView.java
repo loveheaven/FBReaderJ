@@ -19,13 +19,14 @@
 
 package org.geometerplus.zlibrary.core.view;
 
-import org.geometerplus.zlibrary.core.application.ZLApplication;
+import org.geometerplus.fbreader.book.Book;
+import org.geometerplus.fbreader.fbreader.FBReaderApp;
 
 abstract public class ZLView implements ZLViewEnums {
-	public final ZLApplication Application;
+	public final FBReaderApp Application;
 	private ZLPaintContext myViewContext = new DummyPaintContext();
 
-	protected ZLView(ZLApplication application) {
+	protected ZLView(FBReaderApp application) {
 		Application = application;
 	}
 
@@ -38,11 +39,11 @@ abstract public class ZLView implements ZLViewEnums {
 	}
 
 	public final int getContextWidth() {
-		return myViewContext.getWidth();
+		return myIsGuji?myViewContext.getHeight() : myViewContext.getWidth();
 	}
 
 	public final int getContextHeight() {
-		return myViewContext.getHeight();
+		return myIsGuji?myViewContext.getWidth() : myViewContext.getHeight();
 	}
 
 	abstract public interface FooterArea {
@@ -51,50 +52,27 @@ abstract public class ZLView implements ZLViewEnums {
 	}
 
 	abstract public FooterArea getFooterArea();
-
-/*	public static enum PageIndex {
-		previous, current, next;
-
-		public PageIndex getNext() {
-			switch (this) {
-				case previous:
-					return current;
-				case current:
-					return next;
-				default:
-					return null;
-			}
-		}
-
-		public PageIndex getPrevious() {
-			switch (this) {
-				case next:
-					return current;
-				case current:
-					return previous;
-				default:
-					return null;
-			}
-		}
-	};
-	public static enum Direction {
-		leftToRight(true), rightToLeft(true), up(false), down(false);
-
-		public final boolean IsHorizontal;
-
-		Direction(boolean isHorizontal) {
-			IsHorizontal = isHorizontal;
-		}
-	};
-	public static enum Animation {
-		none, curl, slide, shift
+	
+	boolean myIsGuji = false;
+	public boolean isGuji() {
+		return myIsGuji;
 	}
 	
-	public static enum DoubleTap {
-		showMenu, selectWord
+	protected Book myBook;
+	
+	boolean myIsDjVu = false;
+	public boolean isDjvu() {
+		return myIsDjVu;
+	}
+	
+	public void setBook(Book book) {
+		myBook = book;
+		if(myBook != null) {
+			myIsGuji = myBook.isGuji();
+			myIsDjVu = myBook.isDjvu();
+		}
 	}
 
->>>>>>> 1. Add Guji support*/
 	public abstract Animation getAnimationType();
 
 	abstract public void preparePage(ZLPaintContext context, PageIndex pageIndex);

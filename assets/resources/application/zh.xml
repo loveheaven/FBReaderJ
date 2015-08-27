@@ -453,6 +453,57 @@
 				<node name="summaryOn" value="从左边缘滑动开启书籍菜单"/>
 				<node name="summaryOff" value="使用三线按钮开启书籍菜单"/>
 			</node>
+			<node name="guji" value="古籍显示样式">
+			    <node name="summary" value="分别设定版心、注释、翻译等"/>
+			    <node name="ShowGujiCover" value="封面样式">
+					<node name="sike" value="私刻封面"/>
+					<node name="royal" value="殿本封面"/>
+					<node name="fangke" value="常见坊刻封面"/>
+					<node name="mock" value="模拟封面"/>
+				</node>
+			    <node name="ShowGujiBanxin" value="版心样式">
+					<node name="jingzhe" value="经折装，没有版心"/>
+					<node name="hudie" value="蝴蝶装，版心在中间"/>
+					<node name="baobei" value="包背装，版心在两侧"/>
+				</node>
+				<node name="ShowGujiJielan" value="显示界栏">
+					<node name="summaryOn" value="显示"/>
+					<node name="summaryOff" value="不显示"/>
+				</node>
+			    <node name="DoubleLeftBankuang" value="左版框样式">
+					<node name="summaryOn" value="双边"/>
+					<node name="summaryOff" value="单边"/>
+				</node>
+				<node name="DoubleRightBankuang" value="右版框样式">
+					<node name="summaryOn" value="双边"/>
+					<node name="summaryOff" value="单边"/>
+				</node>
+				<node name="DoubleTopBankuang" value="上版框样式">
+					<node name="summaryOn" value="双边"/>
+					<node name="summaryOff" value="单边"/>
+				</node>
+				<node name="DoubleBottomBankuang" value="下版框样式">
+					<node name="summaryOn" value="双边"/>
+					<node name="summaryOff" value="单边"/>
+				</node>
+				<node name="WaiBankuangWidth" value="外版框宽度"/>
+				<node name="NeiBankuangWidth" value="内版框宽度"/>
+				<node name="SpaceBetweenBankuang" value="内外版框间隔宽度"/>
+				<node name="ShowGujiZhu" value="显示古籍注">
+					<node name="summaryOn" value="显示"/>
+					<node name="summaryOff" value="不显示"/>
+				</node>
+				<node name="ShowGujiYi" value="显示古籍翻译">
+					<node name="summaryOn" value="显示"/>
+					<node name="summaryOff" value="不显示"/>
+				</node>
+				<node name="ShowGujiPunctuation" value="显示古籍标点">
+					<node name="summaryOn" value="显示"/>
+					<node name="summaryOff" value="不显示"/>
+				</node>
+				<node name="GujiZhuColor" value="古籍注颜色"/>
+				<node name="GujiYiColor" value="古籍翻译颜色"/>
+			</node>
 		</node>
 		<node name="text" value="文字">
 			<node name="summary" value="字体, 断字等等。"/>
@@ -518,14 +569,6 @@
 			<node name="autoHyphenations" value="自动断字">
 				<node name="summaryOn" value="自动断字"/>
 				<node name="summaryOff" value="禁止自动断字"/>
-			</node>
-			<node name="ShowGujiZhu" value="显示古籍注">
-				<node name="summaryOn" value="显示"/>
-				<node name="summaryOff" value="不显示"/>
-			</node>
-			<node name="ShowGujiYi" value="显示古籍翻译">
-				<node name="summaryOn" value="显示"/>
-				<node name="summaryOff" value="不显示"/>
 			</node>
 			<node name="allowHyphenations" value="允许断字">
 				<node name="auto" value="断字"/>
@@ -689,6 +732,8 @@
 				<node name="sand" value="沙质"/>
 				<node name="hardpaper" value="硬纸"/>
 				<node name="parchment" value="羊皮书卷"/>
+				<node name="guji_bg_even" value="羊皮书卷右"/>
+				<node name="guji_bg_odd" value="羊皮书卷左"/>
 			</node>
 			<node name="fillMode" value="填充模式">
 				<node name="tile" value="平铺"/>
@@ -727,6 +772,8 @@
 				<node name="showAsFooter" value="水平页脚方式"/>
 				<node name="showAsFooterOldStyle" value="水平页脚 (旧样式)"/>
 			</node>
+			<node name="headerHidden" value="隐藏页头"/>
+			<node name="headerHeight" value="页头高度"/>
 			<node name="footerHeight" value="页脚高度"/>
 			<node name="footerOldStyleColor" value="页脚 (旧样式) 颜色"/>
 			<node name="footerBackgroundColor" value="页脚背景颜色"/>

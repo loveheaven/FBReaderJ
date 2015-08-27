@@ -91,10 +91,10 @@ public final class ZLTextWord extends ZLTextElement {
 			existingMark.setNext(mark);
 		}
 	}
-
+	
 	public int getWidth(ZLPaintContext context) {
 		int width = myWidth;
-		if (width <= 1) {
+		if (width <= 1 || context.isShowGujiPunctuationChanged()) {
 			width = context.getStringWidth(Data, Offset, Length);
 			myWidth = width;
 		}

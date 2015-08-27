@@ -114,7 +114,12 @@ public interface IBookCollection<B extends AbstractBook> extends AbstractSeriali
 	
 	List<Word> unknownWords(long bookId);
 	List<Word> allKnownWords(String language);
+	void deleteAllKnownWord(String language);
 	void saveToKnownWords(Word word);
 	void saveToUnknownWords(Word word);
+	void deleteKnownWord(Word word);
+	void deleteUnknownWord(Word word);
+	void updateKnownWord(Word word, String newText);
+	void updateUnknownWord(Word word, String newText);
 	List<B> recentlyOpenedBooks();
 }

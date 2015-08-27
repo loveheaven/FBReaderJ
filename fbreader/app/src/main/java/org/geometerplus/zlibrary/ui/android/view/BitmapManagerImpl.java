@@ -23,6 +23,7 @@ import android.graphics.*;
 
 import org.geometerplus.fbreader.fbreader.FBReaderApp;
 import org.geometerplus.zlibrary.core.view.ZLView;
+import org.geometerplus.zlibrary.core.view.ZLViewEnums.PageIndex;
 import org.geometerplus.zlibrary.ui.android.view.animation.BitmapManager;
 
 final class BitmapManagerImpl implements BitmapManager {
@@ -55,17 +56,16 @@ final class BitmapManagerImpl implements BitmapManager {
 
 	public Bitmap getBitmap(ZLView.PageIndex index) {
 		for (int i = 0; i < SIZE; ++i) {
-			if (index == myIndexes[i]) {
+			if (index == myIndexes[i] && myBitmaps[i] != null && !myBitmaps[i].isRecycled()) {
 				return myBitmaps[i];
 			}
 		}
 		final FBReaderApp fbReader = (FBReaderApp)FBReaderApp.Instance();
 		
-		boolean isGuji = fbReader.Model == null?false:fbReader.Model.Book.isGuji();
-		boolean isDjvu = fbReader.Model == null?false:fbReader.Model.Book.isDjvu();
+		boolean isDjvu = fbReader.Model == null?false:fbReader.BookTextView.isDjvu();
 		final int iIndex = getInternalIndex(index);
 		myIndexes[iIndex] = index;
-		if(myBitmaps[iIndex] != null && (isDjvu||isGuji)) {
+		if(myBitmaps[iIndex] != null && (isDjvu)) {
 			myBitmaps[iIndex].recycle();
 			myBitmaps[iIndex] = null;
 		}
@@ -76,40 +76,43 @@ final class BitmapManagerImpl implements BitmapManager {
 		if (myBitmaps[iIndex] == null) {
 			try {
 				if(isDjvu) {
-					if(fbReader.Document == null) return null;
-					int pageIndex = fbReader.Document.currentPageIndex;
+					if(fbReader.DJVUDocument == null) return null;
+					int pageIndex = fbReader.DJVUDocument.currentPageIndex;
 					if(index == ZLView.PageIndex.next) pageIndex++;
 					else if(index == ZLView.PageIndex.previous) pageIndex--;
 					if(pageIndex < 0) pageIndex = 0;
-					else if(pageIndex > fbReader.Document.getPageCount()-1) pageIndex = fbReader.Document.getPageCount() -1;
+					else if(pageIndex > fbReader.DJVUDocument.getPageCount()-1) pageIndex = fbReader.DJVUDocument.getPageCount() -1;
 					
-					myBitmaps[iIndex] = fbReader.Document.getPage(pageIndex).renderBitmap(myWidth, myHeight, new RectF(0, 0, 1, 1));
+					Bitmap bitmap = fbReader.DJVUDocument.getPage(pageIndex).renderBitmap(myWidth, myHeight, new RectF(0, 0, 1, 1));
+					if(bitmap == null) {
+						bitmap = fbReader.DJVUDocument.getPage(pageIndex).renderBitmap(myWidth, myHeight, new RectF(0, 0, 1, 1));
+					}
+					myBitmaps[iIndex] = bitmap;
 				} else {
-					myBitmaps[iIndex] = Bitmap.createBitmap(isGuji?myHeight:myWidth, isGuji?myWidth:myHeight, Bitmap.Config.RGB_565);
+					myBitmaps[iIndex] = Bitmap.createBitmap(myWidth, myHeight, Bitmap.Config.ARGB_8888);
 				}
 			} catch (OutOfMemoryError e) {
 				System.gc();
 				System.gc();
-				myBitmaps[iIndex] = Bitmap.createBitmap(isGuji?myHeight:myWidth, isGuji?myWidth:myHeight, Bitmap.Config.RGB_565);
+				try {
+					myBitmaps[iIndex] = Bitmap.createBitmap(myWidth, myHeight, Bitmap.Config.RGB_565);
+				} catch (OutOfMemoryError ex) {
+					System.gc();
+					System.gc();
+				}
 			}
 		}
 		if(!isDjvu) {
 			myWidget.drawOnBitmap(myBitmaps[iIndex], index);
 		}
-		if(isGuji) {
-	        Matrix matrix = new Matrix();
-	        matrix.postRotate(90);
-	        Bitmap rotated = Bitmap.createBitmap(myBitmaps[iIndex], 0, 0,
-	        		myBitmaps[iIndex].getWidth(), myBitmaps[iIndex].getHeight(), matrix, true);
-	        myBitmaps[iIndex].recycle();
-	        myBitmaps[iIndex] = null;
-	        myBitmaps[iIndex] = rotated;
-		}
 		return myBitmaps[iIndex];
 	}
 
 	public void drawBitmap(Canvas canvas, int x, int y, ZLView.PageIndex index, Paint paint) {
-		canvas.drawBitmap(getBitmap(index), x, y, paint);
+		Bitmap bitmap = getBitmap(index);
+		if(bitmap != null) {
+			canvas.drawBitmap(bitmap, x, y, paint);
+		}
 	}
 
 	private int getInternalIndex(ZLView.PageIndex index) {
@@ -123,7 +126,8 @@ final class BitmapManagerImpl implements BitmapManager {
 				return i;
 			}
 		}
-		throw new RuntimeException("That's impossible");
+		return 0;
+		//throw new RuntimeException("That's impossible");
 	}
 
 	void reset() {

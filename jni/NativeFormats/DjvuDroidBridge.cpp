@@ -75,7 +75,7 @@ Java_org_geometerplus_fbreader_formats_djvu_DjvuContext_handleMessage(JNIEnv *en
 {
 	const ddjvu_message_t *msg;
 	ddjvu_context_t* ctx = (ddjvu_context_t*)(contextHandle);
-	DEBUG_PRINT("handleMessage for ctx: %x",ctx);
+	//DEBUG_PRINT("handleMessage for ctx: %x",ctx);
 	if(msg = ddjvu_message_peek(ctx))
     {
         switch (msg->m_any.tag)

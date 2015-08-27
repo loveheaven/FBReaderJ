@@ -16,9 +16,10 @@ import org.geometerplus.zlibrary.ui.android.image.ZLAndroidImageManager;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 
 public class BookShelfCoverCache {
-	private HashMap<Long, SoftReference<Bitmap>> imageCache = new HashMap<Long, SoftReference<Bitmap>>();
+	private HashMap<Long, SoftReference<BitmapDrawable>> imageCache = new HashMap<Long, SoftReference<BitmapDrawable>>();
 	
 	private static BookShelfCoverCache mInstance = null;
 	private Context mContext;
@@ -36,20 +37,20 @@ public class BookShelfCoverCache {
 		return mInstance;
 	}
 
-	public Bitmap get(Book book, ViewHolder holder) {
+	public BitmapDrawable get(Book book, ViewHolder holder) {
 		long bookId = book.getId();
 		
 		if (imageCache.containsKey(bookId)) {
-			Bitmap drawable = imageCache.get(bookId).get();
-			if (drawable != null) {
+			BitmapDrawable drawable = imageCache.get(bookId).get();
+			if (drawable != null && drawable.getBitmap() != null) {
 				return drawable;
-			} else {
+			} else if(holder.hasCover){
 				return createThumbnailDrawable(book, holder);
-
 			}
 		} else {
 			return createThumbnailDrawable(book, holder);
 		}
+		return null;
 	}
 	
 	public static Bitmap convertZLImageToBitmap(ZLImage image) {
@@ -61,8 +62,17 @@ public class BookShelfCoverCache {
 		return bitmap;
 	}
 	
-	public void putCache(Book book, Bitmap image) {
-		imageCache.put(book.getId(), new SoftReference<Bitmap>(image));
+	public static Bitmap convertZLImageToBitmap(ZLImage image, int maxWidth, int maxHeight) {
+		final ZLAndroidImageData data =
+				((ZLAndroidImageManager)ZLAndroidImageManager.Instance()).getImageData(image);
+		if(data == null) return null;
+		
+		Bitmap bitmap = data.getBitmap(maxWidth, maxHeight);
+		return bitmap;
+	}
+	
+	public void putCache(Book book, BitmapDrawable image) {
+		imageCache.put(book.getId(), new SoftReference<BitmapDrawable>(image));
 	}
 
 	/**
@@ -70,22 +80,26 @@ public class BookShelfCoverCache {
 	 * @param data
 	 * @return
 	 */
-	private  Bitmap createThumbnailDrawable(Book book, ViewHolder holder) {
+	private  BitmapDrawable createThumbnailDrawable(Book book, ViewHolder holder) {
 		try {
 			final ZLImage image = CoverUtil.getCover(book, PluginCollection.Instance(Paths.systemInfo(mContext)));
 			Bitmap bitmap = null;
 			if (image instanceof ZLImageProxy) {
 				final ZLImageProxy img = (ZLImageProxy)image;
-				if (!img.isSynchronized()) {
+				if (!img.isSynchronized() && !holder.isGettingCover) {
+					holder.isGettingCover = true;
 					img.startSynchronization(mSynchronizer,
 							holder.new CoverSync(book, img)
 					);
 					return null;
 				}
+				return null;
 			}
 			bitmap = convertZLImageToBitmap(image);
-			imageCache.put(book.getId(), new SoftReference<Bitmap>(bitmap));
-			return bitmap;
+			if(image == null) return null;
+			BitmapDrawable drawable = new BitmapDrawable(bitmap);
+			putCache(book, drawable);
+			return drawable;
 		} catch (Exception e) {
 			return null;
 		}

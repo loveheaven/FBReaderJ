@@ -27,6 +27,10 @@ import org.geometerplus.zlibrary.core.image.ZLImageData;
 import org.geometerplus.zlibrary.core.util.SystemInfo;
 import org.geometerplus.zlibrary.core.util.ZLColor;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+
 final class DummyPaintContext extends ZLPaintContext {
 	DummyPaintContext() {
 		super(new SystemInfo() {
@@ -37,7 +41,19 @@ final class DummyPaintContext extends ZLPaintContext {
 			public String networkCacheDirectory() {
 				return "";
 			}
+			
+			public Context getApplicationContext() {
+				return null;
+			}
 		});
+	}
+	
+	@Override
+	public void clear(ZLFile wallpaperFile, FillMode mode, boolean isPageOdd) {
+	}
+	
+	@Override
+	public void clear(ZLFile wallpaperFileOdd, ZLFile wallpaperFileEven, FillMode mode) {
 	}
 
 	@Override
@@ -140,5 +156,15 @@ final class DummyPaintContext extends ZLPaintContext {
 
 	@Override
 	public void fillCircle(int x, int y, int radius) {
+	}
+
+	@Override
+	public void drawImage(int x, int y, Bitmap bitmap, Size maxSize,
+			ScalingType scaling, ColorAdjustingMode adjustingMode) {
+	}
+
+	@Override
+	public Canvas getCanvas() {
+		return null;
 	}
 }

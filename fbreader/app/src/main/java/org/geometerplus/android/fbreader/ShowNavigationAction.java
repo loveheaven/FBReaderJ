@@ -32,7 +32,7 @@ class ShowNavigationAction extends FBAndroidAction {
 	public boolean isVisible() {
 		final ZLTextView view = (ZLTextView)Reader.getCurrentView();
 		if(view.isDjvu()) {
-			if(Reader.Document != null && Reader.Document.getPageCount() > 0) {
+			if(Reader.DJVUDocument != null && Reader.DJVUDocument.getPageCount() > 0) {
 				return true;
 			}
 			return false;
