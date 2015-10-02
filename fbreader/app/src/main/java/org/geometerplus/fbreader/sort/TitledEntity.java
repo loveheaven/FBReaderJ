@@ -27,6 +27,7 @@ import android.annotation.TargetApi;
 import android.os.Build;
 
 import org.fbreader.util.NaturalOrderComparator;
+import org.geometerplus.zlibrary.ui.android.view.ZLAndroidPaintContext;
 
 public abstract class TitledEntity<T extends TitledEntity<T>> implements Comparable<T> {
 	private static final NaturalOrderComparator ourComparator = new NaturalOrderComparator();
@@ -36,6 +37,7 @@ public abstract class TitledEntity<T extends TitledEntity<T>> implements Compara
 
 	public TitledEntity(String title) {
 		myTitle = title;
+		myTitle = ZLAndroidPaintContext.combineChartoString(myTitle);
 	}
 
 	public String getTitle() {

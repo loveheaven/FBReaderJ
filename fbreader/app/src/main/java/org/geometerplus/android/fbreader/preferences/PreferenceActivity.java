@@ -322,23 +322,31 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 			einkPreferences.add(updateIntervalPreference);
 			einkPreferences.run();
 		}
-		final Screen gujiScreen = appearanceScreen.createPreferenceScreen("guji");
+		final Screen gujiScreen = createPreferenceScreen("guji");
+		gujiScreen.addOption(viewOptions.ShowGujiLayoutOption, "ShowGujiLayout");
 		gujiScreen.addOption(viewOptions.ShowGujiCoverOption, "ShowGujiCover");
-		gujiScreen.addOption(viewOptions.ShowGujiBanxinOption, "ShowGujiBanxin");
+		final Screen gujiBanxinScreen = gujiScreen.createPreferenceScreen("GujiBanxinStyle");
+		gujiBanxinScreen.addOption(viewOptions.ShowGujiBanxinOption, "ShowGujiBanxin");
+		gujiBanxinScreen.addOption(viewOptions.GujiBanxinColorOption, "GujiBanxinColor");
+		final Screen gujiMarginsScreen = gujiScreen.createPreferenceScreen("margins");
+		gujiMarginsScreen.addOption(viewOptions.GujiLeftMargin, "left");
+		gujiMarginsScreen.addOption(viewOptions.GujiRightMargin, "right");
+		gujiMarginsScreen.addOption(viewOptions.GujiTopMargin, "top");
+		gujiMarginsScreen.addOption(viewOptions.GujiBottomMargin, "bottom");
+		final Screen gujiBankuangScreen = gujiScreen.createPreferenceScreen("GujiBankuangStyle");
+		gujiBankuangScreen.addOption(viewOptions.DoubleLeftBankuangOption, "DoubleLeftBankuang");
+		gujiBankuangScreen.addOption(viewOptions.DoubleRightBankuangOption, "DoubleRightBankuang");
+		gujiBankuangScreen.addOption(viewOptions.DoubleTopBankuangOption, "DoubleTopBankuang");
+		gujiBankuangScreen.addOption(viewOptions.DoubleBottomBankuangOption, "DoubleBottomBankuang");
+		gujiBankuangScreen.addOption(viewOptions.WaiBankuangWidthOption, "WaiBankuangWidth");
+		gujiBankuangScreen.addOption(viewOptions.NeiBankuangWidthOption, "NeiBankuangWidth");
+		gujiBankuangScreen.addOption(viewOptions.SpaceBetweenBankuangOption, "SpaceBetweenBankuang");
 		gujiScreen.addOption(viewOptions.ShowGujiJielanOption, "ShowGujiJielan");
-		gujiScreen.addOption(viewOptions.DoubleLeftBankuangOption, "DoubleLeftBankuang");
-		gujiScreen.addOption(viewOptions.DoubleRightBankuangOption, "DoubleRightBankuang");
-		gujiScreen.addOption(viewOptions.DoubleTopBankuangOption, "DoubleTopBankuang");
-		gujiScreen.addOption(viewOptions.DoubleBottomBankuangOption, "DoubleBottomBankuang");
-		gujiScreen.addOption(viewOptions.WaiBankuangWidthOption, "WaiBankuangWidth");
-		gujiScreen.addOption(viewOptions.NeiBankuangWidthOption, "NeiBankuangWidth");
-		gujiScreen.addOption(viewOptions.SpaceBetweenBankuangOption, "SpaceBetweenBankuang");
-		gujiScreen.addOption(viewOptions.ShowGujiZhuOption, "ShowGujiZhu");
-		gujiScreen.addOption(viewOptions.ShowGujiYiOption, "ShowGujiYi");
+		gujiScreen.addOption(viewOptions.ShowGujiAnnotationOption, "ShowGujiAnnotation");
+		gujiScreen.addOption(viewOptions.ShowGujiTranslationOption, "ShowGujiTranslation");
+		gujiScreen.addOption(viewOptions.ShowGujiSuperscriptOption, "ShowGujiSuperscript");
 		gujiScreen.addOption(viewOptions.ShowGujiPunctuationOption, "ShowGujiPunctuation");
-		gujiScreen.addOption(viewOptions.GujiYiColorOption, "GujiYiColor");
-		gujiScreen.addOption(viewOptions.GujiZhuColorOption, "GujiZhuColor");
-
+		
 		final Screen textScreen = createPreferenceScreen("text");
 
 		final Screen fontPropertiesScreen = textScreen.createPreferenceScreen("fontProperties");
@@ -357,6 +365,11 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 			this, textScreen.Resource.getResource("fontSize"),
 			baseStyle.FontSizeOption
 		));
+		textScreen.addPreference(new ZLColorPreference(
+				this, textScreen.Resource, 
+				"fontColor",
+				baseStyle.FontColorOption
+			));
 		textScreen.addPreference(new FontStylePreference(
 			this, textScreen.Resource.getResource("fontStyle"),
 			baseStyle.BoldOption, baseStyle.ItalicOption
@@ -405,6 +418,9 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 
 		final Screen moreStylesScreen = textScreen.createPreferenceScreen("more");
 		for (ZLTextNGStyleDescription description : collection.getDescriptionList()) {
+			if(description.ID >= 80) {
+				continue;
+			}
 			final Screen ngScreen = moreStylesScreen.createPreferenceScreen(description.Name);
 			ngScreen.addPreference(new FontPreference(
 				this, textScreen.Resource.getResource("font"),
@@ -415,6 +431,93 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 				StringPreference.Constraint.POSITIVE_LENGTH,
 				textScreen.Resource, "fontSize"
 			));
+			ngScreen.addPreference(new ZLColorPreference(
+					this, textScreen.Resource, 
+					"fontColor",
+					description.FontColorOption
+				));
+			ngScreen.addPreference(new ZLStringChoicePreference(
+				this, textScreen.Resource.getResource("bold"),
+				description.FontWeightOption,
+				new String[] { "inherit", "normal", "bold" }
+			));
+			ngScreen.addPreference(new ZLStringChoicePreference(
+				this, textScreen.Resource.getResource("italic"),
+				description.FontStyleOption,
+				new String[] { "inherit", "normal", "italic" }
+			));
+			ngScreen.addPreference(new ZLStringChoicePreference(
+				this, textScreen.Resource.getResource("textDecoration"),
+				description.TextDecorationOption,
+				new String[] { "inherit", "none", "underline", "line-through" }
+			));
+			ngScreen.addPreference(new ZLStringChoicePreference(
+				this, textScreen.Resource.getResource("allowHyphenations"),
+				description.HyphenationOption,
+				new String[] { "inherit", "none", "auto" }
+			));
+			ngScreen.addPreference(new ZLStringChoicePreference(
+				this, textScreen.Resource.getResource("alignment"),
+				description.AlignmentOption,
+				new String[] { "inherit", "left", "right", "center", "justify" }
+			));
+			ngScreen.addPreference(new StringPreference(
+				this, description.LineHeightOption,
+				StringPreference.Constraint.PERCENT,
+				textScreen.Resource, "lineSpacing"
+			));
+			ngScreen.addPreference(new StringPreference(
+				this, description.MarginTopOption,
+				StringPreference.Constraint.LENGTH,
+				textScreen.Resource, "spaceBefore"
+			));
+			ngScreen.addPreference(new StringPreference(
+				this, description.MarginBottomOption,
+				StringPreference.Constraint.LENGTH,
+				textScreen.Resource, "spaceAfter"
+			));
+			ngScreen.addPreference(new StringPreference(
+				this, description.MarginLeftOption,
+				StringPreference.Constraint.LENGTH,
+				textScreen.Resource, "leftIndent"
+			));
+			ngScreen.addPreference(new StringPreference(
+				this, description.MarginRightOption,
+				StringPreference.Constraint.LENGTH,
+				textScreen.Resource, "rightIndent"
+			));
+			ngScreen.addPreference(new StringPreference(
+				this, description.TextIndentOption,
+				StringPreference.Constraint.LENGTH,
+				textScreen.Resource, "firstLineIndent"
+			));
+			ngScreen.addPreference(new StringPreference(
+				this, description.VerticalAlignOption,
+				StringPreference.Constraint.LENGTH,
+				textScreen.Resource, "verticalAlignment"
+			));
+		}
+		
+		final Screen gujiTextStylesScreen = gujiScreen.createPreferenceScreen("GujiTextStyle");
+		for (ZLTextNGStyleDescription description : collection.getDescriptionList()) {
+			if(description.ID < 80) {
+				continue;
+			}
+			final Screen ngScreen = gujiTextStylesScreen.createPreferenceScreen(description.Name);
+			ngScreen.addPreference(new FontPreference(
+				this, textScreen.Resource.getResource("font"),
+				description.FontFamilyOption, true
+			));
+			ngScreen.addPreference(new StringPreference(
+				this, description.FontSizeOption,
+				StringPreference.Constraint.POSITIVE_LENGTH,
+				textScreen.Resource, "fontSize"
+			));
+			ngScreen.addPreference(new ZLColorPreference(
+					this, textScreen.Resource, 
+					"fontColor",
+					description.FontColorOption
+				));
 			ngScreen.addPreference(new ZLStringChoicePreference(
 				this, textScreen.Resource.getResource("bold"),
 				description.FontWeightOption,

@@ -2,6 +2,15 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
+LOCAL_MODULE    := JniBitmapOperationsLibrary
+LOCAL_SRC_FILES := JniBitmapOperationsLibrary/JniBitmapOperationsLibrary.cpp
+LOCAL_LDLIBS := -llog
+LOCAL_LDFLAGS += -ljnigraphics
+
+include $(BUILD_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+
 LOCAL_MODULE                  := DeflatingDecompressor-v3
 LOCAL_SRC_FILES               := DeflatingDecompressor/DeflatingDecompressor.cpp
 LOCAL_LDLIBS                  := -lz

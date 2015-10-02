@@ -116,8 +116,8 @@ public class Dict {
 		
 		// map the phrases
 //		log("map phrases...");
-		if (!isMissing(dictPhrase))
-			map(src, dictPhrase, true);
+//		if (!isMissing(dictPhrase))
+//			map(src, dictPhrase, true);
 		
 		
 		// map the characters

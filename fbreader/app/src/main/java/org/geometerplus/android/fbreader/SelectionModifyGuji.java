@@ -60,23 +60,60 @@ public class SelectionModifyGuji extends FBAndroidAction {
 				
 				text += new String(textDataDst);
 			} else if (it.getType() == ZLTextParagraph.Entry.CONTROL) {
-				if(isTitleEnd) {
-					isTitleEnd = false;
-					text +="}\n";
-				}
-				if(isChapterEnd) {
-					isChapterEnd = false;
-					text +="}\n";
-				}
+//				if(isTitleEnd) {
+//					isTitleEnd = false;
+//					if(!text.endsWith("}\n")) {
+//						text+="}\n";
+//					}
+//				}
+//				if(isChapterEnd) {
+//					isChapterEnd = false;
+//					if(!text.endsWith("}\n")) {
+//						text+="}\n";
+//					}
+//				}
 				if(it.getControlIsStart()) {
 					switch(it.getControlKind()) {
-					case FBTextKind.CODE:
+					case FBTextKind.GUJI_TRANSLATION:
 						text+="|{";
 						break;
-					case FBTextKind.SUB:
+					case FBTextKind.GUJI_ANNOTATION:
+						text+="\\anno{";
+						break;
+					case FBTextKind.GUJI_COMMENT:
+						text+="\\com{";
+						break;
+					case FBTextKind.GUJI_SUBSCRIPT:
 						text+="\\sub{";
 						break;
-					case FBTextKind.SUP:
+					case FBTextKind.GUJI_SUBTITLE:
+						text+="\\subt{";
+						break;
+					case FBTextKind.GUJI_CR:
+						text+="\\cr{";
+						break;
+					case FBTextKind.GUJI_PARAGRAPHSTART:
+						text+="\\ps{";
+						break;
+					case FBTextKind.GUJI_AUTHOR:
+						text+="\\author{";
+						break;
+					case FBTextKind.GUJI_TITLEANNOTATION:
+						text+="\\tanno{";
+						break;
+					case FBTextKind.GUJI_SECTIONTITLE1:
+						text+="\\sec1{";
+						break;
+					case FBTextKind.GUJI_SECTIONTITLE2:
+						text+="\\sec2{";
+						break;
+					case FBTextKind.GUJI_SECTIONTITLE3:
+						text+="\\sec3{";
+						break;
+					case FBTextKind.GUJI_SECTIONTITLE4:
+						text+="\\sec4{";
+						break;
+					case FBTextKind.GUJI_SUPERSCRIPT:
 						text+="\\sup{";
 						break;
 					case FBTextKind.H3:
@@ -88,8 +125,11 @@ public class SelectionModifyGuji extends FBAndroidAction {
 					case FBTextKind.H4:
 						text+="\\h4{";
 						break;
-					case FBTextKind.SECTION_TITLE:
-						text+="\\chapter{";
+					case FBTextKind.H1:
+						text+="\\h1{";
+						break;
+					case FBTextKind.GUJI_SECTIONTITLE:
+						text+="\\section{";
 						isChapterEnd = true;
 						break;
 					case FBTextKind.TITLE:
@@ -99,13 +139,49 @@ public class SelectionModifyGuji extends FBAndroidAction {
 					}
 				} else {
 					switch(it.getControlKind()) {
-					case FBTextKind.CODE:
+					case FBTextKind.GUJI_TRANSLATION:
 						text+="}";
 						break;
-					case FBTextKind.SUB:
+					case FBTextKind.GUJI_ANNOTATION:
 						text+="}";
 						break;
-					case FBTextKind.SUP:
+					case FBTextKind.GUJI_COMMENT:
+						text+="}";
+						break;
+					case FBTextKind.GUJI_SUBSCRIPT:
+						text+="}";
+						break;
+					case FBTextKind.GUJI_SUBTITLE:
+						text+="}";
+						break;
+					case FBTextKind.GUJI_CR:
+						text+="}";
+						break;
+					case FBTextKind.GUJI_PARAGRAPHSTART:
+						text+="}";
+						break;
+					case FBTextKind.GUJI_AUTHOR:
+						text+="}";
+						break;
+					case FBTextKind.GUJI_TITLEANNOTATION:
+						text+="}";
+						break;
+					case FBTextKind.GUJI_SECTIONTITLE:
+						text+="}\n";
+						break;
+					case FBTextKind.GUJI_SECTIONTITLE1:
+						text+="}";
+						break;
+					case FBTextKind.GUJI_SECTIONTITLE2:
+						text+="}";
+						break;
+					case FBTextKind.GUJI_SECTIONTITLE3:
+						text+="}";
+						break;
+					case FBTextKind.GUJI_SECTIONTITLE4:
+						text+="}";
+						break;
+					case FBTextKind.GUJI_SUPERSCRIPT:
 						text+="}";
 						break;
 					case FBTextKind.H3:
@@ -114,8 +190,14 @@ public class SelectionModifyGuji extends FBAndroidAction {
 					case FBTextKind.H2:
 						text+="}";
 						break;
+					case FBTextKind.H1:
+						text+="}";
+						break;
 					case FBTextKind.H4:
 						text+="}";
+						break;
+					case FBTextKind.TITLE:
+						text+="}\n";
 						break;
 					}
 					

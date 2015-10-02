@@ -26,6 +26,7 @@ import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.fonts.FontEntry;
 import org.geometerplus.zlibrary.core.library.ZLibrary;
 import org.geometerplus.zlibrary.core.options.*;
+import org.geometerplus.zlibrary.core.util.ZLColor;
 import org.geometerplus.zlibrary.core.view.ZLView;
 import org.geometerplus.zlibrary.text.model.ZLTextAlignmentType;
 import org.geometerplus.zlibrary.text.model.ZLTextMetrics;
@@ -65,11 +66,12 @@ public class ZLTextBaseStyle extends ZLTextStyle {
 	public final ZLStringOption MarginLeftOption;
 	public final ZLStringOption MarginRightOption;
 	public final ZLStringOption TextIndentOption;
+	public final ZLColorOption FontColorOption;
 
 	public ZLTextBaseStyle(String prefix, String fontFamily, int fontSize) {
 		super(null, ZLTextHyperlink.NO_LINK);
 		FontFamilyOption = new ZLStringOption(GROUP, prefix + ":fontFamily", fontFamily);
-		fontSize = fontSize * ZLibrary.Instance().getDisplayDPI() / 160;
+		fontSize = fontSize * ZLibrary.Instance().getDisplayDPI() / 120;
 		FontSizeOption = new ZLIntegerRangeOption(GROUP, prefix + ":fontSize", 5, Math.max(144, fontSize * 2), fontSize);
 		FontSizeOption.setCallback(new ZLOption.ZLOptionCallback() {
 			
@@ -99,6 +101,7 @@ public class ZLTextBaseStyle extends ZLTextStyle {
 		MarginLeftOption = new ZLStringOption(GROUP, prefix + ":margin-left", "");
 		MarginRightOption = new ZLStringOption(GROUP, prefix + ":margin-right", "");
 		TextIndentOption = new ZLStringOption(GROUP, prefix + ":text-indent", "20pt");
+		FontColorOption = new ZLColorOption("text", "fontColor", ZLColor.BLACK);
 	}
 
 	private String myFontFamily;
@@ -119,6 +122,11 @@ public class ZLTextBaseStyle extends ZLTextStyle {
 	@Override
 	public int getFontSize(ZLTextMetrics metrics) {
 		return getFontSize();
+	}
+	
+	@Override
+	public ZLColor getFontColor() {
+		return FontColorOption.getValue();
 	}
 
 	@Override

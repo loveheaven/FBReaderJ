@@ -62,4 +62,20 @@ public interface FBTextKind {
 	//byte BOOK_HYPERLINK = 38;
 
 	byte XHTML_TAG_P = 51;
+	
+	byte GUJI_COMMENT = 80;
+	byte GUJI_SUBSCRIPT = 81; //正文小字，用于谦称
+	byte GUJI_SUBTITLE = 82;
+	byte GUJI_ANNOTATION = 83; //注
+	byte GUJI_TRANSLATION = 84; //翻译
+	byte GUJI_CR = 85; //换行，抬格
+	byte GUJI_AUTHOR = 86;
+	byte GUJI_TITLEANNOTATION = 87; //用于标题里的注，和ANNOTATION的区别主要是:如果标题注太长，第二行的注要和第一行的注的起始位置保持一致
+	byte GUJI_SUPERSCRIPT = 88;
+	byte GUJI_PARAGRAPHSTART = 89;
+	byte GUJI_SECTIONTITLE = 99;
+	byte GUJI_SECTIONTITLE1 = 100;
+	byte GUJI_SECTIONTITLE2 = 101;
+	byte GUJI_SECTIONTITLE3 = 102;
+	byte GUJI_SECTIONTITLE4 = 103;
 };

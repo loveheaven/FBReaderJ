@@ -552,7 +552,7 @@ public final class FBReaderApp extends ZLApplication {
 		public void run() {
 			Collection.storePosition(myBook.getId(), myPosition);
 			myBook.setProgress(myProgress);
-			//Collection.saveBook(myBook);
+			Collection.saveBook(myBook);
 		}
 	}
 
@@ -752,14 +752,15 @@ public final class FBReaderApp extends ZLApplication {
 		);
 	}
 
-	public TOCTree getCurrentTOCElement() {
-		final ZLTextWordCursor cursor = BookTextView.getStartCursor();
+	public TOCTree getCurrentTOCElement(ZLTextPage page) {
+		final ZLTextWordCursor cursor = page == null?BookTextView.getStartCursor():page.getStartCursor();
 		if (Model == null || cursor == null) {
 			return null;
 		}
 
 		int index = cursor.getParagraphIndex();
 		if (cursor.isEndOfParagraph()) {
+			if(!BookTextView.isGuji() || page == null|| page.LineInfos.size() > 0)
 			++index;
 		}
 		TOCTree treeToSelect = null;

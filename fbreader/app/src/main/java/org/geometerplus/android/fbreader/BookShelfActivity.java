@@ -11,6 +11,7 @@ import org.geometerplus.android.fbreader.network.NetworkLibraryActivity;
 import org.geometerplus.android.fbreader.network.NetworkLibraryPrimaryActivity;
 import org.geometerplus.android.fbreader.preferences.PreferenceActivity;
 import org.geometerplus.android.fbreader.util.AndroidImageSynchronizer;
+import org.geometerplus.android.util.OrientationUtil;
 import org.geometerplus.fbreader.book.Book;
 import org.geometerplus.fbreader.fbreader.ActionCode;
 import org.geometerplus.zlibrary.core.resources.ZLResource;
@@ -43,7 +44,7 @@ import android.widget.Toast;
  * @author fan
  * 
  */
-public class BookShelf extends Activity implements OnClickListener {
+public class BookShelfActivity extends Activity implements OnClickListener {
 
 	private static final String TAG = "BookShelf";
 	
@@ -121,7 +122,7 @@ public class BookShelf extends Activity implements OnClickListener {
 					int position, final long id) {
 				
 				
-				mCollection.bindToService(BookShelf.this, new Runnable() {
+				mCollection.bindToService(BookShelfActivity.this, new Runnable() {
 					@Override
 					public void run() {
 						Book book = mCollection.getBookById(id);
@@ -130,9 +131,9 @@ public class BookShelf extends Activity implements OnClickListener {
 							String bookPath = book.getPath();
 							boolean isExist = isExistOnSdcard(bookPath);
 							if(isExist) {
-								FBReader.openBookActivity(BookShelf.this, book, null);
+								FBReader.openBookActivity(BookShelfActivity.this, book, null);
 							} else {
-								Toast.makeText(BookShelf.this, R.string.no_exist_on_sdcard, Toast.LENGTH_SHORT).show();
+								Toast.makeText(BookShelfActivity.this, R.string.no_exist_on_sdcard, Toast.LENGTH_SHORT).show();
 								mCollection.removeBook(book, false);
 								mCursorAdapter.removeItem(book);
 								mCursorAdapter.notifyDataSetChanged();
@@ -145,7 +146,7 @@ public class BookShelf extends Activity implements OnClickListener {
 
 		});
 		
-		mCursorAdapter = new BookShelfAdapter(BookShelf.this, null, ImageSynchronizer);
+		mCursorAdapter = new BookShelfAdapter(BookShelfActivity.this, null, ImageSynchronizer);
 		mShelevesView.setAdapter(mCursorAdapter);
 
 		
@@ -236,7 +237,7 @@ public class BookShelf extends Activity implements OnClickListener {
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case DIALOG_CONFIRM:
-			return new AlertDialog.Builder(BookShelf.this)
+			return new AlertDialog.Builder(BookShelfActivity.this)
 					.setTitle(R.string.quit)
 					.setMessage(R.string.confirm_quit)
 					.setPositiveButton(R.string.dialog_ok,
@@ -256,7 +257,7 @@ public class BookShelf extends Activity implements OnClickListener {
 								}
 							}).create();
 		case DIALOG_OPTION:
-			return new AlertDialog.Builder(BookShelf.this).setItems(
+			return new AlertDialog.Builder(BookShelfActivity.this).setItems(
 					R.array.dialog_option, mOptionListener).create();
 		}
 		return null;
@@ -322,34 +323,34 @@ public class BookShelf extends Activity implements OnClickListener {
 			String path = null;
 			switch (which) {
 			case OPTION_OPEN:
-				mCollection.bindToService(BookShelf.this, new Runnable() {
+				mCollection.bindToService(BookShelfActivity.this, new Runnable() {
 					@Override
 					public void run() {
 						Book book = mCollection.getBookById(bookId);
 						if (book != null) {
-							FBReader.openBookActivity(BookShelf.this, book, null);
+							FBReader.openBookActivity(BookShelfActivity.this, book, null);
 						}
 					}
 				});
 				
 				break;
 			case OPTION_DETAIL:
-				mCollection.bindToService(BookShelf.this, new Runnable() {
+				mCollection.bindToService(BookShelfActivity.this, new Runnable() {
 					@Override
 					public void run() {
 						Book book = mCollection.getBookById(bookId);
 						if (book != null) {
 							final Intent intent =
-									new Intent(BookShelf.this, BookInfoActivity.class)
+									new Intent(BookShelfActivity.this, BookInfoActivity.class)
 										.putExtra(BookInfoActivity.FROM_READING_MODE_KEY, true);
 								FBReaderIntents.putBookExtra(intent, book);
-								OrientationUtil.startActivity(BookShelf.this, intent);
+								OrientationUtil.startActivity(BookShelfActivity.this, intent);
 						}
 					}
 				});
 				break;
 			case OPTION_DELETE:
-				mCollection.bindToService(BookShelf.this, new Runnable() {
+				mCollection.bindToService(BookShelfActivity.this, new Runnable() {
 					@Override
 					public void run() {
 						Book book = mCollection.getBookById(bookId);

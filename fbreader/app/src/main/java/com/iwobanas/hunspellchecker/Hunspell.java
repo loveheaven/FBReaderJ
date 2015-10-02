@@ -15,6 +15,8 @@ public class Hunspell {
         System.loadLibrary("hunspell-jni");
     }
 	public static Hunspell Instance(String language) {
+		if(language == null) language= Language;
+		language = language.toLowerCase();
         String fileBase = "/sdcard/Dictdata/hunspell/" + language;
     	synchronized (mHunspell) {
     		if(Language == null || !Language.equals(language)) {

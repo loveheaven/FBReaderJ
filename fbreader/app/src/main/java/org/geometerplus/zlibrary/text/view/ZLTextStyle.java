@@ -28,12 +28,10 @@ import org.geometerplus.zlibrary.text.model.ZLTextMetrics;
 public abstract class ZLTextStyle {
 	public final ZLTextStyle Parent;
 	public final ZLTextHyperlink Hyperlink;
-	public ZLColor TextColor;
 
 	protected ZLTextStyle(ZLTextStyle parent, ZLTextHyperlink hyperlink) {
 		Parent = parent != null ? parent : this;
 		Hyperlink = hyperlink;
-		TextColor = new ZLColor(0,0,0);
 	}
 
 	public abstract List<FontEntry> getFontEntries();
@@ -64,4 +62,6 @@ public abstract class ZLTextStyle {
 	public abstract byte getAlignment();
 
 	public abstract boolean allowHyphenations();
+	
+	public abstract ZLColor getFontColor();
 }

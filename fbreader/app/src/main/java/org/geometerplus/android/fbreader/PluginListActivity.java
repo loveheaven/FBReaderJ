@@ -127,7 +127,7 @@ public class PluginListActivity extends ListActivity {
 				final ZLResource resource = myResource.getResource(plugin.Id);
 				titleView.setText(resource.getValue());
 				summaryView.setText(resource.getResource("summary").getValue());
-				int iconId = R.drawable.fbreader;
+				int iconId = R.drawable.cooldreader;
 				try {
 					final Field f = R.drawable.class.getField("plugin_" + plugin.Id);
 					iconId = f.getInt(R.drawable.class);

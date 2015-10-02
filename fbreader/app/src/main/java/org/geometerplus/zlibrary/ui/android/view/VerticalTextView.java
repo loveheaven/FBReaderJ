@@ -42,7 +42,7 @@ public class VerticalTextView extends TextView {
         isVertical = vertical;
         textString = getText().toString();
         indexs = getKeyChar(textString);
-        textCount = textString.toCharArray().length;
+        textCount = indexs.length;
     }
     
     @Override
@@ -51,7 +51,7 @@ public class VerticalTextView extends TextView {
     		if (textCount == 0 || TextUtils.isEmpty(textString))
 	            return;
 	        float childHeight = this.getTextSize();//getHeight() / textCount;
-	        charPaint.setTypeface(AndroidFontUtil.systemTypeface("TW-Kai", true, false));
+	        charPaint.setTypeface(AndroidFontUtil.systemTypeface("方正书宋_GBK", true, false));
 	        charPaint.setColor(getResources().getColor(android.R.color.black));
 	        if(textCount <=5) {
 	        	charPaint.setTextSize(this.getTextSize());
@@ -75,6 +75,7 @@ public class VerticalTextView extends TextView {
     }
 
     protected char[] getKeyChar(String str) {
+    	str = ZLAndroidPaintContext.combineChartoString(str);
         char[] keys = new char[str.length()];
         for (int i = 0; i < keys.length; i++) {
             keys[i] = str.charAt(i);

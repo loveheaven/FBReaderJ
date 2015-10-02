@@ -20,19 +20,21 @@
 package org.geometerplus.android.fbreader;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
+import org.fbreader.util.Boolean3;
 import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.resources.ZLResource;
-import org.geometerplus.zlibrary.core.util.ZLBoolean3;
 import org.geometerplus.zlibrary.text.view.ZLTextView;
 import org.geometerplus.zlibrary.text.view.ZLTextWordCursor;
 import org.geometerplus.zlibrary.ui.android.R;
 import org.geometerplus.fbreader.bookmodel.TOCTree;
 import org.geometerplus.fbreader.fbreader.ActionCode;
 import org.geometerplus.fbreader.fbreader.FBReaderApp;
+import org.geometerplus.fbreader.fbreader.options.ViewOptions.GujiPunctuationEnum;
 
 final class NavigationPopup extends ZLApplication.PopupPanel {
 	final static String ID = "NavigationPopup";
@@ -43,6 +45,8 @@ final class NavigationPopup extends ZLApplication.PopupPanel {
 	private ZLTextWordCursor myStartPosition;
 	private final FBReaderApp myFBReader;
 	private volatile boolean myIsInProgress;
+	
+	private Button mySelectFont;
 
 	NavigationPopup(FBReaderApp fbReader) {
 		super(fbReader);
@@ -72,6 +76,7 @@ final class NavigationPopup extends ZLApplication.PopupPanel {
 		if (myWindow != null) {
 			myWindow.show();
 			setupNavigation();
+			updateUI();
 		}
 	}
 
@@ -102,6 +107,10 @@ final class NavigationPopup extends ZLApplication.PopupPanel {
 			setupNavigation();
 		}
 	}
+	
+	private void updateUI() {
+		mySelectFont.setText(myFBReader.ViewOptions.getTextStyleCollection().getBaseStyle().FontFamilyOption.getValue());
+	}
 
 	private void createPanel(FBReader activity, RelativeLayout root) {
 		if (myWindow != null && activity == myWindow.getContext()) {
@@ -110,15 +119,26 @@ final class NavigationPopup extends ZLApplication.PopupPanel {
 
 		activity.getLayoutInflater().inflate(R.layout.navigation_panel, root);
 		myWindow = (NavigationWindow)root.findViewById(R.id.navigation_panel);
+		
+		mySelectFont = (Button)myWindow.findViewById(R.id.navigation_selectfont);
+		mySelectFont.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(myActivity.getApplicationContext(), FontChangeActivity.class);
+				myActivity.startActivity(intent);
+			}
+		});
+		mySelectFont.setText(myFBReader.ViewOptions.getTextStyleCollection().getBaseStyle().FontFamilyOption.getValue());
 
-		TextView changeFontSize = (TextView)myWindow.findViewById(R.id.navigation_fontsize);
-		changeFontSize.setText(ZLResource.resource("Preferences").getResource("text").getResource("font").getValue());
+		final TextView changeFontSize = (TextView)myWindow.findViewById(R.id.navigation_fontsize);
+		changeFontSize.setText(""+myFBReader.ViewOptions.getTextStyleCollection().getBaseStyle().FontSizeOption.getValue());
 		final ImageButton zoomin = (ImageButton)myWindow.findViewById(R.id.navigation_zoomin);
 		zoomin.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				myFBReader.runAction(ActionCode.INCREASE_FONT);
+				changeFontSize.setText(""+myFBReader.ViewOptions.getTextStyleCollection().getBaseStyle().FontSizeOption.getValue());
 			}
 		});
 		final ImageButton zoomout = (ImageButton)myWindow.findViewById(R.id.navigation_zoomout);
@@ -127,6 +147,7 @@ final class NavigationPopup extends ZLApplication.PopupPanel {
 			@Override
 			public void onClick(View v) {
 				myFBReader.runAction(ActionCode.DECREASE_FONT);
+				changeFontSize.setText(""+myFBReader.ViewOptions.getTextStyleCollection().getBaseStyle().FontSizeOption.getValue());
 			}
 		});
 		
@@ -245,33 +266,33 @@ final class NavigationPopup extends ZLApplication.PopupPanel {
 		});
 		
 		final Button showTranditional = (Button)myWindow.findViewById(R.id.navigation_showtranditional);
-		ZLBoolean3 value = myFBReader.ViewOptions.ShowTranditionalOption.getValue();
+		Boolean3 value = myFBReader.ViewOptions.ShowTranditionalOption.getValue();
 		switch(value) {
-		case  B3_UNDEFINED:
+		case  UNDEFINED:
 			showTranditional.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_zho, 0);
 			break;
-		case  B3_TRUE:
+		case  TRUE:
 			showTranditional.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_zht, 0);
 			break;
-		case  B3_FALSE:
+		case  FALSE:
 			showTranditional.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_zhs, 0);
 			break;
 		} 
 		showTranditional.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ZLBoolean3 value = myFBReader.ViewOptions.ShowTranditionalOption.getValue();
+				Boolean3 value = myFBReader.ViewOptions.ShowTranditionalOption.getValue();
 				switch(value) {
-				case  B3_UNDEFINED:
-					myFBReader.ViewOptions.ShowTranditionalOption.setValue(ZLBoolean3.B3_TRUE);
+				case  UNDEFINED:
+					myFBReader.ViewOptions.ShowTranditionalOption.setValue(Boolean3.TRUE);
 					showTranditional.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_zht, 0);
 					break;
-				case  B3_TRUE:
-					myFBReader.ViewOptions.ShowTranditionalOption.setValue(ZLBoolean3.B3_FALSE);
+				case  TRUE:
+					myFBReader.ViewOptions.ShowTranditionalOption.setValue(Boolean3.FALSE);
 					showTranditional.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_zhs, 0);
 					break;
-				case  B3_FALSE:
-					myFBReader.ViewOptions.ShowTranditionalOption.setValue(ZLBoolean3.B3_UNDEFINED);
+				case  FALSE:
+					myFBReader.ViewOptions.ShowTranditionalOption.setValue(Boolean3.UNDEFINED);
 					showTranditional.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_zho, 0);
 					break;
 				} 
@@ -281,7 +302,43 @@ final class NavigationPopup extends ZLApplication.PopupPanel {
 			}
 		});
 		
+		final Button showPunctuation = (Button)myWindow.findViewById(R.id.navigation_showpuctuation);
+		GujiPunctuationEnum punct = myFBReader.ViewOptions.ShowGujiPunctuationOption.getValue();
+		switch(punct) {
+		case judou:
+			showPunctuation.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_puncjudou, 0);
+			break;
+		case show:
+			showPunctuation.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_puncshow, 0);
+			break;
+		case hide:
+			showPunctuation.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_punchide, 0);
+			break;
+		}
 		
+		showPunctuation.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				GujiPunctuationEnum value = myFBReader.ViewOptions.ShowGujiPunctuationOption.getValue();
+				switch(value) {
+				case  judou:
+					myFBReader.ViewOptions.ShowGujiPunctuationOption.setValue(GujiPunctuationEnum.hide);
+					showPunctuation.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_punchide, 0);
+					break;
+				case hide:
+					myFBReader.ViewOptions.ShowGujiPunctuationOption.setValue(GujiPunctuationEnum.show);
+					showPunctuation.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_puncshow, 0);
+					break;
+				case show:
+					myFBReader.ViewOptions.ShowGujiPunctuationOption.setValue(GujiPunctuationEnum.judou);
+					showPunctuation.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.popup_puncjudou, 0);
+					break;
+				} 
+				
+				myFBReader.getViewWidget().reset();
+				myFBReader.getViewWidget().repaint();
+			}
+		});
 		
 		final SeekBar slider = (SeekBar)myWindow.findViewById(R.id.navigation_slider);
 		final TextView text = (TextView)myWindow.findViewById(R.id.navigation_text);
@@ -319,6 +376,7 @@ final class NavigationPopup extends ZLApplication.PopupPanel {
 	}
 
 	private void setupNavigation() {
+		
 		final SeekBar slider = (SeekBar)myWindow.findViewById(R.id.navigation_slider);
 		final TextView text = (TextView)myWindow.findViewById(R.id.navigation_text);
 
@@ -337,7 +395,7 @@ final class NavigationPopup extends ZLApplication.PopupPanel {
 		builder.append(page);
 		builder.append("/");
 		builder.append(pagesNumber);
-		final TOCTree tocElement = myFBReader.getCurrentTOCElement();
+		final TOCTree tocElement = myFBReader.getCurrentTOCElement(null);
 		if (tocElement != null) {
 			builder.append("  ");
 			builder.append(tocElement.getText());

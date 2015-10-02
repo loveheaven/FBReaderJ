@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.fbreader.util.Boolean3;
-
 import org.geometerplus.zlibrary.core.fonts.FontEntry;
+import org.geometerplus.zlibrary.core.util.ZLColor;
 import org.geometerplus.zlibrary.text.model.ZLTextAlignmentType;
 import org.geometerplus.zlibrary.text.model.ZLTextMetrics;
 import org.geometerplus.zlibrary.text.view.ZLTextHyperlink;
@@ -58,6 +58,11 @@ public class ZLTextNGStyle extends ZLTextDecoratedStyle {
 	@Override
 	protected int getFontSizeInternal(ZLTextMetrics metrics) {
 		return myDescription.getFontSize(metrics, Parent.getFontSize(metrics));
+	}
+	
+	@Override 
+	public ZLColor getFontColor() {
+		return myDescription.getFontColor();
 	}
 
 	@Override

@@ -42,6 +42,7 @@ protected:
 	bool sectionHandler(std::string &str);
 	bool titleHandler(std::string &str);
 	bool newLineHandler();
+	void insertEndOfSectionParagraph();
 
 private:
 	void internalEndParagraph();

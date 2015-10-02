@@ -24,6 +24,8 @@ import android.graphics.Color;
 
 import org.geometerplus.zlibrary.core.util.ZLColor;
 
+import com.jni.bitmap_operations.JniBitmapHolder;
+
 public abstract class ZLAndroidColorUtil {
 	public static int rgba(ZLColor color, int alpha) {
 		return color != null
@@ -52,6 +54,27 @@ public abstract class ZLAndroidColorUtil {
 		b /= w * h;
 		r >>= 16;
 		g >>= 8;
+		return new ZLColor((int)(r & 0xFF), (int)(g & 0xFF), (int)(b & 0xFF));
+	}
+	
+	public static ZLColor getAverageColor(JniBitmapHolder bitmap) {
+		final int w = Math.min(bitmap.getWidth(), 7);
+		final int h = Math.min(bitmap.getHeight(), 7);
+		long r = 0, g = 0, b = 0, a= 0;
+		for (int i = 0; i < w; ++i) {
+			for (int j = 0; j < h; ++j) {
+				long color = bitmap.getPixel(i, j) & 0xffffffffL;
+				//a += (color & 0xFF000000)>>24;
+				b += (color & 0x00FF0000)>>16;
+				g += (color & 0x0000FF00)>>8;
+				r += color & 0x000000FF;
+			}
+		}
+		r /= w * h;
+		g /= w * h;
+		b /= w * h;
+//		r >>= 16;
+//		g >>= 8;
 		return new ZLColor((int)(r & 0xFF), (int)(g & 0xFF), (int)(b & 0xFF));
 	}
 }

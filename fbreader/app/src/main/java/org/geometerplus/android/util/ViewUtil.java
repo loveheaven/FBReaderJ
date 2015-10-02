@@ -22,6 +22,7 @@ package org.geometerplus.android.util;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 public class ViewUtil {
@@ -40,6 +41,10 @@ public class ViewUtil {
 	
 	public static CheckBox findCheckBox(View container, int id) {
 		return (CheckBox)findView(container, id);
+	}
+	
+	public static RadioButton findRadioButton(View container, int id) {
+		return (RadioButton)findView(container, id);
 	}
 
 	public static ImageView findImageView(View container, int id) {

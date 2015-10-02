@@ -21,6 +21,7 @@ package org.geometerplus.zlibrary.core.view;
 
 import java.util.List;
 
+import org.fbreader.util.Boolean3;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.fonts.FontEntry;
 import org.geometerplus.zlibrary.core.image.ZLImageData;
@@ -121,7 +122,7 @@ final class DummyPaintContext extends ZLPaintContext {
 	}
 
 	@Override
-	public void drawString(int x, int y, char[] string, int offset, int length, boolean isGujiString) {
+	public void drawString(int x, int y, char[] string, int offset, int length, boolean isGujiString, Boolean3 languageType) {
 	}
 
 	@Override
@@ -142,6 +143,12 @@ final class DummyPaintContext extends ZLPaintContext {
 	
 	@Override
 	public void fillRectangle(int x0, int y0, int x1, int y1) {
+	}
+	
+	@Override
+	public void fillRoundRectangle(int x0, int y0, int x1, int y1, float rx,
+			float ry) {
+		
 	}
 
 	@Override
@@ -167,4 +174,10 @@ final class DummyPaintContext extends ZLPaintContext {
 	public Canvas getCanvas() {
 		return null;
 	}
+
+	@Override
+	public void setTextSize(float textSize) {
+		
+	}
+
 }

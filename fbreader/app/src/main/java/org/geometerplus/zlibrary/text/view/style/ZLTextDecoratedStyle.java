@@ -22,6 +22,7 @@ package org.geometerplus.zlibrary.text.view.style;
 import java.util.List;
 
 import org.geometerplus.zlibrary.core.fonts.FontEntry;
+import org.geometerplus.zlibrary.core.util.ZLColor;
 import org.geometerplus.zlibrary.text.model.ZLTextMetrics;
 import org.geometerplus.zlibrary.text.view.ZLTextStyle;
 import org.geometerplus.zlibrary.text.view.ZLTextHyperlink;
@@ -99,6 +100,11 @@ public abstract class ZLTextDecoratedStyle extends ZLTextStyle {
 		return myFontSize;
 	}
 	protected abstract int getFontSizeInternal(ZLTextMetrics metrics);
+	
+	@Override
+	public ZLColor getFontColor() {
+		return ZLColor.BLACK;
+	}
 
 	@Override
 	public final int getSpaceBefore(ZLTextMetrics metrics) {

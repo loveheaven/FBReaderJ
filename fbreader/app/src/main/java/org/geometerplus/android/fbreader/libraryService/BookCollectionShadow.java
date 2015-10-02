@@ -644,6 +644,16 @@ public class BookCollectionShadow extends AbstractBookCollection<Book> implement
 		}
 	}
 	
+	public void deleteAllUnknownWord(long bookId) {
+		try {
+			if (myInterface != null) {
+				myInterface.deleteAllUnknownWord(bookId);
+			}
+		} catch(RemoteException e) {
+			
+		}
+	}
+	
 	public void deleteKnownWord(Word word) {
 		try {
 			if (myInterface != null) {

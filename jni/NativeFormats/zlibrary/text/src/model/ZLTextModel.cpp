@@ -151,6 +151,17 @@ void ZLTextPlainModel::createParagraph(ZLTextParagraph::Kind kind) {
 	addParagraphInternal(paragraph);
 }
 
+void ZLTextModel::popParagraph() {
+	myStartEntryIndices.pop_back();
+		myStartEntryOffsets.pop_back(); // offset in words for future use in Java
+		myParagraphLengths.pop_back();
+		myTextSizes.pop_back();
+		myParagraphKinds.pop_back();
+
+		myParagraphs.pop_back();
+		myLastEntryStart = 0;
+}
+
 void ZLTextModel::addText(const std::string &text) {
 	ZLUnicodeUtil::Ucs2String ucs2str;
 	ZLUnicodeUtil::utf8ToUcs2(ucs2str, text);

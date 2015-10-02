@@ -41,6 +41,7 @@ final class ZLTextLineInfo {
 	int SpaceCounter;
 	ZLTextStyle StartStyle;
 	boolean isFirstParagraphOfSection;
+	int GujiTitleAnnotationPos;
 
 	ZLTextLineInfo(ZLTextParagraphCursor paragraphCursor, int elementIndex, int charIndex, ZLTextStyle style) {
 		ParagraphCursor = paragraphCursor;
@@ -59,6 +60,7 @@ final class ZLTextLineInfo {
 		} else {
 			isFirstParagraphOfSection = false;
 		}
+		GujiTitleAnnotationPos = 0;
 	}
 
 	boolean isEndOfParagraph() {

@@ -53,7 +53,7 @@ public class TOCActivity extends ListActivity {
 		final FBReaderApp fbreader = (FBReaderApp)ZLApplication.Instance();
 		final TOCTree root = fbreader.Model.TOCTree;
 		myAdapter = new TOCAdapter(root);
-		TOCTree treeToSelect = fbreader.getCurrentTOCElement();
+		TOCTree treeToSelect = fbreader.getCurrentTOCElement(null);
 		myAdapter.selectItem(treeToSelect);
 		mySelectedItem = treeToSelect;
 	}

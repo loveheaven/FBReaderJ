@@ -21,6 +21,7 @@ package org.geometerplus.fbreader.fbreader;
 
 import java.util.*;
 
+import org.fbreader.util.Boolean3;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.filesystem.ZLResourceFile;
 import org.geometerplus.zlibrary.core.fonts.FontEntry;
@@ -28,11 +29,9 @@ import org.geometerplus.zlibrary.core.library.ZLibrary;
 import org.geometerplus.zlibrary.core.util.ZLColor;
 import org.geometerplus.zlibrary.core.view.SelectionCursor;
 import org.geometerplus.zlibrary.core.view.ZLPaintContext;
-
 import org.geometerplus.zlibrary.text.model.ZLTextModel;
 import org.geometerplus.zlibrary.text.view.*;
 import org.geometerplus.zlibrary.text.view.style.ZLTextStyleCollection;
-
 import org.geometerplus.fbreader.book.Book;
 import org.geometerplus.fbreader.bookmodel.BookModel;
 import org.geometerplus.fbreader.bookmodel.FBHyperlinkType;
@@ -429,7 +428,7 @@ public final class FBView extends ZLTextView {
 	@Override
 	public int getLeftMargin() {
 		if(isGuji()) {
-			return myViewOptions.TopMargin.getValue();
+			return myViewOptions.GujiTopMargin.getValue();
 		} else {
 			return myViewOptions.LeftMargin.getValue();
 		}
@@ -439,7 +438,7 @@ public final class FBView extends ZLTextView {
 	@Override
 	public int getRightMargin() {
 		if(isGuji()) {
-			return myViewOptions.BottomMargin.getValue();
+			return myViewOptions.GujiBottomMargin.getValue();
 		} else {
 			return myViewOptions.RightMargin.getValue();
 		}
@@ -448,7 +447,7 @@ public final class FBView extends ZLTextView {
 	@Override
 	public int getTopMargin() {
 		if(isGuji()) {
-			return myViewOptions.RightMargin.getValue();
+			return myViewOptions.GujiRightMargin.getValue();
 		} else {
 			return myViewOptions.TopMargin.getValue() + 
 					(myViewOptions.HeaderHidden.getValue()?0 : myViewOptions.HeaderHeight.getValue());
@@ -458,7 +457,7 @@ public final class FBView extends ZLTextView {
 	@Override
 	public int getBottomMargin() {
 		if(isGuji()) {
-			return myViewOptions.LeftMargin.getValue();
+			return myViewOptions.GujiLeftMargin.getValue();
 		} else {
 			return myViewOptions.BottomMargin.getValue();
 		}
@@ -687,7 +686,7 @@ public final class FBView extends ZLTextView {
 			final String infoString = buildInfoString(pagePosition, " ");
 			final int infoWidth = context.getStringWidth(infoString);
 			context.setTextColor(fgColor);
-			context.drawString(right - infoWidth, height - delta, infoString, false);
+			context.drawStringWithGujiRotatedCanvas(right - infoWidth, height - delta, infoString, false, Boolean3.UNDEFINED);
 
 			// draw gauge
 			final int gaugeRight = right - (infoWidth == 0 ? 0 : infoWidth + 10);
@@ -749,7 +748,7 @@ public final class FBView extends ZLTextView {
 			final String infoString = buildInfoString(pagePosition, "  ");
 			final int infoWidth = context.getStringWidth(infoString);
 			context.setTextColor(textColor);
-			context.drawString(right - infoWidth, (height + charHeight + 1) / 2, infoString, false);
+			context.drawStringWithGujiRotatedCanvas(right - infoWidth, (height + charHeight + 1) / 2, infoString, false, Boolean3.UNDEFINED);
 
 			// draw gauge
 			final int gaugeRight = right - (infoWidth == 0 ? 0 : infoWidth + 10);

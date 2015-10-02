@@ -72,7 +72,7 @@ class AppNotifier implements FBReaderApp.Notifier {
 		final NotificationManager notificationManager =
 			(NotificationManager)myActivity.getSystemService(Activity.NOTIFICATION_SERVICE);
 		final NotificationCompat.Builder builder = new NotificationCompat.Builder(myActivity)
-			.setSmallIcon(R.drawable.fbreader)
+			.setSmallIcon(R.drawable.cooldreader)
 			.setTicker(errorTitle)
 			.setContentTitle(errorTitle)
 			.setContentText(info.Title);

@@ -60,7 +60,7 @@ public class ServiceNetworkContext extends AndroidNetworkContext {
 				.getResource("message")
 				.getValue();
 		final Notification notification = new NotificationCompat.Builder(myService)
-			.setSmallIcon(R.drawable.fbreader)
+			.setSmallIcon(R.drawable.cooldreader)
 			.setTicker(text)
 			.setContentTitle(realm)
 			.setContentText(text)

@@ -21,11 +21,14 @@ package org.geometerplus.zlibrary.core.view;
 
 import java.util.*;
 
+import org.fbreader.util.Boolean3;
+import org.geometerplus.fbreader.fbreader.options.ViewOptions.GujiPunctuationEnum;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.fonts.FontEntry;
 import org.geometerplus.zlibrary.core.image.ZLImageData;
 import org.geometerplus.zlibrary.core.util.SystemInfo;
 import org.geometerplus.zlibrary.core.util.ZLColor;
+import org.geometerplus.zlibrary.ui.android.view.ZLAndroidPaintContext;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -65,10 +68,10 @@ abstract public class ZLPaintContext {
 	private boolean myFontIsItalic;
 	private boolean myFontIsUnderlined;
 	private boolean myFontIsStrikedThrough;
-	protected boolean myIsShowGujiPunctuation = false;
+	protected GujiPunctuationEnum myIsShowGujiPunctuation = GujiPunctuationEnum.show;
 	protected boolean myIsSHowGUjiPunctuationChanged = false;
 	protected boolean mIsGuji = false;
-	public void setIsShowGujiPunctuation(boolean isGuji, boolean value) {
+	public void setIsShowGujiPunctuation(boolean isGuji, GujiPunctuationEnum value) {
 		mIsGuji = isGuji;
 		myIsShowGujiPunctuation = value;
 		if(!mIsGuji) {
@@ -76,8 +79,8 @@ abstract public class ZLPaintContext {
 		}
 		
 	}
-	public boolean isShowGujiPunctuation() {
-		if(!mIsGuji) return true;
+	public GujiPunctuationEnum isShowGujiPunctuation() {
+		if(!mIsGuji) return GujiPunctuationEnum.show;
 		return myIsShowGujiPunctuation;
 	}
 	
@@ -127,6 +130,7 @@ abstract public class ZLPaintContext {
 
 	abstract protected void setFontInternal(List<FontEntry> entries, int size, boolean bold, boolean italic, boolean underline, boolean strikeThrough);
 
+	abstract public void setTextSize(float textSize);
 	abstract public void setTextColor(ZLColor color);
 	abstract public void setLineColor(ZLColor color);
 	abstract public void setLineWidth(int width);
@@ -155,7 +159,7 @@ abstract public class ZLPaintContext {
 	}
 	abstract protected int getSpaceWidthInternal();
 
-	private int myStringHeight = -1;
+	protected int myStringHeight = -1;
 	public final int getStringHeight() {
 		int stringHeight = myStringHeight;
 		if (stringHeight == -1) {
@@ -189,16 +193,16 @@ abstract public class ZLPaintContext {
 	}
 	abstract protected int getDescentInternal();
 
-	public final void drawString(int x, int y, String string, boolean isGujiString) {
+	public final void drawStringWithGujiRotatedCanvas(int x, int y, String string, boolean isGujiString, Boolean3 languageType) {
 		if(isGujiString) {
 			this.getCanvas().rotate(-90);
 		}
-		drawString(x, y, string.toCharArray(), 0, string.length(), isGujiString);
+		drawString(x, y, string.toCharArray(), 0, string.length(), isGujiString, languageType);
 		if(isGujiString) {
 			this.getCanvas().rotate(90);
 		}
 	}
-	abstract public void drawString(int x, int y, char[] string, int offset, int length, boolean isGujiString);
+	abstract public void drawString(int x, int y, char[] string, int offset, int length, boolean isGujiString, Boolean3 languageType);
 
 	public static final class Size {
 		public final int Width;
@@ -244,6 +248,7 @@ abstract public class ZLPaintContext {
 	abstract public void drawLine(int x0, int y0, int x1, int y1);
 	abstract public void drawRectangle(int x0, int y0, int x1, int y1);
 	abstract public void fillRectangle(int x0, int y0, int x1, int y1);
+	abstract public void fillRoundRectangle(int x0, int y0, int x1, int y1, float rx, float ry);
 
 	abstract public void drawPolygonalLine(int[] xs, int[] ys);
 	abstract public void fillPolygon(int[] xs, int[] ys);

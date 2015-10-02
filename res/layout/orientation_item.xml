@@ -19,7 +19,7 @@
 			android:layout_marginBottom="8dip"
 			android:layout_weight="1.0"
 		/>
-		<CheckBox
+		<RadioButton
 			android:id="@+id/orientation_checkbox"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -29,6 +29,6 @@
 			android:layout_marginTop="8dip"
 			android:layout_marginBottom="8dip"
 			android:focusable="false"
-			android:enabled="false"
+			android:enabled="true"
 		/>
 	</LinearLayout>

@@ -19,10 +19,10 @@
 
 package org.geometerplus.fbreader.fbreader.options;
 
+import org.fbreader.util.Boolean3;
 import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.library.ZLibrary;
 import org.geometerplus.zlibrary.core.options.*;
-import org.geometerplus.zlibrary.core.util.ZLBoolean3;
 import org.geometerplus.zlibrary.core.util.ZLColor;
 import org.geometerplus.zlibrary.core.view.ZLView;
 import org.geometerplus.zlibrary.text.view.ZLTextView;
@@ -30,16 +30,25 @@ import org.geometerplus.zlibrary.text.view.style.ZLTextStyleCollection;
 import org.geometerplus.fbreader.fbreader.FBView;
 
 public class ViewOptions implements ZLOption.ZLOptionCallback{
-	public static enum BanxinStyleEnum {
+	public static enum GujiLayoutStyleEnum {
 		jingzhe, hudie, baobei
 	}
 	
+	public static enum GujiBanxinStyleEnum {
+		daheikou, xiaoheikou, baikou, booktitle
+	}
+	
 	public static enum GujiCoverStyleEnum {
-		sike, royal, fangke, mock
+		heke, royal, fangke, mock
+	}
+	
+	public static enum GujiPunctuationEnum {
+		show, hide, judou
 	}
 
 	public final ZLEnumOption<GujiCoverStyleEnum> ShowGujiCoverOption;
-	public final ZLEnumOption<BanxinStyleEnum> ShowGujiBanxinOption;
+	public final ZLEnumOption<GujiLayoutStyleEnum> ShowGujiLayoutOption;
+	public final ZLEnumOption<GujiBanxinStyleEnum> ShowGujiBanxinOption;
 	public final ZLBooleanOption ShowGujiJielanOption;
 	public final ZLBooleanOption DoubleLeftBankuangOption;
 	public final ZLBooleanOption DoubleRightBankuangOption;
@@ -48,17 +57,21 @@ public class ViewOptions implements ZLOption.ZLOptionCallback{
 	public final ZLIntegerRangeOption WaiBankuangWidthOption;
 	public final ZLIntegerRangeOption NeiBankuangWidthOption;
 	public final ZLIntegerRangeOption SpaceBetweenBankuangOption;
-	public final ZLBooleanOption ShowGujiZhuOption;
-	public final ZLBooleanOption ShowGujiYiOption;
-	public final ZLBooleanOption ShowGujiPunctuationOption;
-	public final ZLColorOption GujiYiColorOption;
-	public final ZLColorOption GujiZhuColorOption;
+	public final ZLBooleanOption ShowGujiAnnotationOption;
+	public final ZLBooleanOption ShowGujiTranslationOption;
+	public final ZLBooleanOption ShowGujiSuperscriptOption;
+	public final ZLEnumOption<GujiPunctuationEnum> ShowGujiPunctuationOption;
+	public final ZLColorOption GujiBanxinColorOption;
 	public final ZLBoolean3Option ShowTranditionalOption;
 	public final ZLBooleanOption TwoColumnView;
 	public final ZLIntegerRangeOption LeftMargin;
 	public final ZLIntegerRangeOption RightMargin;
 	public final ZLIntegerRangeOption TopMargin;
 	public final ZLIntegerRangeOption BottomMargin;
+	public final ZLIntegerRangeOption GujiLeftMargin;
+	public final ZLIntegerRangeOption GujiRightMargin;
+	public final ZLIntegerRangeOption GujiTopMargin;
+	public final ZLIntegerRangeOption GujiBottomMargin;
 	public final ZLBooleanOption HeaderHidden;
 	public final ZLIntegerRangeOption HeaderHeight;
 	public final ZLIntegerRangeOption SpaceBetweenColumns;
@@ -79,10 +92,12 @@ public class ViewOptions implements ZLOption.ZLOptionCallback{
 		final int horMargin = Math.min(dpi / 5, Math.min(x, y) / 30);
 
 		ShowGujiCoverOption =
-				new ZLEnumOption<GujiCoverStyleEnum>("Options", "ShowGujiCover", GujiCoverStyleEnum.sike);
+				new ZLEnumOption<GujiCoverStyleEnum>("Options", "ShowGujiCover", GujiCoverStyleEnum.royal);
+		ShowGujiLayoutOption =
+					new ZLEnumOption<GujiLayoutStyleEnum>("Options", "ShowGujiLayout", GujiLayoutStyleEnum.baobei);
 		ShowGujiBanxinOption =
-					new ZLEnumOption<BanxinStyleEnum>("Options", "ShowGujiBanxin", BanxinStyleEnum.hudie);
-		ShowGujiBanxinOption.setCallback(this);
+				new ZLEnumOption<GujiBanxinStyleEnum>("Options", "ShowGujiBanxin", GujiBanxinStyleEnum.booktitle);
+		ShowGujiLayoutOption.setCallback(this);
 		ShowGujiJielanOption = new ZLBooleanOption("Options", "ShowGujiJielan", true);
 		DoubleLeftBankuangOption =
 				new ZLBooleanOption("Options", "DoubleLeftBankuang", true);
@@ -97,7 +112,7 @@ public class ViewOptions implements ZLOption.ZLOptionCallback{
 				new ZLBooleanOption("Options", "DoubleBottomBankuang", true);
 		DoubleBottomBankuangOption.setCallback(this);
 		WaiBankuangWidthOption =
-				new ZLIntegerRangeOption("Options", "WaiBankuangWidth", 0, 100, 6);
+				new ZLIntegerRangeOption("Options", "WaiBankuangWidth", 0, 100, horMargin/3+1);
 		WaiBankuangWidthOption.setCallback(this);
 		NeiBankuangWidthOption =
 				new ZLIntegerRangeOption("Options", "NeiBankuang", 0, 100, 2);
@@ -105,15 +120,16 @@ public class ViewOptions implements ZLOption.ZLOptionCallback{
 		SpaceBetweenBankuangOption =
 				new ZLIntegerRangeOption("Options", "SpaceBetweenBankuang", 0, 100, 2);
 		SpaceBetweenBankuangOption.setCallback(this);
-		ShowGujiYiOption =
-				new ZLBooleanOption("Options", "ShowGujiYi", true);
-		ShowGujiZhuOption =
-				new ZLBooleanOption("Options", "ShowGujiZhu", true);
+		ShowGujiTranslationOption =
+				new ZLBooleanOption("Options", "ShowGujiTranslation", true);
+		ShowGujiAnnotationOption =
+				new ZLBooleanOption("Options", "ShowGujiAnnotation", true);
 		ShowGujiPunctuationOption =
-				new ZLBooleanOption("Options", "ShowGujiPunctuation", true);
-		GujiYiColorOption = new ZLColorOption("Colors", "GujiYiColor", new ZLColor(0x5b,0,0x12));
-		GujiZhuColorOption = new ZLColorOption("Colors", "GujiZhuColor", new ZLColor(180,0,30));
-		ShowTranditionalOption = new ZLBoolean3Option("Options", "ShowTranditional", ZLBoolean3.B3_UNDEFINED);
+				new ZLEnumOption<GujiPunctuationEnum>("Options", "ShowGujiPunctuation", GujiPunctuationEnum.judou);
+		ShowGujiSuperscriptOption =
+				new ZLBooleanOption("Options", "ShowGujiSuperscript", true);
+		GujiBanxinColorOption = new ZLColorOption("Colors", "GujiBanxinColor", ZLColor.GUJI_TRANSLATE);
+		ShowTranditionalOption = new ZLBoolean3Option("Options", "ShowTranditional", Boolean3.UNDEFINED);
 		
 		TwoColumnView =
 			new ZLBooleanOption("Options", "TwoColumnView", x * x + y * y >= 42 * dpi * dpi);
@@ -121,16 +137,24 @@ public class ViewOptions implements ZLOption.ZLOptionCallback{
 			new ZLIntegerRangeOption("Options", "LeftMargin", 0, x/4, horMargin);
 		RightMargin =
 			new ZLIntegerRangeOption("Options", "RightMargin", 0, x/4, horMargin);
+		GujiLeftMargin =
+				new ZLIntegerRangeOption("Options", "GujiLeftMargin", 0, x/4, horMargin*3);
+		GujiRightMargin =
+				new ZLIntegerRangeOption("Options", "GujiRightMargin", 0, x/4, horMargin*3);
 		TopMargin =
 			new ZLIntegerRangeOption("Options", "TopMargin", 0, y/4, horMargin);
-		TopMargin.setCallback(this);
+		GujiTopMargin =
+				new ZLIntegerRangeOption("Options", "GujiTopMargin", 0, y/4, horMargin*6);
+		GujiTopMargin.setCallback(this);
 		HeaderHidden = 
 			new ZLBooleanOption("Options", "HeaderHidden", false);
 		HeaderHeight =
 			new ZLIntegerRangeOption("Options", "HeaderHeight", 0, 100, horMargin);
 		BottomMargin =
 			new ZLIntegerRangeOption("Options", "BottomMargin", 0, y/4, horMargin);
-		BottomMargin.setCallback(this);
+		GujiBottomMargin =
+				new ZLIntegerRangeOption("Options", "GujiBottomMargin", 0, y/4, horMargin*3);
+		GujiBottomMargin.setCallback(this);
 		SpaceBetweenColumns =
 			new ZLIntegerRangeOption("Options", "SpaceBetweenColumns", 0, 300, 3 * horMargin);
 		ScrollbarType =

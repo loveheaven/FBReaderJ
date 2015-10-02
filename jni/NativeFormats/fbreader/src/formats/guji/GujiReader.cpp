@@ -29,8 +29,10 @@ class GujiReaderCore {
 
 public:
 	GujiReaderCore(GujiReader &reader);
+	virtual ~GujiReaderCore(){};
 	virtual void readDocument(ZLInputStream &stream);
 	virtual void readMetaInfo(ZLInputStream &stream, Book& book);
+	virtual std::string findTag(ZLInputStream &stream, Book& book, std::string tag);
 
 protected:
 	GujiReader &myReader;
@@ -40,8 +42,10 @@ class GujiReaderCoreUtf16 : public GujiReaderCore {
 
 public:
 	GujiReaderCoreUtf16(GujiReader &reader);
+	virtual ~GujiReaderCoreUtf16(){};
 	void readDocument(ZLInputStream &stream);
 	virtual void readMetaInfo(ZLInputStream &stream, Book& book);
+	virtual std::string findTag(ZLInputStream &stream, Book& book, std::string tag);
 
 protected:
 	virtual char getAscii(const char *ptr) = 0;
@@ -107,12 +111,13 @@ GujiReaderCore::GujiReaderCore(GujiReader &reader) : myReader(reader) {
 GujiReaderCoreUtf16::GujiReaderCoreUtf16(GujiReader &reader) : GujiReaderCore(reader) {
 }
 
-void GujiReaderCore::readMetaInfo(ZLInputStream &stream, Book& book) {
+std::string GujiReaderCore::findTag(ZLInputStream &stream, Book& book, std::string tag) {
 	const size_t BUFSIZE = 2048;
 	char *buffer = new char[BUFSIZE];
 	std::string str;
 	size_t length;
 	bool isExit =false;
+	std::string ret;
 	do {
 		length = stream.read(buffer, BUFSIZE);
 		char *start = buffer;
@@ -127,8 +132,8 @@ void GujiReaderCore::readMetaInfo(ZLInputStream &stream, Book& book) {
 				if (start != ptr) {
 					str.erase();
 					myReader.myConverter->convert(str, start, ptr + 1);
-					if(str.find("\\title{") == 0) {
-						book.setTitle(str.substr(7, str.length()-9));
+					if(str.find(tag) == 0) {
+						ret = str.substr(tag.length(), str.length()-tag.length() -2);//book.setTitle();
 						isExit = true;
 						break;
 					}
@@ -150,21 +155,53 @@ void GujiReaderCore::readMetaInfo(ZLInputStream &stream, Book& book) {
 		if (start != end) {
 			str.erase();
 			myReader.myConverter->convert(str, start, end);
-			if(str.find("\\title{") == 0) {
-				book.setTitle(str.substr(7, str.length()-9));
+			if(str.find(tag) == 0) {
+				ret = str.substr(tag.length(), str.length()-tag.length() -2);//book.setTitle(str.substr(7, str.length()-9));
 				break;
 			}
 		}
 	} while (length == BUFSIZE);
 	delete[] buffer;
+	return ret;
+}
+template <typename T>
+std::vector<std::string> splitString(const std::string& str, T separator)
+{
+    std::vector<std::string> strvec;
+    std::string::size_type pos1, pos2;
+    pos2 = str.find(separator);
+    pos1 = 0;
+
+    while (std::string::npos != pos2)
+    {
+        strvec.push_back(str.substr(pos1, pos2 - pos1));
+        pos1 = pos2 + 1;
+        pos2 = str.find(separator, pos1);
+    }
+    strvec.push_back(str.substr(pos1));
+    return strvec;
 }
 
-void GujiReaderCoreUtf16::readMetaInfo(ZLInputStream &stream, Book& book) {
+void GujiReaderCore::readMetaInfo(ZLInputStream &stream, Book& book) {
+	std::string title = findTag(stream, book, "\\title{");
+	book.setTitle(title);
+	stream.seek(0,true);
+	std::string author = findTag(stream, book, "\\author{");
+	if(!author.empty()) {
+		std::vector<std::string> authors = splitString(author, ";");
+		for (std::vector<std::string>::iterator iter=authors.begin();iter!=authors.end();iter++) {
+			book.addAuthor(*iter);
+		}
+	}
+}
+
+std::string GujiReaderCoreUtf16::findTag(ZLInputStream &stream, Book& book, std::string tag) {
 	const size_t BUFSIZE = 2048;
 	char *buffer = new char[BUFSIZE];
 	std::string str;
 	size_t length;
 	bool isExit =false;
+	std::string ret;
 	do {
 		length = stream.read(buffer, BUFSIZE);
 		char *start = buffer;
@@ -180,8 +217,8 @@ void GujiReaderCoreUtf16::readMetaInfo(ZLInputStream &stream, Book& book) {
 				if (start != ptr) {
 					str.erase();
 					myReader.myConverter->convert(str, start, ptr + 2);
-					if(str.find("\\title{") == 0) {
-						book.setTitle(str.substr(7, str.length()-9));
+					if(str.find(tag) == 0) {
+						ret = str.substr(tag.length(), str.length()-tag.length() -2);
 						isExit = true;
 						break;
 					}
@@ -202,13 +239,24 @@ void GujiReaderCoreUtf16::readMetaInfo(ZLInputStream &stream, Book& book) {
 		if (start != end) {
 			str.erase();
 			myReader.myConverter->convert(str, start, end);
-			if(str.find("\\title{") == 0) {
-				book.setTitle(str.substr(7, str.length()-9));
+			if(str.find(tag) == 0) {
+				ret = str.substr(tag.length(), str.length()-tag.length()-2);
 				break;
 			}
 		}
 	} while (length == BUFSIZE);
 	delete[] buffer;
+	return ret;
+
+}
+void GujiReaderCoreUtf16::readMetaInfo(ZLInputStream &stream, Book& book) {
+	std::string title = findTag(stream, book, "\\title{");
+	book.setTitle(title);
+	stream.seek(0, true);
+	std::string author = findTag(stream, book, "\\author{");
+	if(!author.empty()) {
+		book.addAuthor(author);
+	}
 }
 
 void GujiReaderCore::readDocument(ZLInputStream &stream) {

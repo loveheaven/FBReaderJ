@@ -19,11 +19,15 @@
 
 package org.geometerplus.zlibrary.core.util;
 
+
 /**
  * class Color. Color is presented as the triple of short's (Red, Green, Blue components)
  * Each component should be in the range 0..255
  */
 public final class ZLColor {
+	public static ZLColor BLACK = new ZLColor(0);
+	public static ZLColor GUJI_ANNOTATION = new ZLColor(180,0,30);
+	public static ZLColor GUJI_TRANSLATE = new ZLColor(0x5b,0,0x12);
 	public final short Red;
 	public final short Green;
 	public final short Blue;
@@ -42,6 +46,10 @@ public final class ZLColor {
 
 	public int intValue() {
 		return (Red << 16) + (Green << 8) + Blue;
+	}
+	
+	public ZLColor getReverseColor() {
+		return new ZLColor(255-Red, 255-Green, 255-Blue);
 	}
 
 	@Override

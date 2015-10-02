@@ -132,7 +132,7 @@ public class ColorProfile {
 				createOption(name, "FooterNGForegroundUnreadOption", 119, 119, 119);
 		} else {
 			WallpaperOption =
-				new ZLStringOption("Colors", name + ":Wallpaper", "wallpapers/parchment.jpg");
+				new ZLStringOption("Colors", name + ":Wallpaper", "wallpapers/guji_bg_odd.jpg");
 			FillModeOption =
 				new ZLEnumOption<ZLPaintContext.FillMode>("Colors", name + ":FillMode", ZLPaintContext.FillMode.tile);
 			BackgroundOption =

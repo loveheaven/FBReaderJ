@@ -900,6 +900,11 @@ public class BookCollection extends AbstractBookCollection<DbBook> {
 	}
 	
 	@Override
+	public void deleteAllUnknownWord(long bookId) {
+		myDatabase.deleteAllUnknownWord(bookId);
+	}
+	
+	@Override
 	public void deleteKnownWord(Word word) {
 		myDatabase.deleteKnownWord(word.getText(), word.getLanguage());
 	}

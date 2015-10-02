@@ -33,7 +33,7 @@ public class PageTurningOptions {
 		new ZLEnumOption<FingerScrollingType>("Scrolling", "Finger", FingerScrollingType.byTapAndFlick);
 
 	public final ZLEnumOption<ZLView.Animation> AnimationOption =
-		new ZLEnumOption<ZLView.Animation>("Scrolling", "Animation", ZLView.Animation.curl);
+		new ZLEnumOption<ZLView.Animation>("Scrolling", "Animation", ZLView.Animation.shift);
 	public final ZLIntegerRangeOption AnimationSpeedOption =
 		new ZLIntegerRangeOption("Scrolling", "AnimationSpeed", 1, 10, 4);
 

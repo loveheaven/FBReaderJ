@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- English FBReaderJ resources, by FBReader.ORG Limited -->
 <resources>
-	<node name="library" value="ZWReader library">
+	<node name="library" value="CooldReader library">
 		<node name="unknownAuthor" value="Unknown author"/>
 		<node name="booksWithNoTags" value="Books with no tags"/>
 		<node name="demo" value="sample"/>
@@ -60,8 +60,8 @@
 			<node name="withIndex" value="Memory card No %s"/>
 			<node name="summary" value="Files on memory card, external or built-in"/>
 		</node>
-		<node name="fileTreeLibrary" value="ZWReader library">
-			<node name="summary" value="ZWReader books directory"/>
+		<node name="fileTreeLibrary" value="CooldReader library">
+			<node name="summary" value="CooldReader books directory"/>
 		</node>
 		<node name="localSearch" value="Search"/>
 		<node name="rescan" value="Rescan"/>
@@ -78,8 +78,8 @@
 		<node name="uploadAgain" value="Upload again"/>
 		<node name="tryAgain" value="Try again"/>
 	</node>
-	<node name="networkLibrary" value="ZWReader network library">
-		<node name="sync" value="FBReader® book network">
+	<node name="networkLibrary" value="CooldReader network library">
+		<node name="sync" value="CooldReader® book network">
 			<node name="summary" value="My personal catalogue"/>
 		</node>
 		<node name="byAuthor" value="By author">
@@ -263,7 +263,7 @@
 			<node name="search" value="Search"/>
 			<node name="createbak" value="Create backup"/>
 			<node name="importbak" value="Import backup"/>
-			<node name="deleteAllKnownWords" value="Delete all"/>
+			<node name="deleteAll" value="Delete all"/>
 		</node>
 <!-- bookmark related end -->	
 	</node>
@@ -286,7 +286,7 @@
 		<node name="returnTo" value="Return to …"/>
 		<node name="back" value="Back"/>
 		<node name="forward" value="Forward"/>
-		<node name="close" value="Close ZWReader"/>
+		<node name="close" value="Close CooldReader"/>
 	</node>
 	<node name="style" value="Style %s"/>
 	<node name="highlightingStyleMenu">
@@ -377,7 +377,7 @@
 		<node name="tags" value="Tag(s)"/>
 		<node name="series" value="Series"/>
 	</node>
-	<node name="Preferences" value="FBReader settings">
+	<node name="Preferences" value="CooldReader settings">
 		<node name="sync" value="Synchronisation">
 			<node name="summary" value="Book network settings"/>
 			<node name="site" value="Read more about synchronisation">
@@ -507,6 +507,7 @@
 				<node name="inherit" value="&lt;unchanged&gt;"/>
 			</node>
 			<node name="fontSize" value="Font size"/>
+			<node name="fontColor" value="Font color"/>
 			<node name="fontStyle" value="Font style">
 				<node name="regular" value="Regular"/>
 				<node name="bold" value="Bold"/>
@@ -902,12 +903,12 @@
 				<node name="summaryOff" value="Don't show items for last 3 positions in the book"/>
 			</node>
 			<node name="backKeyAction" value="Back key action">
-				<node name="exit" value="Close ZWReader"/>
+				<node name="exit" value="Close CooldReader"/>
 				<node name="goBack" value="Navigate back"/>
 				<node name="cancelMenu" value="Show cancel menu"/>
 			</node>
 			<node name="backKeyLongPressAction" value="Back key long press action">
-				<node name="exit" value="Close ZWReader"/>
+				<node name="exit" value="Close CooldReader"/>
 				<node name="goBack" value="Navigate back"/>
 				<node name="cancelMenu" value="Show cancel menu"/>
 				<node name="none" value="No action"/>
@@ -920,7 +921,7 @@
 				<node name="summaryOff" value="Do not show daily tips"/>
 			</node>
 		</node>
-		<node name="about" value="About ZWReader">
+		<node name="about" value="About CooldReader">
 			<node name="summary" value="Version info, contacts, etc."/>
 			<node name="version" value="Version"/>
 			<node name="site" value="Visit our website">
@@ -1080,7 +1081,7 @@
 			<node name="register" value="Sign up"/>
 		</node>
 		<node name="CustomCatalogDialog">
-			<node name="title" value="ZWReader: add custom catalogue"/>
+			<node name="title" value="CooldReader: add custom catalogue"/>
 			<node name="catalogTitle" value="Title"/>
 			<node name="catalogUrl" value="URL"/>
 			<node name="catalogSummary" value="Summary"/>
@@ -1098,12 +1099,12 @@
 		</node>
 		<node name="tips">
 			<node name="title" value="Tip of the day"/>
-			<node name="initializationText" value="Would you like to read FBReader's daily tips? New tips would be downloaded from the ZWReader site, with expected network traffic 1-2 kilobytes per week.&#10;&#10;Enable tips?"/>
+			<node name="initializationText" value="Would you like to read CooldReader's daily tips? New tips would be downloaded from the CooldReader site, with expected network traffic 1-2 kilobytes per week.&#10;&#10;Enable tips?"/>
 			<node name="dontShowAgain" value="Don't show again"/>
 			<node name="more" value="Next tip"/>
 		</node>
 		<node name="screenHint">
-			<node name="message1" value="ZWReader works in fullscreen mode by default. Tap the centre third of the screen now to show controls. You can change this in the “Appearance” section of the Settings dialog."/>
+			<node name="message1" value="CooldReader works in fullscreen mode by default. Tap the centre third of the screen now to show controls. You can change this in the “Appearance” section of the Settings dialog."/>
 			<node name="message2" value="Well done! Now tap the centre third of the screen again to hide the controls and this hint. If you want to keep controls on the screen while reading, select the “Show action bar” option in “Appearance” in Settings."/>
 		</node>
 		<node name="folderList">
@@ -1163,7 +1164,7 @@
 		<node name="pluginNotFound" value="No plugin for '%s'"/>
 		<node name="unknownPluginType" value="Unknown plugin type: %s"/>
 		<node name="fileNotFound" value="File not found: %s"/>
-		<node name="unsupportedEncryptionMethod" value="File %s encryption method is not supported by ZWReader. Some pages are not readable"/>
+		<node name="unsupportedEncryptionMethod" value="File %s encryption method is not supported by CooldReader. Some pages are not readable"/>
 		<node name="opfFileNotFound" value="OPF is not found in %s"/>
 		<node name="unsupportedFileFormat" value="File format is not supported for '%s'"/>
 		<node name="errorParsingRtf" value="Rtf parsing error in: %s"/>
@@ -1191,17 +1192,17 @@
 	</node>
 	<node name="crash">
 		<node name="fixBooksDirectory">
-			<node name="title" value="ZWReader issue"/>
-			<node name="text" value="Cannot write to FBReader cache. Please check that your memory card is inserted correctly, or select another directory."/>
+			<node name="title" value="CooldReader issue"/>
+			<node name="text" value="Cannot write to CooldReader cache. Please check that your memory card is inserted correctly, or select another directory."/>
 		</node>
 		<node name="missingNativeLibrary">
-			<node name="title" value="ZWReader issue"/>
-			<node name="text" value="ZWReader cannot load native library. If the issue persists, please reinstall FBReader."/>
+			<node name="title" value="CooldReader issue"/>
+			<node name="text" value="CooldReader cannot load native library. If the issue persists, please reinstall CooldReader."/>
 		</node>
 	</node>
 	<node name="error">
 		<node name="bookReading">
-			<node name="title" value="ZWReader issue"/>
+			<node name="title" value="CooldReader issue"/>
 		</node>
 	</node>
 	<node name="links">

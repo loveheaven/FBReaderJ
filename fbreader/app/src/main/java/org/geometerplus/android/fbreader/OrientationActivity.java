@@ -19,31 +19,23 @@
 
 package org.geometerplus.android.fbreader;
 
-import java.lang.reflect.Field;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.DefaultHandler;
-
-import android.app.ListActivity;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Bundle;
-import android.widget.*;
-import android.view.*;
-
-import org.geometerplus.zlibrary.core.application.ZLApplication;
-import org.geometerplus.zlibrary.core.filesystem.ZLFile;
-import org.geometerplus.zlibrary.core.library.ZLibrary;
-import org.geometerplus.zlibrary.core.resources.ZLResource;
-import org.geometerplus.zlibrary.core.util.XmlUtil;
-import org.geometerplus.zlibrary.ui.android.R;
 import org.geometerplus.android.fbreader.api.MenuNode;
-import org.geometerplus.android.util.PackageUtil;
 import org.geometerplus.android.util.ViewUtil;
 import org.geometerplus.fbreader.fbreader.ActionCode;
+import org.geometerplus.zlibrary.core.application.ZLApplication;
+import org.geometerplus.zlibrary.core.library.ZLibrary;
+import org.geometerplus.zlibrary.core.resources.ZLResource;
+import org.geometerplus.zlibrary.ui.android.R;
+
+import android.app.ListActivity;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.RadioButton;
+import android.widget.TextView;
 
 public class OrientationActivity extends ListActivity {
 	private final ZLResource myResource = ZLResource.resource("menu");
@@ -93,19 +85,19 @@ public class OrientationActivity extends ListActivity {
 				? convertView
 				: LayoutInflater.from(parent.getContext()).inflate(R.layout.orientation_item, parent, false);
 			final TextView titleView = ViewUtil.findTextView(view, R.id.orientation_name);
-			final CheckBox checkView = ViewUtil.findCheckBox(view, R.id.orientation_checkbox);
+			final RadioButton checkView = ViewUtil.findRadioButton(view, R.id.orientation_checkbox);
 			final MenuNode item = getItem(position);
 			if (item != null) {
 				final ZLResource resource = myResource.getResource(item.Code);
 				titleView.setText(resource.getValue());
 				switch (ZLApplication.Instance().isActionChecked(item.Code)) {
-				case B3_TRUE:
+				case TRUE:
 					checkView.setChecked(true);
 					break;
-				case B3_FALSE:
+				case FALSE:
 					checkView.setChecked(false);
 					break;
-				case B3_UNDEFINED:
+				case UNDEFINED:
 					checkView.setEnabled(false);
 					break;
 				}

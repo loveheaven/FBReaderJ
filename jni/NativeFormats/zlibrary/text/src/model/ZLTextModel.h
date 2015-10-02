@@ -89,6 +89,7 @@ public:
 	const std::vector<jint> &paragraphLengths() const;
 	const std::vector<jint> &textSizes() const;
 	const std::vector<jbyte> &paragraphKinds() const;
+	void popParagraph();
 
 protected:
 	void addParagraphInternal(ZLTextParagraph *paragraph);

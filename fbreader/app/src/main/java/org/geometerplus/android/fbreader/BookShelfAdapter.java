@@ -92,13 +92,11 @@ public class BookShelfAdapter extends BaseAdapter {
 	public void refresh(List<Book> books) {
 		mBooks = books;
 		this.notifyDataSetChanged();
-		if(mBooks != null)android.util.Log.v("BOOKSHELF", "refresh:" + mBooks.size());
 	}
 
 	@Override
 	public int getCount() {
 		if(mBooks == null) return 0;
-		android.util.Log.v("BOOKSHELF", "count:" + mBooks.size());
 		return mBooks.size();
 	}
 

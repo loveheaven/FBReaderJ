@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Chinese FBReaderJ resources, by http://shucang.com/ -->
+<!-- Chinese 古風ReaderJ resources, by http://shucang.com/ -->
 <resources>
-	<node name="library" value="ZWReader 书库">
+	<node name="library" value="古風Reader 书库">
 		<node name="unknownAuthor" value="佚名"/>
 		<node name="booksWithNoTags" value="未归类"/>
 		<node name="demo" value="试读"/>
@@ -60,8 +60,8 @@
 			<node name="withIndex" value="内存卡编号 %s"/>
 			<node name="summary" value="插入设备的存储卡"/>
 		</node>
-		<node name="fileTreeLibrary" value="FBReader 文件夹">
-			<node name="summary" value="FBReader 存放书刊的文件夹"/>
+		<node name="fileTreeLibrary" value="古風Reader 文件夹">
+			<node name="summary" value="古風Reader 存放书刊的文件夹"/>
 		</node>
 		<node name="localSearch" value="本地搜索"/>
 		<node name="rescan" value="重新扫描"/>
@@ -78,8 +78,8 @@
 		<node name="uploadAgain" value="重新上传"/>
 		<node name="tryAgain" value="重新尝试"/>
 	</node>
-	<node name="networkLibrary" value="FBReader 网络书库">
-		<node name="sync" value="FBReader® 书籍网络">
+	<node name="networkLibrary" value="古風Reader 网络书库">
+		<node name="sync" value="古風Reader® 书籍网络">
 			<node name="summary" value="我的个人类目"/>
 		</node>
 		<node name="byAuthor" value="作者">
@@ -252,7 +252,7 @@
 			<node name="search" value="搜索"/>
 			<node name="createbak" value="创建备份"/>
 			<node name="importbak" value="导入备份"/>
-			<node name="deleteAllKnownWords" value="清空熟词"/>
+			<node name="deleteAll" value="清空全部"/>
 		</node>		
 	</node>
 	<node name="editBookmark">
@@ -274,7 +274,7 @@
 		<node name="returnTo" value="返回到…"/>
 		<node name="back" value="后退"/>
 		<node name="forward" value="前进"/>
-		<node name="close" value="关闭FBReader"/>
+		<node name="close" value="关闭古風Reader"/>
 	</node>
 	<node name="style" value="样式 %s"/>
 	<node name="editStyle" value="编辑样式">
@@ -294,7 +294,7 @@
 		<node name="clearSelection" value="清除"/>
 	</node>
 	<node name="sharing">
-		<node name="sharedFrom" value="共享自 &lt;a href=&quot;https://fbreader.org/&quot;&gt;FBReader&lt;/a&gt; "/>
+		<node name="sharedFrom" value="共享自 &lt;a href=&quot;https://古風Reader.org/&quot;&gt;古風Reader&lt;/a&gt; "/>
 	</node>
 	<node name="menu">
 		<node name="installPremium" value="升级到付费版"/>
@@ -308,8 +308,8 @@
 		<node name="library" value="本地书柜"/>
 		<node name="toc" value="目录"/>
 		<node name="saveguji" value="保存修改"/>
-		<node name="day" value="白底黑字"/>
-		<node name="night" value="黑底白字"/>
+		<node name="day" value="白天模式"/>
+		<node name="night" value="夜晚模式"/>
 		<node name="dayNight" value="白天/夜间"/>
 		<node name="yotaSwitchToBackScreen" value="切换到下一屏幕"/>
 		<node name="yotaSwitchToFrontScreen" value="切换到上一屏幕"/>
@@ -353,16 +353,16 @@
 		<node name="tags" value="标签"/>
 		<node name="series" value="丛书系列"/>
 	</node>
-	<node name="Preferences" value="FBReader设定">
+	<node name="Preferences" value="古風Reader设定">
 		<node name="sync" value="同步">
 			<node name="summary" value="书籍网络设定"/>
 			<node name="site" value="了解更多关于同步内容">
 				<node name="url" value="https://books.fbreader.org/help.html"/>
 			</node>
 			<node name="enable" value="开启同步">
-				<node name="summaryOn" value="将我的书库和 FBReader 书籍网络服务器同步"/>
+				<node name="summaryOn" value="将我的书库和古風书籍网络服务器同步"/>
 				<node name="summaryOnWithAccount" value="将我的书库同步为 %s"/>
-				<node name="summaryOff" value="不要将我的书库和 FBReader 书籍网络服务器同步"/>
+				<node name="summaryOff" value="不要将我的书库和古風书籍网络服务器同步"/>
 			</node>
 			<node name="values">
 				<node name="always" value="总是"/>
@@ -394,6 +394,119 @@
 			</node>
 			<node name="tempDir" value="存放临时文件的位置">
 				<node name="chooserTitle" value="临时文件文件夹"/>
+			</node>
+		</node>
+		<node name="guji" value="古籍显示样式">
+		    <node name="summary" value="分别设定版心、注释、翻译等"/>
+		    <node name="ShowGujiCover" value="封面样式">
+				<node name="heke" value="和刻封面"/>
+				<node name="royal" value="官刻封面"/>
+				<node name="fangke" value="坊刻封面"/>
+				<node name="mock" value="模拟封面"/>
+			</node>
+		    <node name="ShowGujiLayout" value="版面样式">
+				<node name="jingzhe" value="经折装，没有版心"/>
+				<node name="hudie" value="蝴蝶装，版心在中间"/>
+				<node name="baobei" value="包背装，版心在两侧"/>
+			</node>
+			<node name="GujiBanxinStyle" value="古籍版心样式">
+			    <node name="summary" value="设定版心书口、鱼尾等样式"/>
+			    <node name="ShowGujiBanxin" value="版心样式">
+					<node name="daheikou" value="大黑口"/>
+					<node name="xiaoheikou" value="小黑口"/>
+					<node name="baikou" value="白口"/>
+					<node name="booktitle" value="上书口显示书名"/>
+				</node>
+				<node name="GujiBanxinColor" value="版心字体颜色"/>
+			</node>
+			<node name="margins" value="古籍边距">
+				<node name="summary" value="文本空白距"/>
+				<node name="left" value="左边距"/>
+				<node name="right" value="右边距"/>
+				<node name="top" value="顶边距"/>
+				<node name="bottom" value="底边距"/>
+			</node>
+			<node name="ShowGujiJielan" value="显示界栏">
+				<node name="summaryOn" value="显示"/>
+				<node name="summaryOff" value="不显示"/>
+			</node>
+			<node name="GujiBankuangStyle" value="古籍板框样式">
+				<node name="summary" value="设定板框样式与宽度"/>
+			    <node name="DoubleLeftBankuang" value="左版框样式">
+					<node name="summaryOn" value="双边"/>
+					<node name="summaryOff" value="单边"/>
+				</node>
+				<node name="DoubleRightBankuang" value="右版框样式">
+					<node name="summaryOn" value="双边"/>
+					<node name="summaryOff" value="单边"/>
+				</node>
+				<node name="DoubleTopBankuang" value="上版框样式">
+					<node name="summaryOn" value="双边"/>
+					<node name="summaryOff" value="单边"/>
+				</node>
+				<node name="DoubleBottomBankuang" value="下版框样式">
+					<node name="summaryOn" value="双边"/>
+					<node name="summaryOff" value="单边"/>
+				</node>
+				<node name="WaiBankuangWidth" value="外版框宽度"/>
+				<node name="NeiBankuangWidth" value="内版框宽度"/>
+				<node name="SpaceBetweenBankuang" value="内外版框间隔宽度"/>
+			</node>
+			<node name="ShowGujiAnnotation" value="显示古籍注解">
+				<node name="summaryOn" value="显示"/>
+				<node name="summaryOff" value="不显示"/>
+			</node>
+			<node name="ShowGujiTranslation" value="显示古籍翻译">
+				<node name="summaryOn" value="显示"/>
+				<node name="summaryOff" value="不显示"/>
+			</node>
+			<node name="ShowGujiSuperscript" value="显示古籍正文右注">
+				<node name="summaryOn" value="显示"/>
+				<node name="summaryOff" value="不显示"/>
+			</node>
+			<node name="ShowGujiPunctuation" value="显示古籍标点">
+				<node name="judou" value="将标点显示为句读"/>
+				<node name="show" value="显示标点"/>
+				<node name="hide" value="不显示标点"/>
+			</node>
+			<node name="GujiTextStyle" value="古籍文字样式">
+				<node name="summary" value="分别设定标题、段落等"/>
+				<node name="Classic Chinese Section Title" value="章节标题">
+					<node name="summary" value="章节、卷开头的标题"/>
+				</node>
+				<node name="Classic Chinese Annotation" value="夹注">
+					<node name="summary" value="双行小字注解"/>
+				</node>
+				<node name="Classic Chinese Title Annotation" value="题注">
+					<node name="summary" value="标题里的双行小字注解"/>
+				</node>
+				<node name="Classic Chinese Translation" value="翻译">
+					<node name="summary" value="双行小字翻译或者注释"/>
+				</node>
+				<node name="Classic Chinese Subtitle" value="副标题">
+					<node name="summary" value="居下的标题"/>
+				</node>
+				<node name="Classic Chinese Subscript" value="正文小字">
+					<node name="summary" value="用于名字或者称臣的小字"/>
+				</node>
+				<node name="Classic Chinese Comment" value="评论">
+					<node name="summary" value="正文中的评论"/>
+				</node>
+				<node name="Classic Chinese Superscript" value="正文右注">
+					<node name="summary" value="正文右边的注解，例如日文汉字旁所注假名"/>
+				</node>
+				<node name="Classic Chinese Section Title 1" value="章节标题1">
+					<node name="summary" value="章节、卷开头空一格的标题"/>
+				</node>
+				<node name="Classic Chinese Section Title 2" value="章节标题2">
+					<node name="summary" value="章节、卷开头空两格的标题"/>
+				</node>
+				<node name="Classic Chinese Section Title 3" value="章节标题3">
+					<node name="summary" value="章节、卷开头空三格的标题"/>
+				</node>
+				<node name="Classic Chinese Section Title 4" value="章节标题4">
+					<node name="summary" value="章节、卷开头空四格的标题"/>
+				</node>
 			</node>
 		</node>
 		<node name="appearance" value="呈现方式">
@@ -534,6 +647,7 @@
 				<node name="inherit" value="&lt;不变&gt;"/>
 			</node>
 			<node name="fontSize" value="字体大小"/>
+			<node name="fontColor" value="字体颜色"/>
 			<node name="fontStyle" value="字型">
 				<node name="regular" value="正常"/>
 				<node name="bold" value="加粗"/>
@@ -931,12 +1045,12 @@
 				<node name="summaryOff" value="不显示最近浏览的3处位置"/>
 			</node>
 			<node name="backKeyAction" value="回退键动作设定">
-				<node name="exit" value="关闭 FBReader"/>
+				<node name="exit" value="关闭 古風Reader"/>
 				<node name="goBack" value="后退到前一个界面"/>
 				<node name="cancelMenu" value="显示取消菜单"/>
 			</node>
 			<node name="backKeyLongPressAction" value="长按回退键动作设定">
-				<node name="exit" value="关闭FBReader"/>
+				<node name="exit" value="关闭古風Reader"/>
 				<node name="goBack" value="后退到前一个界面"/>
 				<node name="cancelMenu" value="显示取消菜单"/>
 				<node name="none" value="不做任何事"/>
@@ -949,20 +1063,20 @@
 				<node name="summaryOff" value="不显示"/>
 			</node>
 		</node>
-		<node name="about" value="关于FBReader">
+		<node name="about" value="关于古風Reader">
 			<node name="summary" value="版本信息, 联系人"/>
 			<node name="version" value="版本"/>
 			<node name="site" value="访问我们的网站">
-				<node name="url" value="https://fbreader.org/"/>
+				<node name="url" value="https://古風Reader.org/"/>
 			</node>
 			<node name="email" value="给我们发送邮件">
-				<node name="url" value="mailto:contact@fbreader.org"/>
+				<node name="url" value="mailto:contact@古風Reader.org"/>
 			</node>
-			<node name="googleplus" value="加入 FBReader Google+ 社区">
+			<node name="googleplus" value="加入古風Reader Google+ 社区">
 				<node name="url" value="https://plus.google.com/communities/115894899404862312312"/>
 			</node>
 			<node name="twitter" value="关注我们的twitter">
-				<node name="url" value="https://twitter.com/fbreader"/>
+				<node name="url" value="https://twitter.com/古風Reader"/>
 			</node>
 			<node name="facebook" value="关注我们的Facebook">
 				<node name="url" value="https://facebook.com/fbreader"/>
@@ -1109,7 +1223,7 @@
 			<node name="register" value="注册"/>
 		</node>
 		<node name="CustomCatalogDialog">
-			<node name="title" value="FBReader: 添加自设书库"/>
+			<node name="title" value="古風Reader: 添加自设书库"/>
 			<node name="catalogTitle" value="书库名称"/>
 			<node name="catalogUrl" value="书库网址"/>
 			<node name="catalogSummary" value="简介"/>
@@ -1127,12 +1241,12 @@
 		</node>
 		<node name="tips">
 			<node name="title" value="今天提示"/>
-			<node name="initializationText" value="你希望阅读FBReader每日提示吗? 新的提示将从FBReader网站下载. 每周使用流量大约 1-2 K字节.&#10;&#10;启用小提示吗?"/>
+			<node name="initializationText" value="你希望阅读古風Reader每日提示吗? 新的提示将从古風Reader网站下载. 每周使用流量大约 1-2 K字节.&#10;&#10;启用小提示吗?"/>
 			<node name="dontShowAgain" value="不要再显示"/>
 			<node name="more" value="下个提示"/>
 		</node>
 		<node name="screenHint">
-			<node name="message1" value="FBReader works in fullscreen mode by default. Tap the centre third of the screen now to show controls. You can change this in the “Appearance” section of the Settings dialog." toBeTranslated="true"/>
+			<node name="message1" value="古風Reader works in fullscreen mode by default. Tap the centre third of the screen now to show controls. You can change this in the “Appearance” section of the Settings dialog." toBeTranslated="true"/>
 			<node name="message2" value="Well done! Now tap the centre third of the screen again to hide the controls and this hint. If you want to keep controls on the screen while reading, select the “Show action bar” option in “Appearance” in Settings." toBeTranslated="true"/>
 		</node>
 		<node name="folderList">
@@ -1192,7 +1306,7 @@
 		<node name="pluginNotFound" value="没有这个插件 '%s'"/>
 		<node name="unknownPluginType" value="未知插件类型: %s"/>
 		<node name="fileNotFound" value="文件未找到: %s"/>
-		<node name="unsupportedEncryptionMethod" value="FBReader不支持文件 %s 加密方法. 某些页面不可读"/>
+		<node name="unsupportedEncryptionMethod" value="古風Reader不支持文件 %s 加密方法. 某些页面不可读"/>
 		<node name="opfFileNotFound" value="在 %s 文件夹未找到 OPF  "/>
 		<node name="unsupportedFileFormat" value="文件格式 '%s' 不支持"/>
 		<node name="errorParsingRtf" value="Rtf解析错误: %s"/>
@@ -1220,21 +1334,21 @@
 	</node>
 	<node name="crash">
 		<node name="fixBooksDirectory">
-			<node name="title" value="FBReader 问题"/>
-			<node name="text" value="无法写入FBReader缓存. 请检查内存卡已正确插入, 或选择其他目录."/>
+			<node name="title" value="古風Reader 问题"/>
+			<node name="text" value="无法写入古風Reader缓存. 请检查内存卡已正确插入, 或选择其他目录."/>
 		</node>
 		<node name="missingNativeLibrary">
-			<node name="title" value="FBReader 问题"/>
-			<node name="text" value="FBReader无法加载本地库. 可能未正确安装. 如果问题还存在, 请重新安装FBReader."/>
+			<node name="title" value="古風Reader 问题"/>
+			<node name="text" value="古風Reader无法加载本地库. 可能未正确安装. 如果问题还存在, 请重新安装古風Reader."/>
 		</node>
 	</node>
 	<node name="error">
 		<node name="bookReading">
-			<node name="title" value="FBReader 问题"/>
+			<node name="title" value="古風Reader 问题"/>
 		</node>
 	</node>
 	<node name="links">
-		<node name="faqPage" value="https://fbreader.org/faq-page"/>
+		<node name="faqPage" value="https://古風Reader.org/faq-page"/>
 	</node>
 	<node name="plugins" value="安装插件">
 		<node name="noMorePlugins" value="抱歉, 目前没有新插件"/>
@@ -1314,9 +1428,9 @@
 		<node name="cannotOpenDictionary" value="无法打开词典"/>
 		<node name="noDictionarySelected" value="词典未选择; 请调整 Dictan 设定"/>
 	</node>
-	<node name="premium" value="FBReader 付费版">
-		<node name="shortTitle" value="FBReader 付费版"/>
-		<node name="conflict" value="FBReader 和 FBReader 付费版都已安装. 您想运行哪个?"/>
+	<node name="premium" value="古風Reader 付费版">
+		<node name="shortTitle" value="古風Reader 付费版"/>
+		<node name="conflict" value="古風Reader 和 古風Reader 付费版都已安装. 您想运行哪个?"/>
 	</node>
 	<node name="widget">
 		<node name="simple">

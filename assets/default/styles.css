@@ -268,3 +268,89 @@ date {
 	margin-left: 30pt;
 	hyphens: none;
 }
+
+GUJI_COMMENT {
+	fbreader-id: 80;
+	fbreader-name: "Classic Chinese Comment";
+	hyphens: none;
+	margin-left: 1em;
+}
+
+GUJI_SUBSCRIPT {
+	fbreader-id: 81;
+	fbreader-name: "Classic Chinese Subscript";
+	font-size: 0.6em;
+	hyphens: none;
+}
+
+GUJI_SUBTITLE {
+	fbreader-id: 82;
+	fbreader-name: "Classic Chinese Subtitle";
+	hyphens: none;
+	text-align: right;
+}
+
+GUJI_ANNOTATION {
+	fbreader-id: 83;
+	fbreader-name: "Classic Chinese Annotation";
+	hyphens: none;
+	font-size: 0.55em;
+	font-color: 11796510;
+}
+
+GUJI_TRANSLATION {
+	fbreader-id: 84;
+	fbreader-name: "Classic Chinese Translation";
+	hyphens: none;
+	font-size: 0.55em;
+	font-color: 5963794;
+}
+
+GUJI_TITLEANNOTATION {
+	fbreader-id: 87;
+	fbreader-name: "Classic Chinese Title Annotation";
+	hyphens: none;
+	font-size: 0.55em;
+	font-color: 11796510;
+}
+
+GUJI_SUPERSCRIPT {
+	fbreader-id: 88;
+	fbreader-name: "Classic Chinese Superscript";
+	hyphens: none;
+	font-size: 0.4em;
+}
+
+GUJI_SECTIONTITLE {
+	fbreader-id: 99;
+	fbreader-name: "Classic Chinese Section Title";
+	hyphens: none;
+	margin-left: 0em;
+}
+
+GUJI_SECTIONTITLE1 {
+	fbreader-id: 100;
+	fbreader-name: "Classic Chinese Section Title 1";
+	hyphens: none;
+	margin-left: 1em;
+}
+
+GUJI_SECTIONTITLE2 {
+	fbreader-id: 101;
+	fbreader-name: "Classic Chinese Section Title 2";
+	hyphens: none;
+	margin-left: 2em;
+}
+
+GUJI_SECTIONTITLE3 {
+	fbreader-id: 102;
+	fbreader-name: "Classic Chinese Section Title 3";
+	hyphens: none;
+	margin-left: 3em;
+}
+GUJI_SECTIONTITLE4 {
+	fbreader-id: 103;
+	fbreader-name: "Classic Chinese Section Title 4";
+	hyphens: none;
+	margin-left: 4em;
+}

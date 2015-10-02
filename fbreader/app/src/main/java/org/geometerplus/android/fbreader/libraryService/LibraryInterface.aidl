@@ -88,6 +88,7 @@ interface LibraryInterface {
 	void saveToKnownWords(in Word word);
 	void saveToUnknownWords(in Word word);
 	void deleteAllKnownWord(in String language);
+	void deleteAllUnknownWord(in long bookId);
 	void deleteKnownWord(in Word word);
 	void deleteUnknownWord(in Word word);
 	void updateKnownWord(in Word word, in String newText);

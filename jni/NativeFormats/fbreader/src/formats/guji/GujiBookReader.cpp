@@ -55,22 +55,24 @@ int replace_all(std::string& str, const std::string& pattern, const std::string&
 bool GujiBookReader::titleHandler(std::string &str) {
 	const shared_ptr<Book> myBook = myModel.book();
 	myBook->setTitle(str.substr(7, str.length()-9));
-	myIsNeedLineHandler = false;
+	myIsNeedLineHandler = true;
 	if(!myIsAfterBookTitle) {
 		myIsAfterBookTitle = true;
 	}
 
-	beginContentsParagraph();
+	beginParagraph();//表示正文的一个段落开始
+	beginContentsParagraph(model().bookTextModel()->paragraphsNumber() - 1);//表示一个目录的开始。用于实现目录的嵌套
 	enterTitle();
-	pushKind(TITLE);
-	beginParagraph();
+	addControl(TITLE, true);
+
 
 	addData(str.substr(7, str.length()-9));
 	addContentsData(str.substr(7, str.length()-9));
 	exitTitle();
-	this->internalEndParagraph();
-	popKind();
+	//popKind();
 	endContentsParagraph();
+	addControl(TITLE, false);
+	//this->internalEndParagraph();
 }
 
 bool GujiBookReader::sectionHandler(std::string &str) {
@@ -79,19 +81,23 @@ bool GujiBookReader::sectionHandler(std::string &str) {
 			if(myIsAfterBookTitle) {
 				myIsAfterBookTitle = false;
 			} else {
-				internalEndParagraph();
-				insertEndOfSectionParagraph();
+				//internalEndParagraph();
+				//insertEndOfSectionParagraph();
+				//__android_log_print(ANDROID_LOG_INFO, "love", "!!!!!666sectionHandlerSSS!!%d",model().bookTextModel()->paragraphsNumber());
+				//beginParagraph();
 			}
-			beginContentsParagraph();
+
+			beginContentsParagraph(model().bookTextModel()->paragraphsNumber() - 1);
 			enterTitle();
-			pushKind(SECTION_TITLE);
-			beginParagraph();
+			addControl(GUJI_SECTIONTITLE, true);
+
 			addData(str.substr(9, str.find("}")-9));
 			addContentsData(str.substr(9, str.find("}")-9));
 			exitTitle();
-			this->internalEndParagraph();
 
-			popKind();
+
+			addControl(GUJI_SECTIONTITLE, false);
+			this->internalEndParagraph();
 			this->beginParagraph();
 			myIsNeedLineHandler = false;
 			myIsInSectionTitle = false;
@@ -99,9 +105,11 @@ bool GujiBookReader::sectionHandler(std::string &str) {
 			addData(str.substr(0, str.find("}")));
 			addContentsData(str.substr(0, str.find("}")));
 			exitTitle();
-			this->internalEndParagraph();
 
-			popKind();
+
+			//popKind();
+			addControl(GUJI_SECTIONTITLE, false);
+			this->internalEndParagraph();
 			this->beginParagraph();
 			myIsNeedLineHandler = false;
 			myIsInSectionTitle = false;
@@ -111,21 +119,32 @@ bool GujiBookReader::sectionHandler(std::string &str) {
 			if(myIsAfterBookTitle) {
 				myIsAfterBookTitle = false;
 			} else {
-				internalEndParagraph();
-				insertEndOfSectionParagraph();
+				//internalEndParagraph();
+				//insertEndOfSectionParagraph();
+				//beginParagraph();
 			}
 			myIsNeedLineHandler = false;
 			myIsInSectionTitle = true;
-			beginContentsParagraph();
+			beginContentsParagraph(model().bookTextModel()->paragraphsNumber() - 1);
 			enterTitle();
-			pushKind(SECTION_TITLE);
-			beginParagraph();
+			addControl(GUJI_SECTIONTITLE, true);
+
 			addData(str.substr(9, str.length()-9));
 			addContentsData(str.substr(9, str.length()-9));
 		} else {
 			addData(str);
 			addContentsData(str);
 			myIsNeedLineHandler = false;
+		}
+	}
+}
+
+void GujiBookReader::insertEndOfSectionParagraph() {
+	if (model().bookTextModel() != 0) {
+		std::size_t size = model().bookTextModel()->paragraphsNumber();
+		if (size > 0) {
+			endParagraph();
+			((ZLTextPlainModel&)(*model().bookTextModel())).createParagraph(ZLTextParagraph::END_OF_SECTION_PARAGRAPH);
 		}
 	}
 }
@@ -137,18 +156,21 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 		str= myLastString + str;
 		myLastString.erase();
 	}
+
 	if(str.find("\\title{") == 0) {
 		titleHandler(str);
 	} else if(str.find("\\section{") == 0 || myIsInSectionTitle) {
 		sectionHandler(str);
 	} else if(str.find("\\endSection") == 0) {
-		endContentsParagraph();
-		pushKind(CONTENTS_TABLE_ENTRY);
-		beginParagraph();
+		endContentsParagraph();//表示一个目录的结束。用于实现目录的嵌套
+		model().bookTextModel()->popParagraph();
+		insertEndOfSectionParagraph();
+		//pushKind(CONTENTS_TABLE_ENTRY);
+		//beginParagraph();
 
-			this->internalEndParagraph();
-			popKind();
-		myIsNeedLineHandler = false;
+			//this->internalEndParagraph();
+			//popKind();
+		myIsNeedLineHandler = true;
 	} else if(str.find("\\") == 0 && str.length() < 11 && (str.rfind("\n") != (str.length() - 1))) {
 		myLastString.erase();
 		myLastString = str;
@@ -170,14 +192,14 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 		}
 		if (ptr != end) {//is the first line of an paragraph because it has some text
 			if(myIsAfterBookTitle) {
-				beginParagraph();
+				//beginParagraph();
 				myIsAfterBookTitle = false;
 			}
-			if ((myFormat.breakType() & GujiTextFormat::BREAK_PARAGRAPH_AT_LINE_WITH_INDENT) &&
-					myNewLine && (mySpaceCounter > myFormat.ignoredIndent())) {
-				internalEndParagraph();
-				beginParagraph();
-			}
+//			if ((myFormat.breakType() & GujiTextFormat::BREAK_PARAGRAPH_AT_LINE_WITH_INDENT) &&
+//					myNewLine && (mySpaceCounter > myFormat.ignoredIndent())) {
+//				internalEndParagraph();
+//				beginParagraph();
+//			}
 
 			ptr = end - str.length();
 			const char * start = end - str.length();
@@ -187,7 +209,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					if(ptr != start) {
 						addData(str.substr(start +str.length() -end, ptr-start));
 					}
-					myKind = CODE;
+					myKind = GUJI_TRANSLATION;
 					addControl(myKind, true);
 					ptr += 1;
 					start =ptr+1;
@@ -239,6 +261,142 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					addControl(myKind, true);
 					ptr += 3;
 					start =ptr+1;
+				} else if(*ptr == '\\' && (ptr+3) != end
+					&& *(ptr+1) == 'c'
+					&& *(ptr+2) == 'r'
+					&& *(ptr+3) == '{'
+					) {
+					if(ptr != start) {
+						addData(str.substr(start +str.length() -end, ptr-start));
+					}
+					myKind = GUJI_CR;
+					addControl(myKind, true);
+					ptr += 3;
+					start =ptr+1;
+				} else if(*ptr == '\\' && (ptr+3) != end
+					&& *(ptr+1) == 'p'
+					&& *(ptr+2) == 's'
+					&& *(ptr+3) == '{'
+					) {
+					if(ptr != start) {
+						addData(str.substr(start +str.length() -end, ptr-start));
+					}
+					myKind = GUJI_PARAGRAPHSTART;
+					addControl(myKind, true);
+					ptr += 3;
+					start =ptr+1;
+				} else if(*ptr == '\\' && (ptr+5) != end
+					&& *(ptr+1) == 's'
+					&& *(ptr+2) == 'e'
+					&& *(ptr+3) == 'c'
+					&& *(ptr+4) == '1'
+					&& *(ptr+5) == '{'
+					) {
+					if(ptr != start) {
+						addData(str.substr(start +str.length() -end, ptr-start));
+					}
+					myKind = GUJI_SECTIONTITLE1;
+					addControl(myKind, true);
+					ptr += 5;
+					start =ptr+1;
+				} else if(*ptr == '\\' && (ptr+5) != end
+					&& *(ptr+1) == 's'
+					&& *(ptr+2) == 'e'
+					&& *(ptr+3) == 'c'
+					&& *(ptr+4) == '2'
+					&& *(ptr+5) == '{'
+					) {
+					if(ptr != start) {
+						addData(str.substr(start +str.length() -end, ptr-start));
+					}
+					myKind = GUJI_SECTIONTITLE2;
+					addControl(myKind, true);
+					ptr += 5;
+					start =ptr+1;
+				} else if(*ptr == '\\' && (ptr+5) != end
+					&& *(ptr+1) == 's'
+					&& *(ptr+2) == 'e'
+					&& *(ptr+3) == 'c'
+					&& *(ptr+4) == '3'
+					&& *(ptr+5) == '{'
+					) {
+					if(ptr != start) {
+						addData(str.substr(start +str.length() -end, ptr-start));
+					}
+					myKind = GUJI_SECTIONTITLE3;
+					addControl(myKind, true);
+					ptr += 5;
+					start =ptr+1;
+				} else if(*ptr == '\\' && (ptr+5) != end
+					&& *(ptr+1) == 's'
+					&& *(ptr+2) == 'e'
+					&& *(ptr+3) == 'c'
+					&& *(ptr+4) == '4'
+					&& *(ptr+5) == '{'
+					) {
+					if(ptr != start) {
+						addData(str.substr(start +str.length() -end, ptr-start));
+					}
+					myKind = GUJI_SECTIONTITLE4;
+					addControl(myKind, true);
+					ptr += 5;
+					start =ptr+1;
+				} else if(*ptr == '\\' && (ptr+5) != end
+					&& *(ptr+1) == 'a'
+					&& *(ptr+2) == 'n'
+					&& *(ptr+3) == 'n'
+					&& *(ptr+4) == 'o'
+					&& *(ptr+5) == '{'
+					) {
+					if(ptr != start) {
+						addData(str.substr(start +str.length() -end, ptr-start));
+					}
+					myKind = GUJI_ANNOTATION;
+					addControl(myKind, true);
+					ptr += 5;
+					start =ptr+1;
+				} else if(*ptr == '\\' && (ptr+6) != end
+					&& *(ptr+1) == 't'
+					&& *(ptr+2) == 'a'
+					&& *(ptr+3) == 'n'
+					&& *(ptr+4) == 'n'
+					&& *(ptr+5) == 'o'
+					&& *(ptr+6) == '{'
+					) {
+					if(ptr != start) {
+						addData(str.substr(start +str.length() -end, ptr-start));
+					}
+					myKind = GUJI_TITLEANNOTATION;
+					addControl(myKind, true);
+					ptr += 6;
+					start =ptr+1;
+				} else if(*ptr == '\\' && (ptr+5) != end
+					&& *(ptr+1) == 's'
+					&& *(ptr+2) == 'u'
+					&& *(ptr+3) == 'b'
+					&& *(ptr+4) == 't'
+					&& *(ptr+5) == '{'
+					) {
+					if(ptr != start) {
+						addData(str.substr(start +str.length() -end, ptr-start));
+					}
+					myKind = GUJI_SUBTITLE;
+					addControl(myKind, true);
+					ptr += 5;
+					start =ptr+1;
+				} else if(*ptr == '\\' && (ptr+4) != end
+					&& *(ptr+1) == 'c'
+					&& *(ptr+2) == 'o'
+					&& *(ptr+3) == 'm'
+					&& *(ptr+4) == '{'
+					) {
+					if(ptr != start) {
+						addData(str.substr(start +str.length() -end, ptr-start));
+					}
+					myKind = GUJI_COMMENT;
+					addControl(myKind, true);
+					ptr += 4;
+					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+4) != end 
 					&& *(ptr+1) == 's'
 					&& *(ptr+2) == 'u'
@@ -248,7 +406,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					if(ptr != start) {
 						addData(str.substr(start +str.length() -end, ptr-start));
 					}
-					myKind = SUB;
+					myKind = GUJI_SUBSCRIPT;
 					addControl(myKind, true);
 					ptr += 4;
 					start =ptr+1;
@@ -261,9 +419,25 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					if(ptr != start) {
 						addData(str.substr(start +str.length() -end, ptr-start));
 					}
-					myKind = SUP;
+					myKind = GUJI_SUPERSCRIPT;
 					addControl(myKind, true);
 					ptr += 4;
+					start =ptr+1;
+				} else if(*ptr == '\\' && (ptr+7) != end
+					&& *(ptr+1) == 'a'
+					&& *(ptr+2) == 'u'
+					&& *(ptr+3) == 't'
+					&& *(ptr+4) == 'h'
+					&& *(ptr+5) == 'o'
+					&& *(ptr+6) == 'r'
+					&& *(ptr+7) == '{'
+					) {
+					if(ptr != start) {
+						addData(str.substr(start +str.length() -end, ptr-start));
+					}
+					myKind = GUJI_AUTHOR;
+					addControl(myKind, true);
+					ptr += 7;
 					start =ptr+1;
 				} else if(*ptr == '}') {
 					if(ptr != start) {
@@ -276,7 +450,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					
 				}
 				ptr += 1;
-			}
+			} //end while
 			if(ptr != start) {
 				if((*start == '|' || *start == '\\') && (str.rfind("\n") != (str.length() - 1))) {
 					myLastString.erase();
@@ -311,7 +485,6 @@ bool GujiBookReader::newLineHandler() {
 	bool paragraphBreak =
 		(myFormat.breakType() & GujiTextFormat::BREAK_PARAGRAPH_AT_NEW_LINE) ||
 		((myFormat.breakType() & GujiTextFormat::BREAK_PARAGRAPH_AT_EMPTY_LINE) && (myLineFeedCounter > 0));
-
 
 	if (true) {
 		internalEndParagraph();

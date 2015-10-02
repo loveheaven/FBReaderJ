@@ -21,18 +21,59 @@
         android:singleLine="true"
         android:layout_marginTop="6dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
+    
     <SeekBar
         android:id="@+id/navigation_slider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="4dp" />
+        android:paddingTop="4dp"
+        android:progressDrawable="@drawable/seek_bar"
+        android:thumb="@drawable/seek_bar_thumb"
+        android:thumbOffset="-5.0dip" />
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
+        <Button
+            android:id="@+id/navigation_selectfont"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/navigation_button"
+            android:drawableLeft="@drawable/popup_selectfont"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_weight="1"
+            android:textColor="@android:color/white" />
+        
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="#90909090" />
+        <Button
+            android:id="@+id/navigation_showpuctuation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/navigation_button"
+            android:drawableRight="@drawable/popup_puncshow"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
 
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:background="#90909090" />
+    
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
         <ImageButton
             android:id="@+id/navigation_zoomout"
             android:layout_width="wrap_content"
@@ -59,22 +100,20 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:background="@drawable/popup_textzoomin" />
-
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:background="#90909090" />
-
         <Button
             android:id="@+id/navigation_night"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/navigation_button"
+            android:layout_weight="1"
             android:drawableRight="@drawable/popup_night"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/white"
@@ -85,9 +124,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/navigation_button"
+            android:layout_weight="1"
             android:drawableRight="@drawable/popup_day"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/white"
@@ -110,7 +149,6 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/white"
              />
-        
     </LinearLayout>
 
     <View
@@ -119,7 +157,6 @@
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
         android:background="#90909090" />
-
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -184,7 +221,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/navigation_button"
-            android:src="@drawable/popup_copy" />
+            android:src="@drawable/popup_orientation" />
 
         <ImageButton
             android:id="@+id/navigation_install"

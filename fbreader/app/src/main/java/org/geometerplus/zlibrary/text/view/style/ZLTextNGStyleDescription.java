@@ -23,15 +23,17 @@ import java.util.Map;
 import java.util.HashMap;
 
 import org.fbreader.util.Boolean3;
-
 import org.geometerplus.zlibrary.core.application.ZLApplication;
+import org.geometerplus.zlibrary.core.options.ZLColorOption;
 import org.geometerplus.zlibrary.core.options.ZLOption;
 import org.geometerplus.zlibrary.core.options.ZLStringOption;
+import org.geometerplus.zlibrary.core.util.ZLColor;
 import org.geometerplus.zlibrary.core.view.ZLView;
 import org.geometerplus.zlibrary.text.model.*;
 import org.geometerplus.zlibrary.text.view.ZLTextView;
 
 public class ZLTextNGStyleDescription {
+	public final int ID;
 	public final String Name;
 
 	public final ZLStringOption FontFamilyOption;
@@ -48,12 +50,24 @@ public class ZLTextNGStyleDescription {
 	public final ZLStringOption AlignmentOption;
 	public final ZLStringOption VerticalAlignOption;
 	public final ZLStringOption LineHeightOption;
+	public final ZLColorOption FontColorOption;
 
 	private static ZLStringOption createOption(String selector, String name, Map<String,String> valueMap) {
 		return new ZLStringOption("Style", selector + "::" + name, valueMap.get(name));
 	}
+	
+	private static ZLColorOption createColorOption(String selector, String name, Map<String,String> valueMap) {
+		ZLColor value = ZLColor.BLACK;
+		try {
+			final int intValue = Integer.parseInt(valueMap.get(name));
+			value = intValue != -1 ? new ZLColor(intValue) : ZLColor.BLACK;
+		} catch (NumberFormatException e) {
+		}
+		return new ZLColorOption("Style", selector + "::" + name, value);
+	}
 
 	ZLTextNGStyleDescription(String selector, Map<String,String> valueMap) {
+		ID = Integer.parseInt(valueMap.get("fbreader-id"));
 		Name = valueMap.get("fbreader-name");
 
 		FontFamilyOption = createOption(selector, "font-family", valueMap);
@@ -86,6 +100,7 @@ public class ZLTextNGStyleDescription {
 		AlignmentOption = createOption(selector, "text-align", valueMap);
 		VerticalAlignOption = createOption(selector, "vertical-align", valueMap);
 		LineHeightOption = createOption(selector, "line-height", valueMap);
+		FontColorOption = createColorOption(selector, "font-color", valueMap);
 	}
 
 	public int getFontSize(ZLTextMetrics metrics, int parentFontSize) {
@@ -96,6 +111,10 @@ public class ZLTextNGStyleDescription {
 		return ZLTextStyleEntry.compute(
 			length, metrics, parentFontSize, ZLTextStyleEntry.Feature.LENGTH_FONT_SIZE
 		);
+	}
+	
+	public ZLColor getFontColor() {
+		return FontColorOption.getValue();
 	}
 
 	int getVerticalAlign(ZLTextMetrics metrics, int base, int fontSize) {

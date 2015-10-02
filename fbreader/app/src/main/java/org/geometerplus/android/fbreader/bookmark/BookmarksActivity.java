@@ -334,7 +334,16 @@ public class BookmarksActivity extends Activity implements
 				}
 			}
 			return true;
-
+		case 5:
+			if (AllUnknownWords != null && AllUnknownWords.size() > 0) {
+				myCollection.deleteAllUnknownWord(myBook.getId());
+				AllUnknownWords.clear();
+				{
+					final ListView view = (ListView) myTabHost.getCurrentView();
+					((KnownWorsAdapter) view.getAdapter()).notifyDataSetChanged();
+				}
+			}
+			return true;
 		default:
 			return true;
 		}
@@ -344,7 +353,7 @@ public class BookmarksActivity extends Activity implements
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 		menu.clear();
-		if (myTabHost.getCurrentView() == myKnownWordsView) {
+		if (myTabHost.getCurrentView().getId() == R.id.known_words) {
 			MenuItem item = menu.add(0, 2, Menu.NONE,
 					myResource.getResource("menu").getResource("createbak")
 							.getValue());
@@ -357,9 +366,18 @@ public class BookmarksActivity extends Activity implements
 					4,
 					Menu.NONE,
 					myResource.getResource("menu")
-							.getResource("deleteAllKnownWords").getValue());
+							.getResource("deleteAll").getValue());
 			itemDeleteAllKnownWords.setOnMenuItemClickListener(this);
 
+			return true;
+		} else if (myTabHost.getCurrentView().getId() == R.id.unknown_words) {
+			MenuItem itemDeleteAllUnknownWords = menu.add(
+					0,
+					5,
+					Menu.NONE,
+					myResource.getResource("menu")
+							.getResource("deleteAll").getValue());
+			itemDeleteAllUnknownWords.setOnMenuItemClickListener(this);
 			return true;
 		}
 		return false;

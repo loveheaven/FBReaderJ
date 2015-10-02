@@ -415,6 +415,11 @@ public class LibraryService extends Service {
 		public void deleteAllKnownWord(String language) throws RemoteException {
 			myCollection.deleteAllKnownWord(language);
 		}
+		
+		@Override
+		public void deleteAllUnknownWord(long bookId) throws RemoteException {
+			myCollection.deleteAllUnknownWord(bookId);
+		}
 
 		@Override
 		public void saveToKnownWords(Word word) throws RemoteException {

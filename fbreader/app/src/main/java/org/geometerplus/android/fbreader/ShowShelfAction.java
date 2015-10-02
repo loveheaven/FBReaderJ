@@ -33,9 +33,9 @@ class ShowShelfAction extends FBAndroidAction {
 	@Override
 	protected void run(Object ... params) {
 		final BookModel model = Reader.Model;
-		Intent intent = new Intent(BaseActivity.getApplicationContext(), BookShelf.class);
+		Intent intent = new Intent(BaseActivity.getApplicationContext(), BookShelfActivity.class);
 		if (model != null && model.Book != null) {
-			intent.putExtra(BookShelf.SELECTED_BOOK_PATH_KEY, model.Book.getPath());
+			intent.putExtra(BookShelfActivity.SELECTED_BOOK_PATH_KEY, model.Book.getPath());
 		}
 		BaseActivity.startActivity(intent);
 	}
