@@ -144,7 +144,7 @@ public class ViewOptions implements ZLOption.ZLOptionCallback{
 		TopMargin =
 			new ZLIntegerRangeOption("Options", "TopMargin", 0, y/4, horMargin);
 		GujiTopMargin =
-				new ZLIntegerRangeOption("Options", "GujiTopMargin", 0, y/4, horMargin*6);
+				new ZLIntegerRangeOption("Options", "GujiTopMargin", 0, y/4, 400*y/1920);
 		GujiTopMargin.setCallback(this);
 		HeaderHidden = 
 			new ZLBooleanOption("Options", "HeaderHidden", false);
@@ -153,7 +153,7 @@ public class ViewOptions implements ZLOption.ZLOptionCallback{
 		BottomMargin =
 			new ZLIntegerRangeOption("Options", "BottomMargin", 0, y/4, horMargin);
 		GujiBottomMargin =
-				new ZLIntegerRangeOption("Options", "GujiBottomMargin", 0, y/4, horMargin*3);
+				new ZLIntegerRangeOption("Options", "GujiBottomMargin", 0, y/4, 200*y/1920);
 		GujiBottomMargin.setCallback(this);
 		SpaceBetweenColumns =
 			new ZLIntegerRangeOption("Options", "SpaceBetweenColumns", 0, 300, 3 * horMargin);

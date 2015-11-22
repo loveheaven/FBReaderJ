@@ -19,7 +19,11 @@
 
 package org.geometerplus.zlibrary.core.view;
 
-import java.util.List;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.MaskFilter;
+import android.graphics.PathEffect;
 
 import org.fbreader.util.Boolean3;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
@@ -28,9 +32,7 @@ import org.geometerplus.zlibrary.core.image.ZLImageData;
 import org.geometerplus.zlibrary.core.util.SystemInfo;
 import org.geometerplus.zlibrary.core.util.ZLColor;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
+import java.util.List;
 
 final class DummyPaintContext extends ZLPaintContext {
 	DummyPaintContext() {
@@ -47,10 +49,6 @@ final class DummyPaintContext extends ZLPaintContext {
 				return null;
 			}
 		});
-	}
-	
-	@Override
-	public void clear(ZLFile wallpaperFile, FillMode mode, boolean isPageOdd) {
 	}
 	
 	@Override
@@ -83,6 +81,14 @@ final class DummyPaintContext extends ZLPaintContext {
 	}
 	@Override
 	public void setLineWidth(int width) {
+	}
+	@Override
+	public void setLineEffect(PathEffect effect, MaskFilter filter) {
+	}
+
+	@Override
+	public void setFillShader(boolean gradient) {
+
 	}
 
 	@Override
@@ -168,6 +174,11 @@ final class DummyPaintContext extends ZLPaintContext {
 	@Override
 	public void drawImage(int x, int y, Bitmap bitmap, Size maxSize,
 			ScalingType scaling, ColorAdjustingMode adjustingMode) {
+	}
+
+	@Override
+	public void drawShadow(int left, int top, int right, int bottom, boolean isLeftToRight) {
+
 	}
 
 	@Override

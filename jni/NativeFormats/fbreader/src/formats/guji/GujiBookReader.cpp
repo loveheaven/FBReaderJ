@@ -211,6 +211,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = GUJI_TRANSLATION;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 1;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+3) != end 
@@ -223,6 +224,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = H1;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 3;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+3) != end 
@@ -235,6 +237,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = H2;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 3;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+3) != end 
@@ -247,6 +250,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = H3;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 3;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+3) != end 
@@ -259,6 +263,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = H4;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 3;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+3) != end
@@ -271,21 +276,38 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = GUJI_CR;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 3;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+3) != end
 					&& *(ptr+1) == 'p'
-					&& *(ptr+2) == 's'
+					&& *(ptr+2) == 'm'
 					&& *(ptr+3) == '{'
 					) {
 					if(ptr != start) {
 						addData(str.substr(start +str.length() -end, ptr-start));
 					}
-					myKind = GUJI_PARAGRAPHSTART;
+					myKind = GUJI_PARAGRAPHMARK;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 3;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+5) != end
+                    && *(ptr+1) == 'c'
+                    && *(ptr+2) == 'e'
+                    && *(ptr+3) == 'n'
+                    && *(ptr+4) == 't'
+                    && *(ptr+5) == '{'
+                    ) {
+                    if(ptr != start) {
+                        addData(str.substr(start +str.length() -end, ptr-start));
+                    }
+                    myKind = GUJI_CENTERTEXT;
+                    addControl(myKind, true);
+                    pushKind(myKind);
+                    ptr += 5;
+                    start =ptr+1;
+                } else if(*ptr == '\\' && (ptr+5) != end
 					&& *(ptr+1) == 's'
 					&& *(ptr+2) == 'e'
 					&& *(ptr+3) == 'c'
@@ -297,6 +319,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = GUJI_SECTIONTITLE1;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 5;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+5) != end
@@ -311,6 +334,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = GUJI_SECTIONTITLE2;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 5;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+5) != end
@@ -325,6 +349,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = GUJI_SECTIONTITLE3;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 5;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+5) != end
@@ -339,6 +364,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = GUJI_SECTIONTITLE4;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 5;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+5) != end
@@ -353,6 +379,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = GUJI_ANNOTATION;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 5;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+6) != end
@@ -368,6 +395,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = GUJI_TITLEANNOTATION;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 6;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+5) != end
@@ -382,6 +410,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = GUJI_SUBTITLE;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 5;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+4) != end
@@ -395,6 +424,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = GUJI_COMMENT;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 4;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+4) != end 
@@ -408,6 +438,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = GUJI_SUBSCRIPT;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 4;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+4) != end 
@@ -421,6 +452,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = GUJI_SUPERSCRIPT;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 4;
 					start =ptr+1;
 				} else if(*ptr == '\\' && (ptr+7) != end
@@ -437,6 +469,7 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 					}
 					myKind = GUJI_AUTHOR;
 					addControl(myKind, true);
+					pushKind(myKind);
 					ptr += 7;
 					start =ptr+1;
 				} else if(*ptr == '}') {
@@ -445,7 +478,9 @@ bool GujiBookReader::characterDataHandler(std::string &str) {
 						addData(str.substr(start +str.length() -end, ptr-start));
 					}
 					start = ptr +1;
+					myKind = topKind();
 					addControl(myKind, false);
+					popKind();
 				} else {					
 					
 				}
@@ -488,6 +523,7 @@ bool GujiBookReader::newLineHandler() {
 
 	if (true) {
 		internalEndParagraph();
+		reset();
 		beginParagraph();
 	}
 	return true;

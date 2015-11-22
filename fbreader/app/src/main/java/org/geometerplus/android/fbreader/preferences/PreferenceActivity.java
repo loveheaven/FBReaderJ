@@ -365,8 +365,8 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 			this, textScreen.Resource.getResource("fontSize"),
 			baseStyle.FontSizeOption
 		));
-		textScreen.addPreference(new ZLColorPreference(
-				this, textScreen.Resource, 
+		gujiScreen.addPreference(new ZLColorPreference(
+				this, gujiScreen.Resource, 
 				"fontColor",
 				baseStyle.FontColorOption
 			));

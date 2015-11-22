@@ -26,6 +26,7 @@ import android.app.*;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.*;
+import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -218,15 +219,17 @@ public class BookDownloaderService extends Service {
 		final String contentText = success ?
 			resource.getResource("downloadComplete").getValue() :
 			resource.getResource("downloadFailed").getValue();
-		final Notification notification = new Notification(
-			android.R.drawable.stat_sys_download_done,
-			tickerText,
-			System.currentTimeMillis()
-		);
-		notification.flags |= Notification.FLAG_AUTO_CANCEL;
-		final Intent intent = success ? getFBReaderIntent(file) : new Intent();
-		final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
-		notification.setLatestEventInfo(getApplicationContext(), title, contentText, contentIntent);
+
+        final Intent intent = success ? getFBReaderIntent(file) : new Intent();
+        final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+        Notification notification = builder.setContentIntent(contentIntent)
+                .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                .setTicker(tickerText).setWhen(System.currentTimeMillis())
+                .setAutoCancel(true).setContentTitle(title)
+                .setContentText(contentText).build();
+
 		return notification;
 	}
 

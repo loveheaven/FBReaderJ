@@ -299,6 +299,11 @@ public class ZLTextExplicitlyDecoratedStyle extends ZLTextDecoratedStyle impleme
 		}
 		return myEntry.getLength(LENGTH_SPACE_AFTER, metrics, fontSize);
 	}
+	@Override
+	public int getKind() {
+		return -1;
+	}
+	
 	public byte getAlignment() {
 		if (myEntry instanceof ZLTextCSSStyleEntry && !BaseStyle.UseCSSTextAlignmentOption.getValue()) {
 			return Parent.getAlignment();

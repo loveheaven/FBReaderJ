@@ -39,6 +39,11 @@ public class ZLTextNGStyle extends ZLTextDecoratedStyle {
 	}
 
 	@Override
+	public int getKind() {
+		return myDescription.ID;
+	}
+	
+	@Override
 	protected List<FontEntry> getFontEntriesInternal() {
 		final List<FontEntry> parentEntries = Parent.getFontEntries();
 		final String decoratedValue = myDescription.FontFamilyOption.getValue();

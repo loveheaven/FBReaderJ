@@ -23,10 +23,11 @@ import android.graphics.*;
 
 import org.geometerplus.zlibrary.ui.android.view.ViewUtil;
 
-public final class ShiftAnimationProvider extends SimpleAnimationProvider {
+public class ShiftAnimationProvider extends SimpleAnimationProvider {
 	private final Paint myPaint = new Paint();
 	{
-		myPaint.setColor(Color.rgb(127, 127, 127));
+		//myPaint.setColor(Color.rgb(127, 127, 127));
+		myPaint.setColor(Color.rgb(20, 20, 20));
 	}
 
 	public ShiftAnimationProvider(BitmapManager bitmapManager) {

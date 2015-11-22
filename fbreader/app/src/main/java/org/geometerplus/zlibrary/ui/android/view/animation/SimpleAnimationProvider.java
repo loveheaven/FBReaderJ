@@ -95,7 +95,7 @@ abstract class SimpleAnimationProvider extends AnimationProvider {
 	}
 
 	@Override
-	public final void doStep() {
+	public void doStep() {
 		if (!getMode().Auto) {
 			return;
 		}

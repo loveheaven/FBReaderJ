@@ -58,6 +58,7 @@ public:
 	void pushKind(FBTextKind kind);
 	bool popKind();
 	bool isKindStackEmpty() const;
+	FBTextKind topKind();
 
 	void beginParagraph(ZLTextParagraph::Kind kind = ZLTextParagraph::TEXT_PARAGRAPH);
 	void endParagraph();

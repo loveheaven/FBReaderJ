@@ -28,6 +28,7 @@ public final class ZLColor {
 	public static ZLColor BLACK = new ZLColor(0);
 	public static ZLColor GUJI_ANNOTATION = new ZLColor(180,0,30);
 	public static ZLColor GUJI_TRANSLATE = new ZLColor(0x5b,0,0x12);
+	public static ZLColor GUJI_BLACK = new ZLColor(64,63,53);
 	public final short Red;
 	public final short Green;
 	public final short Blue;

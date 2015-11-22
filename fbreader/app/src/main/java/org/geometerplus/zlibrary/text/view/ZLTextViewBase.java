@@ -19,6 +19,8 @@
 
 package org.geometerplus.zlibrary.text.view;
 
+import java.util.Stack;
+
 import org.fbreader.util.Boolean3;
 import org.geometerplus.fbreader.bookmodel.FBTextKind;
 import org.geometerplus.fbreader.fbreader.FBReaderApp;
@@ -328,6 +330,22 @@ abstract class ZLTextViewBase extends ZLView {
 		return null;
 	}
 	
+	private Bitmap myGujiJielan;
+	public Bitmap getGujiJielan(Size maxSize) {
+		if(myGujiJielan != null && !myGujiJielan.isRecycled()) return myGujiJielan;
+		Drawable d = ZLibrary.Instance().getResources().getDrawable(R.drawable.border);
+		Bitmap bitmap = ((android.graphics.drawable.BitmapDrawable)d).getBitmap();
+		Matrix a = new Matrix();
+		if(maxSize != null) {
+			a.setScale(((float)maxSize.Width)/bitmap.getWidth(), ((float)maxSize.Height)/bitmap.getHeight());
+			a.postRotate(-90);
+		} else {
+			a.setRotate(-90);
+		}
+		myGujiJielan = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), a, true);
+		bitmap.recycle();
+		return myGujiJielan;
+	}
 	private Bitmap myGujiYinzhang;
 	public Bitmap getGujiYinZhang(Size maxSize) {
 		if(myGujiYinzhang != null && !myGujiYinzhang.isRecycled()) return myGujiYinzhang;
@@ -383,15 +401,29 @@ abstract class ZLTextViewBase extends ZLView {
 	
 	byte getLastOpenControlKind(ZLTextParagraphCursor cursor, int index) {
 		if(!isGuji()) return -1;
+		int i = index;
 		byte ret = -1;
-		for (; index >= 0; index--) {
-			ZLTextElement element = cursor.getElement(index);
+		Stack<Byte> stack = new Stack<Byte>();
+		for (; i >= 0; i--) {
+			ZLTextElement element = cursor.getElement(i);
+			if(element == null) return ret;
 			if (element instanceof ZLTextControlElement) {
 				ZLTextControlElement control = ((ZLTextControlElement)element);
-				if(control.IsStart) {
+				if(i == index) {
 					return control.Kind;
-				} else {
-					return -1;
+				}
+				if(!control.IsStart) {
+					stack.push(control.Kind);
+				} else if(control.IsStart) {
+					if(!stack.isEmpty()) {
+						if(stack.peek().byteValue() == control.Kind) {
+							stack.pop();
+						} else {
+							return control.Kind;
+						}
+					} else {
+						return control.Kind;
+					}
 				}
 			}
 		}
@@ -412,15 +444,11 @@ abstract class ZLTextViewBase extends ZLView {
 				getTextStyleCollection().getDescription(control.Kind);
 			if (description != null) {
 				setTextStyle(new ZLTextNGStyle(myTextStyle, description, hyperlink));
-
-//				if(control.Kind == FBTextKind.GUJI_TRANSLATION) {
-//					getTextStyle().TextColor = Application.ViewOptions.GujiYiColorOption.getValue();
-//				} else if(control.Kind == FBTextKind.GUJI_ANNOTATION || control.Kind == FBTextKind.GUJI_TITLEANNOTATION) {
-//					getTextStyle().TextColor = Application.ViewOptions.GujiZhuColorOption.getValue();//(211,82,44);
-//				}
 			}
 		} else {
-			setTextStyle(myTextStyle.Parent);
+			if(control.Kind != FBTextKind.GUJI_SUPERSCRIPT) {
+				setTextStyle(myTextStyle.Parent);
+			}
 		}
 	}
 

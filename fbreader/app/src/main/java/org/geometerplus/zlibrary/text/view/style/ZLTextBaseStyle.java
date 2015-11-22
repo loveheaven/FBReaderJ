@@ -101,7 +101,7 @@ public class ZLTextBaseStyle extends ZLTextStyle {
 		MarginLeftOption = new ZLStringOption(GROUP, prefix + ":margin-left", "");
 		MarginRightOption = new ZLStringOption(GROUP, prefix + ":margin-right", "");
 		TextIndentOption = new ZLStringOption(GROUP, prefix + ":text-indent", "20pt");
-		FontColorOption = new ZLColorOption("text", "fontColor", ZLColor.BLACK);
+		FontColorOption = new ZLColorOption("text", "fontColor", ZLColor.GUJI_BLACK);
 	}
 
 	private String myFontFamily;
@@ -237,5 +237,10 @@ public class ZLTextBaseStyle extends ZLTextStyle {
 	@Override
 	public boolean allowHyphenations() {
 		return true;
+	}
+	
+	@Override
+	public int getKind() {
+		return -1;
 	}
 }

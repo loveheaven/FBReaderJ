@@ -72,7 +72,8 @@ public interface FBTextKind {
 	byte GUJI_AUTHOR = 86;
 	byte GUJI_TITLEANNOTATION = 87; //用于标题里的注，和ANNOTATION的区别主要是:如果标题注太长，第二行的注要和第一行的注的起始位置保持一致
 	byte GUJI_SUPERSCRIPT = 88;
-	byte GUJI_PARAGRAPHSTART = 89;
+	byte GUJI_PARAGRAPHMARK = 89;
+	byte GUJI_CENTERTEXT = 98;//居中，用于一行中诗词和标题的居中
 	byte GUJI_SECTIONTITLE = 99;
 	byte GUJI_SECTIONTITLE1 = 100;
 	byte GUJI_SECTIONTITLE2 = 101;

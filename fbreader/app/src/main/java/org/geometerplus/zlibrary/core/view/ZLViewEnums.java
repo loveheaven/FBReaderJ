@@ -57,6 +57,6 @@ public interface ZLViewEnums {
 	}
 
 	public enum Animation {
-		none, curl, slide, slideOldStyle, shift
+		none, curl, slide, slideOldStyle, shift, shiftCurl
 	}
 }

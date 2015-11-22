@@ -103,7 +103,7 @@ public abstract class ZLTextDecoratedStyle extends ZLTextStyle {
 	
 	@Override
 	public ZLColor getFontColor() {
-		return ZLColor.BLACK;
+		return ZLColor.GUJI_BLACK;
 	}
 
 	@Override

@@ -53,7 +53,7 @@ public final class Book extends AbstractBook {
 	
 	public boolean isShouldLearnWord() {
 		return getLanguage() != null && (
-				getLanguage().toLowerCase().startsWith("en") ||
+				getLanguage().toLowerCase().startsWith("en") || getLanguage().toLowerCase().startsWith("es") ||
 				getLanguage().toLowerCase().startsWith("fr") || getLanguage().toLowerCase().startsWith("it")
 				 || getLanguage().toLowerCase().startsWith("ru")  || getLanguage().toLowerCase().startsWith("de"));
 	}

@@ -306,6 +306,12 @@ GUJI_TRANSLATION {
 	font-color: 5963794;
 }
 
+GUJI_CR {
+	fbreader-id: 85;
+	fbreader-name: "Classic Chinese Return";
+	hyphens: none;
+}
+
 GUJI_TITLEANNOTATION {
 	fbreader-id: 87;
 	fbreader-name: "Classic Chinese Title Annotation";
@@ -319,6 +325,19 @@ GUJI_SUPERSCRIPT {
 	fbreader-name: "Classic Chinese Superscript";
 	hyphens: none;
 	font-size: 0.4em;
+}
+
+GUJI_PM {
+	fbreader-id: 89;
+	fbreader-name: "Classic Chinese Paragragh Mark";
+	hyphens: none;
+}
+
+GUJI_CENTERTEXT {
+	fbreader-id: 98;
+	fbreader-name: "Classic Chinese Center Text";
+	hyphens: none;
+	text-align: center;
 }
 
 GUJI_SECTIONTITLE {
@@ -347,6 +366,12 @@ GUJI_SECTIONTITLE3 {
 	fbreader-name: "Classic Chinese Section Title 3";
 	hyphens: none;
 	margin-left: 3em;
+}
+GUJI_SECTIONTITLE4 {
+	fbreader-id: 103;
+	fbreader-name: "Classic Chinese Section Title 4";
+	hyphens: none;
+	margin-left: 4em;
 }
 GUJI_SECTIONTITLE4 {
 	fbreader-id: 103;

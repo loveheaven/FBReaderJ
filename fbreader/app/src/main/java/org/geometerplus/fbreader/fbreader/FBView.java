@@ -515,7 +515,8 @@ public final class FBView extends ZLTextView {
 		switch (hyperlink.Type) {
 			default:
 			case FBHyperlinkType.NONE:
-				return profile.RegularTextOption.getValue();
+				return isGuji()&& profile.Name.equals(ColorProfile.DAY)?
+						getTextStyleCollection().getBaseStyle().getFontColor():profile.RegularTextOption.getValue();
 			case FBHyperlinkType.INTERNAL:
 			case FBHyperlinkType.FOOTNOTE:
 				return Application.Collection.isHyperlinkVisited(Application.getCurrentBook(), hyperlink.Id)

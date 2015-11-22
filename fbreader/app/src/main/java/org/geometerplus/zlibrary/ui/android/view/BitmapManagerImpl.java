@@ -27,7 +27,7 @@ import org.geometerplus.zlibrary.core.view.ZLViewEnums.PageIndex;
 import org.geometerplus.zlibrary.ui.android.view.animation.BitmapManager;
 
 final class BitmapManagerImpl implements BitmapManager {
-	private final int SIZE = 2;
+	private final int SIZE = 3;
 	private final Bitmap[] myBitmaps = new Bitmap[SIZE];
 	private final ZLView.PageIndex[] myIndexes = new ZLView.PageIndex[SIZE];
 

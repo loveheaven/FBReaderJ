@@ -19,7 +19,10 @@
 
 package org.geometerplus.zlibrary.core.view;
 
-import java.util.*;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.MaskFilter;
+import android.graphics.PathEffect;
 
 import org.fbreader.util.Boolean3;
 import org.geometerplus.fbreader.fbreader.options.ViewOptions.GujiPunctuationEnum;
@@ -28,10 +31,11 @@ import org.geometerplus.zlibrary.core.fonts.FontEntry;
 import org.geometerplus.zlibrary.core.image.ZLImageData;
 import org.geometerplus.zlibrary.core.util.SystemInfo;
 import org.geometerplus.zlibrary.core.util.ZLColor;
-import org.geometerplus.zlibrary.ui.android.view.ZLAndroidPaintContext;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 abstract public class ZLPaintContext {
 	private final SystemInfo mySystemInfo;
@@ -54,7 +58,6 @@ abstract public class ZLPaintContext {
 		return mySystemInfo;
 	}
 
-	abstract public void clear(ZLFile wallpaperFile, FillMode mode, boolean isPageOdd);
 	abstract public void clear(ZLFile wallpaperFileOdd, ZLFile wallpaperFileEven, FillMode mode);
 	abstract public void clear(ZLFile wallpaperFile, FillMode mode);
 	abstract public void clear(ZLColor color);
@@ -134,6 +137,8 @@ abstract public class ZLPaintContext {
 	abstract public void setTextColor(ZLColor color);
 	abstract public void setLineColor(ZLColor color);
 	abstract public void setLineWidth(int width);
+	abstract public void setLineEffect(PathEffect effect, MaskFilter filter);
+	abstract public void setFillShader(boolean gradient);
 
 	final public void setFillColor(ZLColor color) {
 		setFillColor(color, 0xFF);
@@ -244,6 +249,7 @@ abstract public class ZLPaintContext {
 	abstract public Size imageSize(ZLImageData image, Size maxSize, ScalingType scaling);
 	abstract public void drawImage(int x, int y, ZLImageData image, Size maxSize, ScalingType scaling, ColorAdjustingMode adjustingMode);
 	abstract public void drawImage(int x, int y, Bitmap bitmap, Size maxSize, ScalingType scaling, ColorAdjustingMode adjustingMode);
+    abstract public void drawShadow(int left, int top, int right, int bottom, boolean isLeftToRight);
 
 	abstract public void drawLine(int x0, int y0, int x1, int y1);
 	abstract public void drawRectangle(int x0, int y0, int x1, int y1);

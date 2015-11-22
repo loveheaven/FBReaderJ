@@ -34,6 +34,7 @@ public abstract class ZLTextStyle {
 		Hyperlink = hyperlink;
 	}
 
+	public abstract int getKind();
 	public abstract List<FontEntry> getFontEntries();
 	public abstract int getFontSize(ZLTextMetrics metrics);
 

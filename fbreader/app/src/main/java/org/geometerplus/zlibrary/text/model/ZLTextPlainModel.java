@@ -441,6 +441,9 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 		List<Word> knownWords = collection.allKnownWords(book.getLanguage());
         //new File(fileName+".csv").delete();
         for(String word:map.keySet()) {
+			if(TextUtils.isEmpty(word)) {
+				continue;
+			}
         	FileWord temp = map.get(word);
         	//AppendToFile.appendMethodB(fileName+".csv", temp.toString());
         	Word w = new Word(book.getId(), book.getLanguage().toLowerCase(), word, temp.frequency, temp.paragraphIndex, 0, 0);
@@ -495,10 +498,10 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
     	return ret;
     }
 	public String recompositeGuji(String guji) {
-		List<GujiStructure> text = extractComSecFromString(guji);
+		List<GujiStructure> list = extractComSecFromString(guji);
 		String ret = "";
-		for(int i = 0; i< text.size(); i++) {
-			GujiStructure s = text.get(i);
+		for(int i = 0; i< list.size(); i++) {
+			GujiStructure s = list.get(i);
 			if(!TextUtils.isEmpty(s.text)) {
 				if(TextUtils.isEmpty(s.tag)) {
 					String yuan = extractGujiFromString(s.text);
@@ -621,26 +624,90 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 			ret.add(new GujiStructure(text, ""));
 			return ret;
 		}
-		int pos = text.indexOf("\\com");
-		if(pos == -1) {
-			pos = text.indexOf("\\sec");
-			if(pos == -1) {
-				pos = text.indexOf("\\subt");
-				if(pos == -1) {
-					ret.add(new GujiStructure(text, ""));
-					return ret;
+		int pos = 0;
+		while(pos < text.length()) {
+			int tagPos = text.indexOf("\\com", pos);
+			if(tagPos == -1) {
+				tagPos = text.indexOf("\\sec", pos);
+				if(tagPos == -1) {
+					tagPos = text.indexOf("\\subt",pos);
+					if(tagPos == -1) {
+						ret.add(new GujiStructure(text.substring(pos), ""));
+						return ret;
+					}
 				}
 			}
+			if(tagPos > pos) {
+				ret.add(new GujiStructure(text.substring(pos, tagPos), ""));
+			}
+			pos = tagPos;
+			int index = 0;
+			String tag="";
+			for(int i = pos; i < text.length(); i++) {
+				if(text.charAt(i) == '{') {
+					if(index == 0) {
+						tag = text.substring(pos, i);
+						pos = i+1;
+					}
+					index++;
+				} else if(text.charAt(i) == '}') {
+					index--;
+					if(index == 0) {
+						if(pos < i) {
+							ret.add(new GujiStructure(text.substring(pos, i), tag));
+						}
+						pos = i + 1;
+						break;
+					}
+				}
+			}
+//			if(pos < text.length()) {
+//				ret.add(new GujiStructure(text.substring(pos), ""));
+//			}
 		}
-		if(pos > 0) {
-			ret.add(new GujiStructure(text.substring(0, pos), ""));
-		}
+		return ret;
+	}
+
+	public String extractGujiFromString(String text) {
+		if(text == null || text.length() == 0) return text;
+		String result ="";
 		int index = 0;
-		String tag="";
+		int pos = text.indexOf("|{", 0);
+		if(pos < 0) return text;
+		result += text.substring(0, pos);
 		for(int i = pos; i < text.length(); i++) {
 			if(text.charAt(i) == '{') {
 				if(index == 0) {
-					tag = text.substring(pos, i);
+					pos = i+1;
+				}
+				index++;
+			} else if(text.charAt(i) == '}') {
+				index--;
+				if(index == 0) {
+					pos = text.indexOf("|{", i+1);
+					if(pos < 0) {
+						return result+ (((i+1) < text.length())?text.substring(i+1):"");
+					}
+					if(i+1 < pos) {
+						result+=text.substring(i+1, pos);
+					}
+					i = pos;
+					index = 0;
+				}
+			}
+		}
+	    return result;
+	}
+	public String extractTranslationFromString(String text) {
+		if(text == null || text.length() == 0) return text;
+		String result ="";
+		int index = 0;
+		int pos = text.indexOf("|{", 0);
+		if(pos < 0) return result;
+		for(int i = pos; i < text.length(); i++) {
+			
+			if(text.charAt(i) == '{') {
+				if(index == 0) {
 					pos = i+1;
 				}
 				index++;
@@ -648,42 +715,18 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 				index--;
 				if(index == 0) {
 					if(pos < i) {
-						ret.add(new GujiStructure(text.substring(pos, i), tag));
+						result+=text.substring(pos, i);
 					}
-					pos = i + 1;
-					break;
+					pos = text.indexOf("|{", i+1);
+					if(pos < 0) return result;
+					i = pos;
+					index = 0;
 				}
 			}
 		}
-		if(pos < text.length())
-		ret.add(new GujiStructure(text.substring(pos), ""));
-		return ret;
+	    return result;
 	}
-
-	public String extractGujiFromString(String text) {
-		if(text == null || text.length() == 0) return text;
-		return text.replaceAll("\\|\\{[^}]*\\}", "");
-	}
-	public String extractTranslationFromString(String text) {
-		if(text == null || text.length() == 0) return text;
-		Pattern p = Pattern.compile("\\|\\{[^}]*\\}");
-	    Matcher m = p.matcher(text);
-	    String result ="";
-	    while(m.find()) {
-	    	result+=m.group();
-	    }
-	    return result.replaceAll("\\|\\{", "").replaceAll("\\}", "");
-	}
-	public String extractAnnoFromString(String text) {
-		if(text == null || text.length() == 0) return text;
-		Pattern p = Pattern.compile("\\\\anno\\{[^}]*\\}");
-	    Matcher m = p.matcher(text);
-	    String result ="";
-	    while(m.find()) {
-	    	result+=m.group();
-	    }
-	    return result.replaceAll("\\\\anno\\{", "").replaceAll("\\}", "");
-	}
+	
 	public final void saveGuji(Book book, int indexToModify, String newString) {
 		int	startIndex = 0;
 		int	endIndex = myParagraphsNumber;
@@ -883,8 +926,8 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 									case FBTextKind.GUJI_CR:
 										result+="\\cr{";
 										break;
-									case FBTextKind.GUJI_PARAGRAPHSTART:
-										result+="\\ps{";
+									case FBTextKind.GUJI_PARAGRAPHMARK:
+										result+="\\pm{";
 										break;
 									case FBTextKind.GUJI_AUTHOR:
 										result+="\\author{";
@@ -952,7 +995,7 @@ public final class ZLTextPlainModel implements ZLTextModel, ZLTextStyleEntry.Fea
 									case FBTextKind.GUJI_CR:
 										result+="}";
 										break;
-									case FBTextKind.GUJI_PARAGRAPHSTART:
+									case FBTextKind.GUJI_PARAGRAPHMARK:
 										result+="}";
 										break;
 									case FBTextKind.GUJI_AUTHOR:

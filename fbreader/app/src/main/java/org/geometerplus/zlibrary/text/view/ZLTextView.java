@@ -19,15 +19,9 @@
 
 package org.geometerplus.zlibrary.text.view;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import android.graphics.Bitmap;
+
+import com.jni.bitmap_operations.JniBitmapHolder;
 
 import org.fbreader.util.Boolean3;
 import org.geometerplus.fbreader.bookmodel.FBTextKind;
@@ -55,11 +49,15 @@ import org.geometerplus.zlibrary.text.model.ZLTextParagraph;
 import org.geometerplus.zlibrary.text.view.style.ZLTextNGStyle;
 import org.geometerplus.zlibrary.text.view.style.ZLTextNGStyleDescription;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.GradientDrawable;
-
-import com.jni.bitmap_operations.JniBitmapHolder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public abstract class ZLTextView extends ZLTextViewBase {
 	public interface ScrollingMode {
@@ -94,7 +92,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		Collections.synchronizedSet(new TreeSet<ZLTextHighlighting>());
 
 	private CursorManager myCursorManager;
-
+	
 	public ZLTextView(FBReaderApp application) {
 		super(application);
 	}
@@ -505,9 +503,11 @@ public abstract class ZLTextView extends ZLTextViewBase {
 				gujiBanxinYEnd,
 				gujiBanxinYEnd,
 				};
-		context.setFillColor(getTextColor(getTextStyle().Hyperlink));
+		//context.setFillColor(getTextColor(getTextStyle().Hyperlink));
+        context.setFillShader(true);
 		context.fillPolygon(xs, ys);
-		
+        context.setFillShader(false);
+
 		context.drawLine(yuweiStartX - spaceWidth, gujiBanxinYStart, yuweiStartX - spaceWidth, gujiBanxinYEnd);
 		context.drawLine(yuweiStartX + yuweiWidth + spaceWidth, gujiBanxinYStart, yuweiStartX+yuweiWidth/2 + spaceWidth, (gujiBanxinYStart + gujiBanxinYEnd)/2);
 		context.drawLine(yuweiStartX+yuweiWidth/2 + spaceWidth, (gujiBanxinYStart + gujiBanxinYEnd)/2, yuweiStartX + yuweiWidth + spaceWidth, gujiBanxinYEnd);
@@ -542,8 +542,11 @@ public abstract class ZLTextView extends ZLTextViewBase {
 	public void drawGujiJielan(ZLPaintContext context, int gujiTopLineNum, int gujiBottomLineNum, int gujiLineHeight, int gujiBanxinYEnd, ZLTextPage page) {
 		int i = 1;
 		int neiWidth = getGujiNeiBankuangWidth();
+		context.setLineWidth(neiWidth);
+		//context.setLineEffect(new DiscretePathEffect(this.getFontSize()*2, 2.0f), null);
+		//Bitmap bmp = getGujiJielan(null);
 		for(int y= 1;y<gujiTopLineNum;y++) {
-			context.setLineWidth(neiWidth);
+			
 			int intent = i<page.LineInfos.size()?page.LineInfos.get(i).LeftIndent:0;
 			if(intent >0) intent = 0;
 			//context.setLineColor(new ZLColor(255,0,0));
@@ -551,6 +554,10 @@ public abstract class ZLTextView extends ZLTextViewBase {
 					y*gujiLineHeight+getTopMargin()+getGujiTopBankuangWidth(), 
 					getRightLine(), 
 					y*gujiLineHeight+getTopMargin()+getGujiTopBankuangWidth());
+
+//			context.drawImage(getLeftMargin()+getGujiLeftBankuangWidth()+intent, 
+//					y*gujiLineHeight+getTopMargin()+getGujiTopBankuangWidth(), 
+//					bmp,null, ScalingType.OriginalSize, ColorAdjustingMode.NONE);
 			i++;
 		}
 		
@@ -558,7 +565,6 @@ public abstract class ZLTextView extends ZLTextViewBase {
 			i++;
 		}
 		for(int y= 1;y<gujiBottomLineNum;y++) {
-			context.setLineWidth(neiWidth);
 			int intent = i<page.LineInfos.size()?page.LineInfos.get(i).LeftIndent:0;
 			if(intent >0) intent = 0;
 			//context.setLineColor(new ZLColor(255,0,0));
@@ -568,6 +574,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 					y*gujiLineHeight+gujiBanxinYEnd);
 			i++;
 		}
+		//context.setLineEffect(null, null);
 	}
 	public void drawGujiBankuang(ZLPaintContext context, int waiBankuangStartY, int waiBankuangEndY) {
 		int waiBanKuangWidth = getGujiWaiBankuangWidth();
@@ -611,7 +618,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 	}
 	
 	public void drawGujiBanxin(ZLTextPage page, ZLPaintContext context, int gujiBanxinYStart, int gujiBanxinYEnd, int pageNo) {
-		context.setLineWidth(4);
+		context.setLineWidth(this.getGujiNeiBankuangWidth());
 		context.setLineColor(getTextColor(getTextStyle().Hyperlink));
 		context.drawLine(getLeftMargin()+getGujiLeftBankuangWidth() , 
 				gujiBanxinYStart, 
@@ -727,7 +734,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		x.add(getContextWidth() - getRightMargin()-rightWidth);
 		y.add((!isOddPage && waiBanKuangStartY+topWidth>0)?0:waiBanKuangStartY+topWidth);
 		indent = 0;
-		if(isOddPage) {
+		if(isOddPage && page.LineInfos.size() > 0) {
 			 indent = page.LineInfos.get(0).LeftIndent < 0?page.LineInfos.get(0).LeftIndent:0;
 		}
 		// left, top
@@ -1035,9 +1042,14 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		if(wallpaper != null) {
 			if(isGuji()) {
 				if(isLandscape()) {
-					context.clear(ZLFile.createFileByPath("wallpapers/guji_bg_odd.jpg"), 
-								ZLFile.createFileByPath("wallpapers/guji_bg_even.jpg"), ZLPaintContext.FillMode.fullscreen);
+					context.clear(ZLFile.createFileByPath("wallpapers/guji_bg.jpg"), 
+								ZLFile.createFileByPath("wallpapers/guji_bg.jpg"), ZLPaintContext.FillMode.fullscreen);
+					context.drawShadow(getContextHeight()/2, 0,
+							getContextHeight()/2 + getGujiBanxinHeight(), getContextWidth(), true);
+                    context.drawShadow(getContextHeight()/2- getGujiBanxinHeight()/2,0,
+							getContextHeight()/2 , getContextWidth(), false);
 				} else {
+					context.clear(wallpaper, getFillMode());
 					if(PAGENO == null) return;
 					if(getGujiStyle() == GujiLayoutStyleEnum.baobei) {
 						final int pageNo = page.PAGENO;
@@ -1045,14 +1057,12 @@ public abstract class ZLTextView extends ZLTextViewBase {
 						if(pageNo % 2 == 1) {
 							isOddPage = true;
 						}
-						if(isOddPage) {
-							wallpaper = ZLFile.createFileByPath("wallpapers/guji_bg_odd.jpg");
+						if(!isOddPage) {
+							context.drawShadow(0,0, 100*getContextHeight()/1080, getContextWidth(), true);
 						} else {
-							wallpaper = ZLFile.createFileByPath("wallpapers/guji_bg_even.jpg");
+							context.drawShadow(getContextHeight() - 60*getContextHeight()/1080,0,
+									getContextHeight(), getContextWidth(), false);
 						}
-						context.clear(wallpaper, getFillMode(), isOddPage);
-					} else {
-						context.clear(wallpaper, getFillMode());
 					}
 				}
 			} else {
@@ -1323,12 +1333,11 @@ public abstract class ZLTextView extends ZLTextViewBase {
 
 		drawSelectionCursor(context, page, SelectionCursor.Which.Left);
 		drawSelectionCursor(context, page, SelectionCursor.Which.Right);
-		
 		if(isGuji()) {
 			if(page.StartCursor.getParagraphIndex() > 1) {
 				int size = (int)(Math.min(getContextWidth(),getContextHeight())*0.13);
-				context.drawImage(30, 230, getGujiYinZhang(new Size(size, size)), null, ScalingType.OriginalSize, ColorAdjustingMode.NONE);
-				//drawShadow(context.getCanvas(), 0, 80, 16);
+				context.drawImage(30*getContextHeight()/1080, 230*getContextWidth()/1920, getGujiYinZhang(new Size(size, size)), null, ScalingType.OriginalSize, ColorAdjustingMode.NONE);
+				
 			}
 			try {
 			context.getCanvas().restore();
@@ -1338,23 +1347,8 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		}
 		
 	}
-	private void drawShadow(Canvas canvas, int top, int bottom, int dX) {
-		final GradientDrawable.Orientation orientation = dX > 0
-			? GradientDrawable.Orientation.BOTTOM_TOP
-			: GradientDrawable.Orientation.LEFT_RIGHT;
-		final int[] colors = new int[] { 0x00FFFFFF, 0xA0000000 };
-		final GradientDrawable gradient = new GradientDrawable(orientation, colors);
-		gradient.setGradientType(GradientDrawable.LINEAR_GRADIENT);
-		gradient.setDither(true);
-		if (dX > 0) {
-			gradient.setBounds(0, top, getContextWidth(), bottom);
-		} else {
-			gradient.setBounds(0, top,  dX + 16, bottom);
-		}
-		gradient.draw(canvas);
-	}
 
-	private ZLTextPage getPage(PageIndex pageIndex) {
+	public ZLTextPage getPage(PageIndex pageIndex) {
 		switch (pageIndex) {
 			default:
 			case current:
@@ -1683,12 +1677,12 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		if (to > pageAreas.size()) {
 			return;
 		}
-		if(info.isFirstParagraphOfSection && !isGuji() && !isDjvu()) {
-			final ZLTextElementArea area = pageAreas.get(index);
-			context.setLineWidth(5);
-			context.drawLine(getLeftMargin() , area.YEnd, 
-					getLeftMargin() + page.getTextWidth(), area.YEnd);
-		}
+//		if(info.isFirstParagraphOfSection && !isGuji() && !isDjvu()) {
+//			final ZLTextElementArea area = pageAreas.get(index);
+//			context.setLineWidth(5);
+//			context.drawLine(getLeftMargin() , area.YEnd,
+//					getLeftMargin() + page.getTextWidth(), area.YEnd);
+//		}
 		for (int wordIndex = info.RealStartElementIndex; wordIndex != endElementIndex && index < to; ++wordIndex, charIndex = 0) {
 			final ZLTextElement element = paragraph.getElement(wordIndex);
 			final ZLTextElementArea area = pageAreas.get(index);
@@ -1708,8 +1702,9 @@ public abstract class ZLTextView extends ZLTextViewBase {
 					drawWord(
 						areaX, areaY, word, charIndex, 
 						area.ControlKind == FBTextKind.GUJI_SUPERSCRIPT?area.Length:-1, false,
-						hlColor != null ? hlColor : 
-							isDay? area.ControlKind != FBTextKind.GUJI_PARAGRAPHSTART?getTextStyle().getFontColor():context.getBackgroundColor()
+						hlColor != null ? hlColor :
+							!isGuji()?getTextColor(getTextStyle().Hyperlink):
+							isDay? (area.ControlKind != FBTextKind.GUJI_PARAGRAPHMARK?getTextStyle().getFontColor():context.getBackgroundColor())
 									:getTextStyle().getFontColor().getReverseColor(),
 						type);
 					if(isGuji() && //(area.ControlKind == -1 || area.ControlKind == FBTextKind.REGULAR || area.ControlKind == FBTextKind.GUJI_COMMENT) && 
@@ -1810,6 +1805,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 			resetTextStyle();
 			final ZLTextParagraphCursor paragraphCursor = result.getParagraphCursor();
 			final int wordIndex = result.getElementIndex();
+			// 从这一段开始将style重新找回
 			applyStyleChanges(paragraphCursor, 0, wordIndex);
 			info = new ZLTextLineInfo(paragraphCursor, wordIndex, result.getCharIndex(), getTextStyle());
 			final int endIndex = info.ParagraphCursorLength;
@@ -1838,20 +1834,20 @@ public abstract class ZLTextView extends ZLTextViewBase {
 				}
 			}
 
-			// pass the firstParagraphOfSection to the real textline
-			if(previousInfo != null && previousInfo.isFirstParagraphOfSection && previousInfo.Height == 0) {
-				previousInfo.isFirstParagraphOfSection = false;
-				info.isFirstParagraphOfSection = true;
-			}
+//			// pass the firstParagraphOfSection to the real textline
+//			if(previousInfo != null && previousInfo.isFirstParagraphOfSection && previousInfo.Height == 0) {
+//				previousInfo.isFirstParagraphOfSection = false;
+//				info.isFirstParagraphOfSection = true;
+//			}
 			ZLTextLineInfo prevInfoInSameParagraph = previousInfo;
 			while (info.EndElementIndex != endIndex) {
 				prevInfoInSameParagraph = info;
 				info = processTextLine(page, paragraphCursor, info.EndElementIndex, info.EndCharIndex, endIndex, isGuji()?prevInfoInSameParagraph:previousInfo);
-				// pass the firstParagraphOfSection to the end of the real textline
-				if(prevInfoInSameParagraph != null && prevInfoInSameParagraph.isFirstParagraphOfSection) {
-					prevInfoInSameParagraph.isFirstParagraphOfSection = false;
-					info.isFirstParagraphOfSection = true;
-				} 
+//				// pass the firstParagraphOfSection to the end of the real textline
+//				if(prevInfoInSameParagraph != null && prevInfoInSameParagraph.isFirstParagraphOfSection) {
+//					prevInfoInSameParagraph.isFirstParagraphOfSection = false;
+//					info.isFirstParagraphOfSection = true;
+//				}
 				textAreaHeight -= isGuji()? gujiLineHeight: info.Height + info.Descent;
 				if (textAreaHeight < 0 && page.LineInfos.size() > page.Column0Height) {
 					if (page.Column0Height == 0 && page.twoColumnView()) {
@@ -1915,6 +1911,9 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		int length = 0;
 		int firstLineWidth = 0;
 		int wordCount = lengthList.size();
+		if(wordCount == 0) {
+			return 0;
+		}
 		/*for(int i = 0; i< lengthList.size(); i++) {
 			length += lengthList.get(i).intValue();
 			if(i == (lengthList.size()-1)/2) {
@@ -2087,6 +2086,8 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		boolean isShowGujiYi = Application.ViewOptions.ShowGujiTranslationOption.getValue();
 		boolean isShowGujiZhu = Application.ViewOptions.ShowGujiAnnotationOption.getValue();
 		boolean isShowGujiSuperscript = Application.ViewOptions.ShowGujiSuperscriptOption.getValue();
+		ArrayList<Integer> gujiAnnolist = new ArrayList<Integer>();
+		boolean isNestedInAnno = false;
 		
 		do {
 			ZLTextElement element = paragraphCursor.getElement(currentElementIndex);
@@ -2105,15 +2106,18 @@ public abstract class ZLTextView extends ZLTextViewBase {
 						}
 					}
 					int index = currentElementIndex;
-					ArrayList<Integer> list = new ArrayList<Integer>();
+					
 					ZLTextElement commentElement = element;
 					int charIndex = currentCharIndex;
 					int width = 0;
 	 				while((commentElement instanceof ZLTextWord || commentElement == ZLTextElement.HSpace) && index < endIndex) {
 	 					newHeight = Math.max(newHeight, getElementHeight(commentElement));
 	 					newDescent = Math.max(newDescent, getElementDescent(commentElement));
-	 					list.add(getElementWidth(commentElement, charIndex));
-	 					width = getCommentWidth(list);
+	 					int commentWidth = getElementWidth(commentElement, charIndex);
+	 					if(commentWidth != 0) {
+	 						gujiAnnolist.add(commentWidth);
+	 					}
+	 					width = getCommentWidth(gujiAnnolist);
 	 					
 	 					if (newWidth+width > maxWidth) {
 	 						isShouldBreak = true;
@@ -2122,26 +2126,29 @@ public abstract class ZLTextView extends ZLTextViewBase {
 	 						storedStyle = getTextStyle();
 	 						break;
 	 					} else {
-	 						if(list.size() % 2 == 0||list.size() % 2 == 1) {
-		 						info.IsVisible = true;
-		 						info.Width = newWidth+width;
-		 						if (info.Height < newHeight) {
-		 							info.Height = newHeight;
-		 						}
-		 						if (info.Descent < newDescent) {
-		 							info.Descent = newDescent;
-		 						}
-		 						currentElementIndex = index;
-		 						info.EndElementIndex = currentElementIndex;
-		 						info.EndCharIndex = charIndex;
-		 						info.SpaceCounter = internalSpaceCounter;
-		 						storedStyle = getTextStyle();
-		 						wordOccurred = true; 
-		 						//removeLastSpace = false;
+	 						info.IsVisible = true;
+	 						info.Width = newWidth+width;
+	 						if (info.Height < newHeight) {
+	 							info.Height = newHeight;
 	 						}
+	 						if (info.Descent < newDescent) {
+	 							info.Descent = newDescent;
+	 						}
+	 						currentElementIndex = index;
+	 						info.EndElementIndex = currentElementIndex;
+	 						info.EndCharIndex = charIndex;
+	 						info.SpaceCounter = internalSpaceCounter;
+	 						storedStyle = getTextStyle();
+	 						wordOccurred = true; 
+	 						//removeLastSpace = false;
 	 					}
 						index++;
 	 					commentElement = paragraphCursor.getElement(index);
+	 					if(commentElement instanceof ZLTextControlElement) {
+ 							if(((ZLTextControlElement)commentElement).IsStart) {
+ 								isNestedInAnno = true;
+ 							}
+	 					}
 	 					charIndex = 0;
 					}//end while
 	 				
@@ -2151,7 +2158,9 @@ public abstract class ZLTextView extends ZLTextViewBase {
 						info.EndElementIndex = currentElementIndex;
 						storedStyle = getTextStyle();
 	 				}
-	 				newWidth = info.Width;
+	 				if(!isNestedInAnno) {
+	 					newWidth = info.Width;
+	 				}
 	 				element = paragraphCursor.getElement(currentElementIndex);
 	 				if(isShouldBreak) {
 	 					break;
@@ -2207,7 +2216,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 				newWidth = info.Width;
  				element = paragraphCursor.getElement(currentElementIndex);
 			} else if(isGuji() && (element instanceof ZLTextWord) &&
-					lastOpenControlKind == FBTextKind.GUJI_PARAGRAPHSTART) {
+					lastOpenControlKind == FBTextKind.GUJI_PARAGRAPHMARK) {
 				int index = currentElementIndex;
 				ZLTextElement commentElement = element;
 				int charIndex = currentCharIndex;
@@ -2219,6 +2228,17 @@ public abstract class ZLTextView extends ZLTextViewBase {
  					index++;
  					commentElement = paragraphCursor.getElement(index);
  					charIndex = 0;
+ 				}
+ 				if(!isNestedInAnno) {
+ 					if(getTextStyle().Parent.getKind() == FBTextKind.GUJI_TITLEANNOTATION ||
+							getTextStyle().Parent.getKind() == FBTextKind.GUJI_ANNOTATION ||
+							getTextStyle().Parent.getKind() == FBTextKind.GUJI_TRANSLATION) {
+						isNestedInAnno = true;
+					}
+ 				}
+ 				if(isNestedInAnno) {
+ 					gujiAnnolist.add(width);
+ 					width = getCommentWidth(gujiAnnolist);
  				}
  					
 				if (newWidth+width > maxWidth) {
@@ -2242,7 +2262,9 @@ public abstract class ZLTextView extends ZLTextViewBase {
 					//removeLastSpace = false;
 				}
 
-				newWidth = info.Width;
+				if(!isNestedInAnno) {
+					newWidth = info.Width;
+				}
  				element = paragraphCursor.getElement(currentElementIndex);
 			} else if(isGuji() && (element instanceof ZLTextWord) &&
 					lastOpenControlKind == FBTextKind.GUJI_CR) {
@@ -2289,13 +2311,23 @@ public abstract class ZLTextView extends ZLTextViewBase {
 				applyStyleChangeElement(element);
 				lastOpenControlKind = -1;
 				if(element instanceof ZLTextControlElement) {
-					if(((ZLTextControlElement)element).IsStart) {
-						lastOpenControlKind = ((ZLTextControlElement)element).Kind;
+					ZLTextControlElement control = ((ZLTextControlElement)element);
+					if(control.IsStart) {
+						lastOpenControlKind = control.Kind;
 						if(lastOpenControlKind == FBTextKind.GUJI_CR) {
 							// leave GUJI_CR in the previous line
 							info.EndElementIndex = currentElementIndex+1;
+							storedStyle = getTextStyle();
 							break;
 						}
+					} else if(isGuji()) {
+						isNestedInAnno = false;
+						if(control.Kind == FBTextKind.GUJI_ANNOTATION
+								|| control.Kind == FBTextKind.GUJI_TITLEANNOTATION
+								|| control.Kind == FBTextKind.GUJI_TRANSLATION) {
+									gujiAnnolist.clear();
+								}
+						lastOpenControlKind = getLastOpenControlKind(paragraphCursor, currentElementIndex+1);
 					}
 				}
 			}
@@ -2459,7 +2491,6 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		final boolean endOfParagraph = info.isEndOfParagraph();
 		boolean wordOccurred = false;
 		boolean changeStyle = true;
-		ZLTextStyle lastTextStyle = info.StartStyle;
 		
 		x += info.LeftIndent;
 		final int maxWidth = page.getTextWidth();
@@ -2491,6 +2522,8 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		boolean isShowGujiZhu = Application.ViewOptions.ShowGujiAnnotationOption.getValue();
 		boolean isShowGujiSuperscript = Application.ViewOptions.ShowGujiSuperscriptOption.getValue();
 		int bottomLine = getBottomLine(page);
+		ArrayList<Integer> gujiAnnolist = new ArrayList<Integer>();
+		boolean isNestedInAnno = false;
 		for (int wordIndex = info.RealStartElementIndex; wordIndex != endElementIndex; ++wordIndex, charIndex = 0) {
 			final ZLTextElement element = paragraph.getElement(wordIndex);
 			int width = getElementWidth(element, charIndex);
@@ -2544,18 +2577,44 @@ public abstract class ZLTextView extends ZLTextViewBase {
 						int index = wordIndex;
 						int startCharIndex = charIndex;
 						ZLTextElement commentElement = element;
-						ArrayList<Integer> list = new ArrayList<Integer>();
-		 				while((commentElement instanceof ZLTextWord || commentElement == ZLTextElement.HSpace) && index != endElementIndex) {
-		 					list.add(getElementWidth(commentElement, startCharIndex));
+						if(!isNestedInAnno) {
+							startX = x;
+						}
+		 				while((commentElement instanceof ZLTextWord || commentElement == ZLTextElement.HSpace) && index < endElementIndex) {
+		 					int commentWidth = getElementWidth(commentElement, startCharIndex);
+		 					if(commentWidth != 0) {
+		 						gujiAnnolist.add(commentWidth);
+		 					}
 		 					commentCount++;
 		 					index++;
 		 					commentElement = paragraph.getElement(index);
 		 					startCharIndex = 0;
+		 					if(commentElement instanceof ZLTextControlElement) {
+	 							if(((ZLTextControlElement)commentElement).IsStart && ((ZLTextControlElement)commentElement).Kind == FBTextKind.GUJI_PARAGRAPHMARK) {
+	 								isNestedInAnno = true;
+	 								index++;
+	 								commentElement = paragraph.getElement(index);
+	 								commentWidth = 0;
+	 								while((commentElement instanceof ZLTextWord) && index < endElementIndex) {
+	 									commentWidth += getElementWidth(commentElement, startCharIndex);
+	 				 					commentCount++;
+	 				 					index++;
+	 				 					commentElement = paragraphCursor.getElement(index);
+	 				 					startCharIndex = 0;
+	 				 				}
+	 								if(commentWidth != 0) {
+	 									gujiAnnolist.add(commentWidth);
+	 								}
+	 								index++;
+	 								commentElement = paragraph.getElement(index);
+	 							}
+		 					}
 		 				}
-		 				midIndex = getCommentMidIndex(list) + 1;//index is based on 1
-		 				startX = x;
+		 				midIndex = getCommentMidIndex(gujiAnnolist) + 1;//index is based on 1
 					}
-					commentIndex++;
+					if(width!=0) {
+						commentIndex++;
+					}
 				} else if(lastOpenControlKind == FBTextKind.GUJI_SUPERSCRIPT) {
 					if(commentCount == 0) {
 						int index = wordIndex;
@@ -2574,7 +2633,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		 				startX = x;
 					}
 					commentIndex = 0;
-				} else if(lastOpenControlKind == FBTextKind.GUJI_PARAGRAPHSTART) {
+				} else if(lastOpenControlKind == FBTextKind.GUJI_PARAGRAPHMARK) {
 					if(commentCount == 0) {
 						int index = wordIndex;
 						int startCharIndex = charIndex;
@@ -2587,11 +2646,41 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		 					commentElement = paragraphCursor.getElement(index);
 		 					startCharIndex = 0;
 		 				}
-		 				startX = x;
+						if(!isNestedInAnno) {
+							startX = x;		 
+							if(getTextStyle().Parent.getKind() == FBTextKind.GUJI_TITLEANNOTATION ||
+									getTextStyle().Parent.getKind() == FBTextKind.GUJI_ANNOTATION ||
+									getTextStyle().Parent.getKind() == FBTextKind.GUJI_TRANSLATION) {
+								isNestedInAnno = true;
+								midIndex = 10000;
+								gujiAnnolist.add(commentWidth);
+							}
+						}
 		 				int fontSize = this.getFontSize();
-		 				context.fillRoundRectangle(x, startY+1, x+commentWidth, startY+this.getGujiLineHeight()-1, fontSize/4, fontSize/4);
+                        context.setFillShader(true);
+                        //context.setFillColor(ZLColor.GUJI_BLACK);
+		 				if(!isNestedInAnno) {
+		 					context.fillRoundRectangle(x, startY+1, x+commentWidth, startY+this.getGujiLineHeight()-1, fontSize/4, fontSize/4);
+		 				} else {
+		 					if(commentIndex +1 > midIndex) {
+		 						if(commentIndex == midIndex) {
+		 							context.fillRoundRectangle(startX, startY+this.getGujiLineHeight()/2+1, startX+commentWidth, 
+			 								startY+this.getGujiLineHeight()-1, fontSize/4, fontSize/4);
+		 						} else {
+		 							context.fillRoundRectangle(x, startY+this.getGujiLineHeight()/2+1, x+commentWidth, 
+			 								startY+this.getGujiLineHeight()-1, fontSize/4, fontSize/4);
+		 						}
+		 						
+		 					} else {
+		 						context.fillRoundRectangle(x, startY+1, x+commentWidth, startY+this.getGujiLineHeight()/2-1, fontSize/4, fontSize/4);
+		 					}
+		 				}
+                        context.setFillShader(false);
+		 				commentIndex++;
 					}
-					commentIndex = 0;
+					if(!isNestedInAnno) {
+						commentIndex = 0;
+					}
 				} else {
 					commentCount = 0;
 					commentIndex = 0;
@@ -2613,6 +2702,9 @@ public abstract class ZLTextView extends ZLTextViewBase {
 					if(commentIndex == (midIndex +1)) {
 						endX=x;
 						x = startX;
+					}
+					if(lastOpenControlKind == FBTextKind.GUJI_PARAGRAPHMARK) {
+						
 					}
 					y = Math.min(startY+this.getGujiLineHeight()/2+fontSize,//startY+this.getGujiLineHeight()*3/4+fontSize/2,
 							bottomLine);
@@ -2662,7 +2754,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 							} else {
 								if(wordIndex == (midIndex + 1)) {
 									x = startX;
-									setTextStyle(lastTextStyle);
+									setTextStyle(getTextStyle().Parent);
 									changeStyle = true;
 								}
 								y = Math.min(startY+this.getGujiLineHeight()/2+this.getFontSize()/2,
@@ -2689,22 +2781,37 @@ public abstract class ZLTextView extends ZLTextViewBase {
 				wordOccurred = true;
 			} else if (isStyleChangeElement(element)) {
 				commentCount = 0;
-				commentIndex = 0;
-				if(isGuji()) {
-					if(endX != 0) {
-						x = Math.max(x, endX);
-						endX = 0;
-					}
+				if(!isNestedInAnno) {
+					commentIndex = 0;
+					midIndex=0;
+					startX = x;
 				}
-				startX = x;
-				midIndex=0;
-				lastTextStyle = getTextStyle();
+				
 				applyStyleChangeElement(element);
 				changeStyle = true;
 				lastOpenControlKind = -1;
 				if(element instanceof ZLTextControlElement) {
-					if(((ZLTextControlElement)element).IsStart) {
+					ZLTextControlElement control = ((ZLTextControlElement)element);
+					if(control.IsStart) {
 						lastOpenControlKind = ((ZLTextControlElement)element).Kind; 
+					} else if(isGuji()){
+						if(isNestedInAnno && control.Kind == FBTextKind.GUJI_PARAGRAPHMARK && gujiAnnolist.size() > 1) {
+							commentCount++;
+						}
+						
+						if(control.Kind == FBTextKind.GUJI_ANNOTATION
+								|| control.Kind == FBTextKind.GUJI_TITLEANNOTATION
+								|| control.Kind == FBTextKind.GUJI_TRANSLATION) {
+								isNestedInAnno = false;
+									gujiAnnolist.clear();
+								}
+						lastOpenControlKind = getLastOpenControlKind(paragraphCursor, wordIndex+1);
+					}
+				}
+				if(isGuji()) {
+					if(endX != 0 && !isNestedInAnno) {
+						x = Math.max(x, endX);
+						endX = 0;
 					}
 				}
 			}
@@ -2984,7 +3091,7 @@ public abstract class ZLTextView extends ZLTextViewBase {
 		int wordIndex = 0;
 		int charIndex = 0;
 		ZLTextLineInfo info = null;
-		while (wordIndex != endElementIndex) {
+		while (wordIndex < endElementIndex) {
 			final ZLTextLineInfo prev = info;
 			info = processTextLine(page, paragraphCursor, wordIndex, charIndex, endElementIndex, prev);
 			wordIndex = info.EndElementIndex;

@@ -87,6 +87,13 @@ bool BookReader::popKind() {
 	return false;
 }
 
+FBTextKind BookReader::topKind() {
+	if (!myKindStack.empty()) {
+		return myKindStack.back();
+	}
+	return REGULAR;
+}
+
 bool BookReader::isKindStackEmpty() const {
 	return myKindStack.empty();
 }

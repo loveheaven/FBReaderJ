@@ -92,8 +92,8 @@ public class SelectionModifyGuji extends FBAndroidAction {
 					case FBTextKind.GUJI_CR:
 						text+="\\cr{";
 						break;
-					case FBTextKind.GUJI_PARAGRAPHSTART:
-						text+="\\ps{";
+					case FBTextKind.GUJI_PARAGRAPHMARK:
+						text+="\\pm{";
 						break;
 					case FBTextKind.GUJI_AUTHOR:
 						text+="\\author{";
@@ -157,7 +157,7 @@ public class SelectionModifyGuji extends FBAndroidAction {
 					case FBTextKind.GUJI_CR:
 						text+="}";
 						break;
-					case FBTextKind.GUJI_PARAGRAPHSTART:
+					case FBTextKind.GUJI_PARAGRAPHMARK:
 						text+="}";
 						break;
 					case FBTextKind.GUJI_AUTHOR:
@@ -213,17 +213,16 @@ public class SelectionModifyGuji extends FBAndroidAction {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				String newText = edit.getText().toString();
-				
 				Reader.Model.getTextModel().saveGuji(Reader.Model.Book, 
 						indexOfParagraph, 
 						newText);
-				
-				fbview.clearSelection();
-				Reader.reloadBook();
 				UIMessageUtil.showMessageText(
 						BaseActivity,
 						ZLResource.resource("selection").getResource("gujiModified").getValue().replace("%s", newText)
 					);
+				fbview.clearSelection();
+				Reader.reloadBook();
+				
 			}
 		}).show();
 

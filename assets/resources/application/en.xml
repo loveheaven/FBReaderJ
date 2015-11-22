@@ -705,7 +705,10 @@
 				<node name="wood" value="Wood"/>
 				<node name="sand" value="Sand"/>
 				<node name="hardpaper" value="Hard paper"/>
-				<node name="parchment" value="Parchment"/>
+				<node name="guji_bg" value="Chinese old paper"/>
+				<node name="oldpaper" value="Old paper"/>
+				<node name="bamboo" value="Bamboo paper"/>
+				<node name="bamboo1" value="Bamboo paper1"/>
 			</node>
 			<node name="fillMode" value="Fill mode">
 				<node name="tile" value="Tile"/>

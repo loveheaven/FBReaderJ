@@ -43,6 +43,22 @@ jobjectArray Java_com_iwobanas_hunspellchecker_Hunspell_getSuggestions( JNIEnv* 
     hunspell->free_list(&suggestions, len);
     return jsuggestions;
 }
+char* iso8859_1_to_utf8(const char *in)
+{
+    char *utf8 = (char*)malloc(1 + (2 * strlen(in)));
+
+    if (utf8) {
+        unsigned char *out = (unsigned char *)utf8;
+        unsigned char *str = (unsigned char *)in;
+        while (*str)
+            if (*str<128) *out++=*str++;
+            else {
+            *out++=0xc2+(*str>0xbf), *out++=(*str++ & 0x3f)+0x80;
+            }
+        *out++ = '\0';
+    }
+    return utf8;
+}
 
 jobjectArray Java_com_iwobanas_hunspellchecker_Hunspell_analyze( JNIEnv* env,
                                                   jobject thiz, jstring jword )
@@ -58,7 +74,9 @@ jobjectArray Java_com_iwobanas_hunspellchecker_Hunspell_analyze( JNIEnv* env,
 
     for (int i = 0; i < len; i++)
     {
-        env->SetObjectArrayElement(jsuggestions, i, env->NewStringUTF(suggestions[i]));
+        char * utf8 = iso8859_1_to_utf8(suggestions[i]);
+        env->SetObjectArrayElement(jsuggestions, i, env->NewStringUTF(utf8));
+        free(utf8);
     }
     hunspell->free_list(&suggestions, len);
     return jsuggestions;

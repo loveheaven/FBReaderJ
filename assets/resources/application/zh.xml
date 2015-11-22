@@ -469,6 +469,7 @@
 				<node name="show" value="显示标点"/>
 				<node name="hide" value="不显示标点"/>
 			</node>
+			<node name="fontColor" value="古籍正文字体颜色"/>
 			<node name="GujiTextStyle" value="古籍文字样式">
 				<node name="summary" value="分别设定标题、段落等"/>
 				<node name="Classic Chinese Section Title" value="章节标题">
@@ -494,6 +495,15 @@
 				</node>
 				<node name="Classic Chinese Superscript" value="正文右注">
 					<node name="summary" value="正文右边的注解，例如日文汉字旁所注假名"/>
+				</node>
+				<node name="Classic Chinese Return" value="抬格">
+					<node name="summary" value="段内换行或者抬格"/>
+				</node>
+				<node name="Classic Chinese Paragragh Mark" value="阴刻文字">
+					<node name="summary" value="段内文字小节开头标记"/>
+				</node>
+				<node name="Classic Chinese Center Text" value="居中正文">
+					<node name="summary" value="一行内居中的正文"/>
 				</node>
 				<node name="Classic Chinese Section Title 1" value="章节标题1">
 					<node name="summary" value="章节、卷开头空一格的标题"/>
@@ -647,7 +657,6 @@
 				<node name="inherit" value="&lt;不变&gt;"/>
 			</node>
 			<node name="fontSize" value="字体大小"/>
-			<node name="fontColor" value="字体颜色"/>
 			<node name="fontStyle" value="字型">
 				<node name="regular" value="正常"/>
 				<node name="bold" value="加粗"/>
@@ -845,9 +854,10 @@
 				<node name="wood" value="木质"/>
 				<node name="sand" value="沙质"/>
 				<node name="hardpaper" value="硬纸"/>
-				<node name="parchment" value="羊皮书卷"/>
-				<node name="guji_bg_even" value="羊皮书卷右"/>
-				<node name="guji_bg_odd" value="羊皮书卷左"/>
+				<node name="oldpaper" value="旧纸"/>
+				<node name="guji_bg" value="古籍"/>
+				<node name="bamboo" value="竹纸"/>
+				<node name="bamboo1" value="竹纸1"/>
 			</node>
 			<node name="fillMode" value="填充模式">
 				<node name="tile" value="平铺"/>
@@ -939,6 +949,7 @@
 				<node name="slide" value="滑动动画"/>
 				<node name="slideOldStyle" value="滑动动画 (旧样式)"/>
 				<node name="shift" value="移动动画"/>
+				<node name="shiftCurl" value="移动翻书动画"/>
 			</node>
 			<node name="animationSpeed" value="动画速度">
 				<node name="fast" value="快"/>

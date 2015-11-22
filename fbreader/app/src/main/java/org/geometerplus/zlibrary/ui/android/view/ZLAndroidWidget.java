@@ -134,6 +134,9 @@ public class ZLAndroidWidget extends MainView implements ZLViewWidget, View.OnLo
 				case shift:
 					myAnimationProvider = new ShiftAnimationProvider(myBitmapManager);
 					break;
+				case shiftCurl:
+					myAnimationProvider = new ShiftCurlAnimationProvider(myBitmapManager);
+					break;
 			}
 		}
 		return myAnimationProvider;
@@ -307,6 +310,7 @@ public class ZLAndroidWidget extends MainView implements ZLViewWidget, View.OnLo
 				PrepareService.execute(new Runnable() {
 					public void run() {
 						myBitmapManager.getBitmap(ZLView.PageIndex.next);
+						myBitmapManager.getBitmap(ZLView.PageIndex.previous);
 					}
 				});
 			}

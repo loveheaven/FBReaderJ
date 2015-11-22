@@ -57,10 +57,10 @@ public class ZLTextNGStyleDescription {
 	}
 	
 	private static ZLColorOption createColorOption(String selector, String name, Map<String,String> valueMap) {
-		ZLColor value = ZLColor.BLACK;
+		ZLColor value = ZLColor.GUJI_BLACK;
 		try {
 			final int intValue = Integer.parseInt(valueMap.get(name));
-			value = intValue != -1 ? new ZLColor(intValue) : ZLColor.BLACK;
+			value = intValue != -1 ? new ZLColor(intValue) : ZLColor.GUJI_BLACK;
 		} catch (NumberFormatException e) {
 		}
 		return new ZLColorOption("Style", selector + "::" + name, value);
